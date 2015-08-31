@@ -52,13 +52,10 @@ angular.module('starter.controllers', [])
   console.log('daysInMonth:' + daysInMonth);
 
   var myDay = 1;
-
   var weeks = [];
 
   for (var r = 1; r<=6; r++){
-
     var week = [];
-
     if (r == 1){
       for (var i = 0; i < pos; i++){
         week.push('-');
