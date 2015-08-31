@@ -39,78 +39,51 @@ angular.module('starter.controllers', [])
 
   var days = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
 
-  var firstDateOfMonth = Utility.getDayOfFirstDateOfMonth(3,2015);
+  var firstDateOfMonth = Utility.getDayOfFirstDateOfMonth(2,2015);
   var pos = days.indexOf(firstDateOfMonth);
 
   var datex = new Date();
   //var daysInMonth = Utility.getDaysInMonth(datex.getMonth(),datex.getYear());
 
-  var daysInMonth = Utility.getDaysInMonth(3,2015);
+  var daysInMonth = Utility.getDaysInMonth(2,2015);
 
-  
+
 
   console.log('daysInMonth:' + daysInMonth);
 
   var myDay = 1;
 
+  var weeks = [];
 
-  var week1 = [];
-  for (var i = 0; i < pos; i++){
-    week1.push('-');
-  }
-  for (var j = pos ; j < 7 ;j++){
-    week1.push(myDay);
-    myDay++;
-  }
-  var week2 = [];
-  for (var t = 0 ; t < 7 ;t++){
-    week2.push(myDay);
-    myDay++;
-  }
-  var week3 = [];
-  for (var y = 0 ; y < 7 ;y++){
-    week3.push(myDay);
-    myDay++;
-  }
-  var week4 = [];
-  for (var x = 0 ; x < 7 ;x++){
-    week4.push(myDay);
-    myDay++;
-  }
+  for (var r = 1; r<=6; r++){
 
-console.log('prima di week5:' + myDay);
-  var week5 = [];
-  if (myDay <= daysInMonth){
-    for (var z = 0 ; z < 7 ;z++){
-      if (myDay <= daysInMonth)
-        week5.push(myDay);
-      else {
-        week5.push('-');
+    var week = [];
+
+    if (r == 1){
+      for (var i = 0; i < pos; i++){
+        week.push('-');
       }
-      myDay++;
-    }
-  }
-console.log('prima di week6:' + myDay);
-  var week6 = [];
-  if (myDay <= daysInMonth){
-    for (var w = 0 ; w < 7 ;w++){
-      if (myDay <= daysInMonth)
-        week6.push(myDay);
-      else {
-        week6.push('-');
+      for (var j = pos ; j < 7 ;j++){
+        week.push(myDay);
+        myDay++;
       }
-      myDay++;
     }
+    if ( r != 1 && myDay <= daysInMonth){
+      for (var w = 0 ; w < 7 ;w++){
+        if (myDay <= daysInMonth)
+          week.push(myDay);
+        else {
+          week.push('-');
+        }
+        myDay++;
+      }
+    }
+    weeks.push (week);
+
   }
 
+  console.log(weeks);
 
-
-  console.log(week1);
-  console.log(week2);
-  console.log(week3);
-  console.log(week4);
-  console.log(week5);
-  console.log(week6);
 
 
 
