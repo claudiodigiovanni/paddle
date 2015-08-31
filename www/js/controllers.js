@@ -46,6 +46,7 @@ angular.module('starter.controllers', [])
   //var daysInMonth = Utility.getDaysInMonth(datex.getMonth(),datex.getYear());
 
   var daysInMonth = Utility.getDaysInMonth(3,2015);
+  
 
   console.log('daysInMonth:' + daysInMonth);
 
