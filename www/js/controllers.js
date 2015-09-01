@@ -37,75 +37,91 @@ angular.module('starter.controllers', [])
 
 .controller('SetAvalability', function($scope, $stateParams, Utility) {
 
-  var days = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
 
-  var firstDateOfMonth = Utility.getDayOfFirstDateOfMonth(2,2015);
-  var pos = days.indexOf(firstDateOfMonth);
-
-  var datex = new Date();
-  //var daysInMonth = Utility.getDaysInMonth(datex.getMonth(),datex.getYear());
-
-  var daysInMonth = Utility.getDaysInMonth(2,2015);
-
-
-
-  console.log('daysInMonth:' + daysInMonth);
-
-  var myDay = 1;
-  var weeks = [];
-
-  for (var r = 1; r<=6; r++){
-    var week = [];
-    if (r == 1){
-      for (var i = 0; i < pos; i++){
-        week.push('-');
-      }
-      for (var j = pos ; j < 7 ;j++){
-        week.push(myDay);
-        myDay++;
-      }
-    }
-    if ( r != 1 && myDay <= daysInMonth){
-      for (var w = 0 ; w < 7 ;w++){
-        if (myDay <= daysInMonth)
-          week.push(myDay);
-        else {
-          week.push('-');
-        }
-        myDay++;
-      }
-    }
-    weeks.push (week);
-
+  $scope.updateFn = function(){
+    alert('onSubmit');
   }
 
-  console.log(weeks);
+  $scope.myrange = {start:9, end:11};
+
+  $scope.ranges = [{start:7,end:9},{start:10,end:12}];
+
+  $scope.newRangesExp = [];
 
 
 
+  $scope.$watch('myrange.start', function() {
+    var x = $scope.myrange.start;
+    $scope.myrange.end = parseInt(x) + 1;
+    $scope.newValStart = x % 1 == 0 ? x : x.substring(0,x.indexOf('.')) + '.30';
+  })
+  $scope.$watch('myrange.end', function() {
+    var x = $scope.myrange.end;
+    if (parseInt(x) < parseInt($scope.myrange.start))
+      $scope.myrange.start = parseInt(x) - 1;
+    $scope.newValEnd = x % 1 == 0 ? x : x.substring(0,x.indexOf('.')) + '.30';
+  })
 
+  $scope.$watch('ranges',function(){
+    //alert('cccs');
+    $scope.newRangesExp = [];
+    _.each($scope.ranges,function(element, index, list){
+      //alert (index);
+      $scope.newRangesExp.push (_.range(element.start,element.end + 0.5,0.5))
+    })
 
+  })
+  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  $scope.weeks = Utility.getCalendar(10,2015);
 
-
-  $scope.days = days;
-  var booked = [];
+  $scope.weekDays = weekDays;
+  var booked = [3,4,6,11,21];
+  $scope.booked = booked;
   var selected = [];
+  $scope.selected = selected;
 
-  var date = new Date() ;
-  var currentDate = date.getDate();
-
-  console.log('ccc'+ currentDate);
-  //date.setDate(date.getDate() + 8);
-  //console.log (days[(date.getDay() + 6 ) % 7]);
-
-  var getDayStatus = function(day){
-
-    if (day < currentDate){
-      return 'Disabled';
+  $scope.dayClicked = function(day){
+    if (day == "-")
+      return;
+    if (booked.indexOf(day) != -1){
+      booked.splice(booked.indexOf(day),1);
     }
+    else if (selected.indexOf(day) != -1){
+        selected.splice(selected.indexOf(day),1);
+      }
+    else{
+        selected.push(day);
+    }
+  }
 
-
+  $scope.getStatus = function(day){
+    if (booked.indexOf(day) != -1){
+      return 'booked';
+    }
+    else if (selected.indexOf(day) != -1){
+      return 'selected';
+    }
+    else {
+      return 'avalaible'
+    }
   };
+
+  $scope.addRange = function(range){
+
+    _.each(selected, function(value, key, list){
+      booked.push(value);
+
+    })
+    $scope.selected = [];
+    var newRange = {start:$scope.myrange.start,end:$scope.myrange.end};
+
+    $scope.ranges.push(newRange);
+    //alert ("BO" + $scope.ranges);
+    alert('start:' + $scope.myrange.start + 'end:' + $scope.myrange.end);
+    $scope.newRangesExp.push (_.range(parseInt(newRange.start),parseInt(newRange.end) + 0.5,0.5))
+
+
+  }
 
 
 

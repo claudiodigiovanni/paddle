@@ -1,14 +1,25 @@
-<ion-view view-title="Dashboard">
+<ion-view view-title="Disponibilità">
   <ion-content class="padding">
-    Avalaible...
+<div class="row">
+  <div class="col" ng-repeat="weekDay in weekDays" >{{weekDay}}</div>
+</div>
+<div class="row" ng-repeat="week in weeks">
+  <div class="col" ng-repeat="day in week track by $index" ng-switch on="getStatus(day)" ng-click="dayClicked(day)">
+    <div ng-switch-when="booked" class="booked">{{day}}</div>
+    <div ng-switch-when="selected" class="selected">{{day}}</div>
+    <div ng-switch-default class="avalaible">{{day}}</div>
 
-    <table class="seatLayout">
-        <tr>
-            <td class="padding-bottom"></td>
-            <td class="padding-bottom" ng-repeat="day in days" > {{day}} -  </td>
-        </tr>
+  </div>
+</div>
 
-    </table>
+
+<button class="button button-block button-positive" ng-click="addRange()">
+  Aggiungi Orario
+</button>
+
+<div hours-range my-function='updateFn()'></div>
+
+
 
 
 

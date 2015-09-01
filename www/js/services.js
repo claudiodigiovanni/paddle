@@ -18,9 +18,42 @@ The way the above code works is that the month passed to the Date constructor is
       return days[(date.getDay() + 6 ) % 7];
       //return date.getDay();
     },
+    getCalendar: function(month,year){
+
+      var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+      var firstDateOfMonth = this.getDayOfFirstDateOfMonth(month,year);
+      var pos = weekDays.indexOf(firstDateOfMonth);
+      var daysInMonth = this.getDaysInMonth(month,year);
+      var myDay = 1;
+      var weeks = [];
+
+      for (var row = 1; row<=6; row++){
+        var week = [];
+        if (row == 1){
+          _.each( _.range(0,pos),function (value, key, list){
+                  week.push('-');
+                })
+          _.each( _.range(pos,7),function (value, key, list){
+                  week.push(myDay);
+                  myDay++;
+                })
+        }
+        if ( row != 1 && myDay <= daysInMonth){
+          _.each( _.range(0,7),function (value, key, list){
+                  myDay <= daysInMonth ? week.push(myDay) : week.push('-');
+                  myDay++;
+                })
+        }
+        weeks.push (week);
+      }
+      return weeks;
+
+    },
     test: function() {
       console.log('test');
     }
+
+
   };
 })
 
