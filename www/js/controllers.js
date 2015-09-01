@@ -37,42 +37,31 @@ angular.module('starter.controllers', [])
 
 .controller('SetAvalability', function($scope, $stateParams, Utility) {
 
+  var currentDate = new Date();
+  $scope.currentMonth = currentDate.getMonth();
+
+  $scope.changeMonth = function (pos){
+
+      $scope.currentMonth = parseInt($scope.currentMonth) + parseInt(pos);
+
+  }
+
 
   $scope.updateFn = function(){
     alert('onSubmit');
   }
 
-  $scope.myrange = {start:9, end:11};
+  $scope.getRangeStatus = function(pos){
+    //alert('getRangeStatus' + pos);
+    if (pos==1)
+      return "positive";
+    else if (pos==2)
+      return "energized";
+  }
 
-  $scope.ranges = [{start:7,end:9},{start:10,end:12}];
 
-  $scope.newRangesExp = [];
-
-
-
-  $scope.$watch('myrange.start', function() {
-    var x = $scope.myrange.start;
-    $scope.myrange.end = parseInt(x) + 1;
-    $scope.newValStart = x % 1 == 0 ? x : x.substring(0,x.indexOf('.')) + '.30';
-  })
-  $scope.$watch('myrange.end', function() {
-    var x = $scope.myrange.end;
-    if (parseInt(x) < parseInt($scope.myrange.start))
-      $scope.myrange.start = parseInt(x) - 1;
-    $scope.newValEnd = x % 1 == 0 ? x : x.substring(0,x.indexOf('.')) + '.30';
-  })
-
-  $scope.$watch('ranges',function(){
-    //alert('cccs');
-    $scope.newRangesExp = [];
-    _.each($scope.ranges,function(element, index, list){
-      //alert (index);
-      $scope.newRangesExp.push (_.range(element.start,element.end + 0.5,0.5))
-    })
-
-  })
   var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
-  $scope.weeks = Utility.getCalendar(10,2015);
+  $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getYear());
 
   $scope.weekDays = weekDays;
   var booked = [3,4,6,11,21];
@@ -94,7 +83,7 @@ angular.module('starter.controllers', [])
     }
   }
 
-  $scope.getStatus = function(day){
+  $scope.getDayStatus = function(day){
     if (booked.indexOf(day) != -1){
       return 'booked';
     }
@@ -107,19 +96,6 @@ angular.module('starter.controllers', [])
   };
 
   $scope.addRange = function(range){
-
-    _.each(selected, function(value, key, list){
-      booked.push(value);
-
-    })
-    $scope.selected = [];
-    var newRange = {start:$scope.myrange.start,end:$scope.myrange.end};
-
-    $scope.ranges.push(newRange);
-    //alert ("BO" + $scope.ranges);
-    alert('start:' + $scope.myrange.start + 'end:' + $scope.myrange.end);
-    $scope.newRangesExp.push (_.range(parseInt(newRange.start),parseInt(newRange.end) + 0.5,0.5))
-
 
   }
 

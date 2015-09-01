@@ -1,10 +1,21 @@
 <ion-view view-title="Disponibilità">
+
+
+
   <ion-content class="padding">
+
+      <div class="card" style="text-align:center">
+      <div class="item item-text-wrap">
+        <i class="icon ion-chevron-left" ng-click="changeMonth(-1)"></i> &nbsp;&nbsp;&nbsp;{{currentMonth}}&nbsp;&nbsp;&nbsp;   <i class="icon ion-chevron-right" ng-click="changeMonth(1)"></i>
+      </div>
+      </div>
+
+
 <div class="row">
   <div class="col" ng-repeat="weekDay in weekDays" >{{weekDay}}</div>
 </div>
 <div class="row" ng-repeat="week in weeks">
-  <div class="col" ng-repeat="day in week track by $index" ng-switch on="getStatus(day)" ng-click="dayClicked(day)">
+  <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus(day)" ng-click="dayClicked(day)">
     <div ng-switch-when="booked" class="booked">{{day}}</div>
     <div ng-switch-when="selected" class="selected">{{day}}</div>
     <div ng-switch-default class="avalaible">{{day}}</div>
@@ -17,7 +28,7 @@
   Aggiungi Orario
 </button>
 
-<div hours-range my-function='updateFn()'></div>
+<div hours-range my-function='updateFn()' get-range-status='getRangeStatus(pos)'></div>
 
 
 
