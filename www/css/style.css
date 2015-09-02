@@ -21,4 +21,7 @@ table tr:nth-child(even) {
 .selected{
   background-color: #4adf38;
 }
+.bookedSelected{
+  background-color: #df38ba;
+}
 </style>

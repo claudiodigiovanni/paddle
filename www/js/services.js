@@ -1,29 +1,53 @@
 angular.module('starter.services', [])
 
+
+.factory('MockData',function(){
+
+  return {
+    getPrenotazioni :function(month,year){
+      var user1 = "user1";
+      var prenotazioni = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1},{user:user1, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1}];
+      return prenotazioni;
+
+    },
+    getDisponibilitaCoach:function(month,year){
+      var disponibilitaCoach = [{date:new Date("2015/09/2"),ranges:[1,2,3,4,6],maestro:1}];
+      return disponibilitaCoach;
+    },
+    getBookings: function(month,year){
+      return [{date:new Date('2015/08/13'),ranges:[2,3,4,5]},{date:new Date('2015/08/26'),ranges:[5,6,7,8]}];
+    }
+  }
+
+})
+
 .factory('Utility',function(){
 
   return {
-    /*
-    The month passed in is 1 for January, 2 for February and so on through to 12 for December.
-
-The way the above code works is that the month passed to the Date constructor is actually 0 based (i.e. 0 is January, 1 is February etc) so it is in effect creating a date for the day 0 of the next month. Because day 0 equates to the last day of the previous month the number returned is effectively the number of days for the month we want.
+    /* Because day 0 equates to the last day of the previous month the number returned is effectively the number of days for the month we want.
     */
     getDaysInMonth: function(month,year) {
-      return new Date(year, month, 0).getDate();
+      return new Date(year, month + 1, 0).getDate();
     },
     getDayOfFirstDateOfMonth: function(month,year){
-
+      //            1     2     3     4     5     6     0
       var days = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
-      var date = new Date (year, month-1, 1);
+      var date = new Date (year, month, 1);
+      //alert('date.getDay()'+ date.getDay());
       return days[(date.getDay() + 6 ) % 7];
       //return date.getDay();
     },
     getCalendar: function(month,year){
 
+    //  alert('month:' +  month)
+      //alert('year:' +  year)
+
       var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
       var firstDateOfMonth = this.getDayOfFirstDateOfMonth(month,year);
+      //alert ('firstDateOfMonth'  + firstDateOfMonth);
       var pos = weekDays.indexOf(firstDateOfMonth);
       var daysInMonth = this.getDaysInMonth(month,year);
+      //alert ('daysInMonth'+ daysInMonth);
       var myDay = 1;
       var weeks = [];
 

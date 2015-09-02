@@ -23,7 +23,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   });
     Parse.initialize("coSL7yZiTPaWCJ2RupEoJU1Fah8KrZOzn36O7JGT","rVaK5TeMUTrHjEpzizDy4RF4fmIYsvbCpCfG9bPM");
 })
-
+.constant('config', {
+  TennisCourtsNumber: 2,
+  PaddleCourtsNumber: 2
+})
 .config(function($stateProvider, $urlRouterProvider) {
 
   // Ionic uses AngularUI Router which uses the concept of states
@@ -60,6 +63,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
         }
       }
     })
+
+    .state('tab.bookCoach', {
+        url: '/bookCoach',
+        views: {
+          'tab-bookCoach': {
+            templateUrl: 'templates/bookCoach.html',
+            controller: 'BookCoach'
+          }
+        }
+      })
+
 
   .state('tab.chats', {
       url: '/chats',
