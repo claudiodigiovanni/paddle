@@ -11,32 +11,20 @@
       </div>
 
 
-<div class="row">
-  <div class="col" ng-repeat="weekDay in weekDays" >{{weekDay}}</div>
-</div>
-<div class="row" ng-repeat="week in weeks">
-  <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus(day)" ng-click="dayClicked(day)" >
-    <div ng-switch-when="booked" class="booked">{{day}}</div>
-    <div ng-switch-when="bookedSelected" class="bookedSelected">{{day}}</div>
-    <div ng-switch-when="selectedDays" class="selected">{{day}}</div>
-    <div ng-switch-default class="avalaible">{{day}}</div>
 
-  </div>
-</div>
+<calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
 
 
 <button class="button button-block button-positive" ng-click="addRange()">
   Aggiungi Orario
 </button>
 
-<div hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'></div>
+<hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'></hours-range>
 
 
 <button class="button button-block button-positive" ng-click="deleteBooking()" ng-if="bookedDay">
   Elimina Prenotazione giorno
 </button>
-
-
 
 
 

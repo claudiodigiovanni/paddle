@@ -1,0 +1,14 @@
+<div>
+  <div class="row">
+    <div class="col" ng-repeat="weekDay in weekDays" >{{weekDay}}...</div>
+  </div>
+  <div class="row" ng-repeat="week in weeks">
+    <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus({pos:day})" ng-click="dayClicked({pos:day})" >
+      <div ng-switch-when="booked" class="booked">{{day}}</div>
+      <div ng-switch-when="bookedSelected" class="bookedSelected">{{day}}</div>
+      <div ng-switch-when="selectedDays" class="selected">{{day}}</div>
+      <div ng-switch-default class="avalaible">{{day}}</div>
+
+    </div>
+  </div>
+</div>

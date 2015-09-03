@@ -35,10 +35,37 @@ angular.module('starter.controllers', [])
 2) Seleziona Prenotazoni
 
 */
-.controller('BookCoach', function($scope, $stateParams, config,MockData) {
+.controller('BookCoach', function($scope, $stateParams, config,MockData,Coaches) {
+
+  $scope.coaches = Coaches.all();
+})
+
+
+.controller('CoachAvalabilities', function($scope, $stateParams, config,MockData,Coaches,Utility) {
+
+  var currentDate = new Date();
+  $scope.currentMonth = parseInt(currentDate.getMonth());
+  $scope.currentYear = currentDate.getFullYear();
+
+  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  $scope.weekDays = weekDays;
+
+  $scope.changeMonth = function (pos){
+
+      $scope.currentMonth = parseInt($scope.currentMonth) + parseInt(pos);
+
+  }
+
+  $scope.$watch('currentMonth', function() {
+    //alert("month:" + $scope.currentMonth);
+    $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
+  })
+
 
   var prenotazioni = MockData.getPrenotazioni (8,2015);
   var disponibilitaCoach = MockData.getDisponibilitaCoach (8,2015);
+
+  var selectedRanges = [];
 
   var avalabilities = []
   _.each(disponibilitaCoach,function (d){
@@ -49,7 +76,83 @@ angular.module('starter.controllers', [])
     })
   })
   console.log(avalabilities);
+
+  $scope.getDayStatus = function(day){
+    var m = $scope.currentMonth ;
+    var y = $scope.currentYear;
+
+    var mydate = new Date(y + '/' + m + '/' + day);
+
+    if ($scope.selectedDay && $scope.selectedDay == mydate){
+      return "bookedSelected";
+    }
+
+    var e = _.find(avalabilities,function(obj){
+        return (obj.date == mydate);
+    });
+    if ( e ){
+      return 'booked';
+    }
+
+    else {
+      return 'avalaible'
+    }
+  };
+
+  $scope.dayClicked = function(day){
+
+    var m = $scope.currentMonth ;
+    var y = $scope.currentYear;
+
+    console.log('day:' + day);
+    console.log(new Date(y + '/' + m + '/' + day));
+
+    if (day == "-")
+      return;
+    var e = _.where(avalabilities,{date: new Date(y + '/' + m + '/' + day)});
+    console.log('e');
+    console.log(e);
+    if ( e.length == 0 ){
+      return;
+
+    }
+    else{
+      $scope.selectedDay =  new Date(y + '/' + m + '/' + day);
+      console.log('dayClicked');
+      console.log(e);
+    }
+
+  }
+
+  $scope.getRangeStatus = function(pos){
+    //alert('getRangeStatus' + pos);
+    var selectedDay = $scope.selectedDay
+    console.log('sleday');
+    console.log(selectedDay);
+    var range = _.where (avalabilities,{date: selectedDay, range:pos})
+    console.log('range');
+    console.log(range);
+    if (range && range.length >= 1){
+        return "positive";
+    }
+    else
+      return "light"
+
+  }
+
+  $scope.setRangeStatus = function(pos){
+    //alert('getRangeStatus' + pos);
+    if (selectedRanges.indexOf(pos) != -1){
+      selectedRanges.splice(selectedRanges.indexOf(pos),1);
+    }
+    else {
+      selectedRanges.push(pos);
+    }
+
+  }
+
 })
+
 
 
 .controller('BookCourt', function($scope, $stateParams, config,MockData,Utility) {
@@ -76,11 +179,26 @@ angular.module('starter.controllers', [])
   };
 })
 
+
 .controller('SetAvalability', function($scope, $stateParams, Utility, MockData) {
 
   var currentDate = new Date();
   $scope.currentMonth = parseInt(currentDate.getMonth());
   $scope.currentYear = currentDate.getFullYear();
+
+  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
+
+  $scope.weekDays = weekDays;
+  var booked = MockData.getBookings(8,2015);
+
+  $scope.booked = booked;
+  var selectedDays = [];
+  var selectedRanges = [];
+  $scope.selectedDays = selectedDays;
+
+  $scope.bookedDay = false;
+
 
   $scope.changeMonth = function (pos){
 
@@ -94,9 +212,7 @@ angular.module('starter.controllers', [])
   })
 
 
-  $scope.updateFn = function(){
-    alert('onSubmit');
-  }
+
 
   $scope.getRangeStatus = function(pos){
     //alert('getRangeStatus' + pos);
@@ -117,19 +233,6 @@ angular.module('starter.controllers', [])
 
   }
 
-  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
-  $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
-
-  $scope.weekDays = weekDays;
-  var booked = MockData.getBookings(8,2015);
-
-  $scope.booked = booked;
-  var selectedDays = [];
-  var selectedRanges = [];
-  $scope.selectedDays = selectedDays;
-
-  $scope.bookedDay = false;
-
   $scope.deleteBooking = function(day){
       booked.splice(booked.indexOf($scope.selectedBookedDay) ,1);
       $scope.bookedDay = false;
@@ -138,6 +241,7 @@ angular.module('starter.controllers', [])
   }
 
   $scope.dayClicked = function(day){
+
     if (day == "-")
       return;
     var e = _.find(booked,function(obj){

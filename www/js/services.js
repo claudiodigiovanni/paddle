@@ -11,7 +11,7 @@ angular.module('starter.services', [])
 
     },
     getDisponibilitaCoach:function(month,year){
-      var disponibilitaCoach = [{date:new Date("2015/09/2"),ranges:[1,2,3,4,6],maestro:1}];
+      var disponibilitaCoach = [{date:new Date("2015/09/2"),ranges:[1,2,3,4,6],maestro:1},{date:new Date("2015/09/9"),ranges:[1,2,3,4,8],maestro:1}];
       return disponibilitaCoach;
     },
     getBookings: function(month,year){
@@ -78,6 +78,55 @@ angular.module('starter.services', [])
     }
 
 
+  };
+})
+
+.factory('Coaches', function() {
+  // Might use a resource here that returns a JSON array
+
+  // Some fake testing data
+  var coaches = [{
+    id: 0,
+    name: 'Ben Sparrow',
+    date: 'You on your way?',
+    face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
+  }, {
+    id: 1,
+    name: 'Max Lynx',
+    date: 'Hey, it\'s me',
+    face: 'https://avatars3.githubusercontent.com/u/11214?v=3&s=460'
+  }, {
+    id: 2,
+    name: 'Adam Bradleyson',
+    date: 'I should buy a boat',
+    face: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg'
+  }, {
+    id: 3,
+    name: 'Perry Governor',
+    date: 'Look at my mukluks!',
+    face: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png'
+  }, {
+    id: 4,
+    name: 'Mike Harrington',
+    date: 'This is wicked good ice cream.',
+    face: 'https://pbs.twimg.com/profile_images/578237281384841216/R3ae1n61.png'
+  }];
+
+  return {
+    all: function() {
+      return coaches;
+    },
+    remove: function(coach) {
+      coaches.splice(coaches.indexOf(coach), 1);
+    },
+    get: function(coachId) {
+      for (var i = 0; i < coaches.length; i++) {
+        if (coaches[i].id === parseInt(coachId)) {
+          return coaches[i];
+        }
+      }
+      return null;
+    }
   };
 })
 

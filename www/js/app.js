@@ -64,16 +64,35 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
       }
     })
 
-    .state('tab.bookCoach', {
-        url: '/bookCoach',
-        views: {
-          'tab-bookCoach': {
-            templateUrl: 'templates/bookCoach.html',
-            controller: 'BookCoach'
-          }
+  .state('tab.bookCoach', {
+      url: '/bookCoach',
+      views: {
+        'tab-bookCoach': {
+          templateUrl: 'templates/bookCoach.html',
+          controller: 'BookCoach'
         }
-      })
+      }
+    })
 
+  .state('tab.coachAvalabilities', {
+      url: '/coachAvalabilities/:coachId',
+      views: {
+        'tab-bookCoach': {
+          templateUrl: 'templates/coachAvalabilities.html',
+          controller: 'CoachAvalabilities'
+        }
+      }
+    })
+
+  .state('tab.bookCourt', {
+      url: '/bookCourt',
+      views: {
+        'tab-bookCourt': {
+          templateUrl: 'templates/bookCourt.html',
+          controller: 'BookCourt'
+        }
+      }
+    })
 
   .state('tab.chats', {
       url: '/chats',
