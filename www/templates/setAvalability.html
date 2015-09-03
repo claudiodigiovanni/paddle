@@ -1,32 +1,24 @@
 <ion-view view-title="Disponibilità">
 
+<ion-content class="padding">
 
-
-  <ion-content class="padding">
-
-      <div class="card" style="text-align:center">
-      <div class="item item-text-wrap">
-        <i class="icon ion-chevron-left" ng-click="changeMonth(-1)"></i> &nbsp;&nbsp;&nbsp;{{currentMonth}}&nbsp;&nbsp;&nbsp;   <i class="icon ion-chevron-right" ng-click="changeMonth(1)"></i>
-      </div>
-      </div>
-
-
+<div class="card" style="text-align:center">
+  <div class="item item-text-wrap">
+    <i class="icon ion-chevron-left" ng-click="changeMonth(-1)"></i> &nbsp;&nbsp;&nbsp;{{currentMonth}}&nbsp;&nbsp;&nbsp;   <i class="icon ion-chevron-right" ng-click="changeMonth(1)"></i>
+  </div>
+</div>
 
 <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
 
-
-<button class="button button-block button-positive" ng-click="addRange()">
+<button class="button button-block button-positive" ng-click="addRange()" ng-hide="showDeleteButton">
   Aggiungi Orario
 </button>
 
 <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'></hours-range>
 
-
-<button class="button button-block button-positive" ng-click="deleteBooking()" ng-if="bookedDay">
+<button class="button button-block button-positive" ng-click="deleteAvalability()" ng-show="showDeleteButton">
   Elimina Prenotazione giorno
 </button>
-
-
 
   </ion-content>
 </ion-view>

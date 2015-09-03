@@ -44,7 +44,7 @@ angular.module('starter.controllers', [])
 .controller('CoachAvalabilities', function($scope, $stateParams, config,MockData,Coaches,Utility) {
 
   var currentDate = new Date();
-  $scope.currentMonth = parseInt(currentDate.getMonth());
+  $scope.currentMonth = parseInt(currentDate.getMonth())  ;
   $scope.currentYear = currentDate.getFullYear();
 
   var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
@@ -65,6 +65,7 @@ angular.module('starter.controllers', [])
   var prenotazioni = MockData.getPrenotazioni (8,2015);
   var disponibilitaCoach = MockData.getDisponibilitaCoach (8,2015);
 
+  var avalaibleRanges = [];
   var selectedRanges = [];
 
   var avalabilities = []
@@ -75,68 +76,64 @@ angular.module('starter.controllers', [])
           avalabilities.push({date:d.date,range:r});
     })
   })
-  console.log(avalabilities);
+
+  $scope.showAddButton = false;
+
 
   $scope.getDayStatus = function(day){
-    var m = $scope.currentMonth ;
-    var y = $scope.currentYear;
-
-    var mydate = new Date(y + '/' + m + '/' + day);
-
-    if ($scope.selectedDay && $scope.selectedDay == mydate){
-      return "bookedSelected";
-    }
 
     var e = _.find(avalabilities,function(obj){
-        return (obj.date == mydate);
+        return (obj.date.getDate() == day);
     });
+
+
+    if (e && $scope.selectedDay == day){
+      return "selectedBooked";
+    }
+
     if ( e ){
       return 'booked';
     }
 
     else {
-      return 'avalaible'
+      return 'free'
     }
   };
 
   $scope.dayClicked = function(day){
 
-    var m = $scope.currentMonth ;
-    var y = $scope.currentYear;
-
-    console.log('day:' + day);
-    console.log(new Date(y + '/' + m + '/' + day));
+    $scope.showAddButton = false;
 
     if (day == "-")
       return;
-    var e = _.where(avalabilities,{date: new Date(y + '/' + m + '/' + day)});
-    console.log('e');
-    console.log(e);
-    if ( e.length == 0 ){
-      return;
+    var ranges = _.pluck(_.filter(avalabilities,function(obj){
+        return (obj.date.getDate() == day);
+    }),'range');
 
+    if ( ranges.length == 0 ){
+      return;
     }
     else{
-      $scope.selectedDay =  new Date(y + '/' + m + '/' + day);
+      $scope.selectedDay =  day;
+      avalaibleRanges = ranges;
+      selectedRanges = [];
       console.log('dayClicked');
-      console.log(e);
+      $scope.showAddButton = true;
     }
 
   }
 
+
   $scope.getRangeStatus = function(pos){
-    //alert('getRangeStatus' + pos);
-    var selectedDay = $scope.selectedDay
-    console.log('sleday');
-    console.log(selectedDay);
-    var range = _.where (avalabilities,{date: selectedDay, range:pos})
-    console.log('range');
-    console.log(range);
-    if (range && range.length >= 1){
-        return "positive";
+
+    if (selectedRanges.indexOf(pos) != -1){
+      return "energized"
     }
-    else
-      return "light"
+
+    if (avalaibleRanges.indexOf(pos) != -1){
+      return "positive"
+    }
+    return "light"
 
   }
 
@@ -144,16 +141,30 @@ angular.module('starter.controllers', [])
     //alert('getRangeStatus' + pos);
     if (selectedRanges.indexOf(pos) != -1){
       selectedRanges.splice(selectedRanges.indexOf(pos),1);
+      return
+    }
+
+    if (avalaibleRanges.indexOf(pos) != -1){
+      selectedRanges.push(pos);
     }
     else {
-      selectedRanges.push(pos);
+
     }
 
   }
 
+  $scope.book = function(){
+
+    var m = parseInt($scope.currentMonth) + 1;
+    var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
+    //TODO
+    //new Booking.....
+    //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
+    selectedRanges = [];
+
+  }
+
 })
-
-
 
 .controller('BookCourt', function($scope, $stateParams, config,MockData,Utility) {
 
@@ -183,16 +194,16 @@ angular.module('starter.controllers', [])
 .controller('SetAvalability', function($scope, $stateParams, Utility, MockData) {
 
   var currentDate = new Date();
-  $scope.currentMonth = parseInt(currentDate.getMonth());
+  $scope.currentMonth = parseInt(currentDate.getMonth()) ;
   $scope.currentYear = currentDate.getFullYear();
 
   var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
   $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
 
   $scope.weekDays = weekDays;
-  var booked = MockData.getBookings(8,2015);
+  var avalabilities = MockData.getDisponibilitaCoach(8,2015);
 
-  $scope.booked = booked;
+  $scope.avalabilities = avalabilities;
   var selectedDays = [];
   var selectedRanges = [];
   $scope.selectedDays = selectedDays;
@@ -210,8 +221,6 @@ angular.module('starter.controllers', [])
     //alert("month:" + $scope.currentMonth);
     $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
   })
-
-
 
 
   $scope.getRangeStatus = function(pos){
@@ -233,77 +242,81 @@ angular.module('starter.controllers', [])
 
   }
 
-  $scope.deleteBooking = function(day){
-      booked.splice(booked.indexOf($scope.selectedBookedDay) ,1);
-      $scope.bookedDay = false;
+  $scope.deleteAvalability = function(){
+
+
+    var day = $scope.clickedDay;
+    var ix = _.findIndex(avalabilities,function(obj){
+        return (obj.date.getDate() == day);
+    });
+
+      avalabilities.splice(ix ,1);
       selectedRanges = [];
+      $scope.showDeleteButton = false;
 
   }
 
+
   $scope.dayClicked = function(day){
+
+    $scope.showDeleteButton = false;
 
     if (day == "-")
       return;
-    var e = _.find(booked,function(obj){
+
+    $scope.clickedDay = day;
+
+    var e = _.find(avalabilities,function(obj){
         return (obj.date.getDate() == day);
     });
     if ( e ){
       //booked.splice(e,1);
       selectedRanges = e.ranges;
-      $scope.selectedBookedDay = e;
-      $scope.bookedDay = true;
       selectedDays = [];
-
-
+      $scope.showDeleteButton = true;
     }
     else if (selectedDays.indexOf(day) != -1){
         selectedDays.splice(selectedDays.indexOf(day),1);
-        $scope.bookedDay = false;
+        selectedRanges = [];
       }
     else{
         selectedDays.push(day);
-        $scope.bookedDay = false;
+        selectedRanges = [];
     }
   }
 
   $scope.getDayStatus = function(day){
 
-
-    if ($scope.bookedDay){
-      var mydate = new Date($scope.selectedBookedDay.date);
-      if (day == mydate.getDate()){
-        return "bookedSelected";
-      }
-
-    }
-
-    var e = _.find(booked,function(obj){
+    var e = _.find(avalabilities,function(obj){
         return (obj.date.getDate() == day);
     });
-    if ( e ){
-      return 'booked';
+
+    if ( e && $scope.clickedDay == day){
+      return 'selectedBooked';
+    }
+    else if (e){
+      return "booked";
     }
     else if (selectedDays.indexOf(day) != -1){
       return 'selectedDays';
     }
     else {
-      return 'avalaible'
+      return 'free'
     }
   };
 
   $scope.addRange = function(range){
 
+    var m = parseInt($scope.currentMonth) + 1;
     _.each(selectedDays,function(value, key, list){
 
-      var d = $scope.currentYear + "/" + $scope.currentMonth + "/" + value;
-      booked.push({date: new Date(d), ranges:selectedRanges})
+      var d = $scope.currentYear + "/" + m + "/" + value;
+      avalabilities.push({date: new Date(d), ranges:selectedRanges})
 
 
     })
-
     selectedDays = [];
     selectedRanges = [];
-
   }
 
 

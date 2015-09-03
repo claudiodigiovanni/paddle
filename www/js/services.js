@@ -13,9 +13,6 @@ angular.module('starter.services', [])
     getDisponibilitaCoach:function(month,year){
       var disponibilitaCoach = [{date:new Date("2015/09/2"),ranges:[1,2,3,4,6],maestro:1},{date:new Date("2015/09/9"),ranges:[1,2,3,4,8],maestro:1}];
       return disponibilitaCoach;
-    },
-    getBookings: function(month,year){
-      return [{date:new Date('2015/08/13'),ranges:[2,3,4,5]},{date:new Date('2015/08/26'),ranges:[5,6,7,8]}];
     }
   }
 

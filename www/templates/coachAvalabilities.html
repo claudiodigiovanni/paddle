@@ -13,16 +13,13 @@
 <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
 
 
-<button class="button button-block button-positive" ng-click="addRange()">
+<button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
   Aggiungi Orario
 </button>
 
-<hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'></hours-range>
+<hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
 
 
-<button class="button button-block button-positive" ng-click="deleteBooking()" ng-if="bookedDay">
-  Elimina Prenotazione giorno
-</button>
 
 
 
