@@ -10,25 +10,6 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
-})
-
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
-
 /*
 {user1,data,[1,2,3,6,8], campo1, maestro1}
 1) Seleziona dispo maestro
@@ -168,28 +149,144 @@ angular.module('starter.controllers', [])
 
 .controller('BookCourt', function($scope, $stateParams, config,MockData,Utility) {
 
+  var currentDate = new Date();
+  $scope.currentMonth = parseInt(currentDate.getMonth())  ;
+  $scope.currentYear = currentDate.getFullYear();
+
+  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  $scope.weekDays = weekDays;
+
+  var avalaibleRanges = [];
+  var selectedRanges = [];
+
+
+
+
+  $scope.changeMonth = function (pos){
+
+      $scope.currentMonth = parseInt($scope.currentMonth) + parseInt(pos);
+
+  }
+
+  $scope.$watch('currentMonth', function() {
+    //alert("month:" + $scope.currentMonth);
+    $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
+  })
+
+
   var prenotazioni = MockData.getPrenotazioni (8,2015);
   var daysInMonth = Utility.getDaysInMonth(8,2015)
   //In una giornata ci sono 48 slot prenotabili....
   var days = _.range(1,parseInt(daysInMonth));
+  var ranges = _.range(1, parseInt(config.slotsNumber));
   var avalabilities = []
 
-  _.each(days,function(day){
-      var px = _.where(prenotazioni,{date:new Date('2015/08/' + day)});
-      if (px && px.length < config.TennisCourtsNumber)
-        avalabilities.push({date:new Date('2015/08/' + day)});
+  _.each(days,function(d){
+      var avalability = {day:d, avalaibleRanges: []};
+      var m = parseInt($scope.currentMonth) + 1;
+      var dx = $scope.currentYear + "/" + m + "/" + d;
+      _.each(ranges, function(r){
+        var px = _.where(prenotazioni,{date:new Date(dx), ranges:[r]});
+        if (px.length < config.TennisCourtsNumber){
+          avalability.avalaibleRanges.push(r);
+        }
+      })
+      avalabilities.push(avalability);
   })
   console.log(avalabilities);
+
+  $scope.showAddButton = false;
+
+
+  $scope.getDayStatus = function(day){
+
+    var e = _.find(avalabilities,function(obj){
+        return (obj.day == day && obj.avalaibleRanges.length >  0);
+    });
+    if (e && $scope.selectedDay == day){
+      return "selectedBooked";
+    }
+    if ( e ){
+      return 'avalaible';
+    }
+    else {
+      return 'free'
+    }
+  };
+
+  $scope.dayClicked = function(day){
+
+    console.log('dayClicked' + day);
+    selectedRanges = [];
+
+    $scope.showAddButton = false;
+
+    if (day == "-")
+      return;
+    var ranges = _.find(avalabilities,function(obj){
+        return (obj.day == day);
+    }).avalaibleRanges;
+
+    if ( ranges.length == 0 ){
+      return;
+    }
+    else{
+      $scope.selectedDay =  day;
+      avalaibleRanges = ranges;
+      selectedRanges = [];
+      console.log(avalaibleRanges);
+      $scope.showAddButton = true;
+    }
+
+  }
+
+
+  $scope.getRangeStatus = function(pos){
+
+    if (selectedRanges.indexOf(pos) != -1){
+      return "energized"
+    }
+
+    if (avalaibleRanges.indexOf(pos) != -1){
+      return "positive"
+    }
+    return "light"
+
+  }
+
+  $scope.setRangeStatus = function(pos){
+    //alert('getRangeStatus' + pos);
+    if (selectedRanges.indexOf(pos) != -1){
+      selectedRanges.splice(selectedRanges.indexOf(pos),1);
+      return
+    }
+
+    if (avalaibleRanges.indexOf(pos) != -1){
+      selectedRanges.push(pos);
+    }
+    else {
+
+    }
+
+  }
+
+  $scope.book = function(){
+
+    var m = parseInt($scope.currentMonth) + 1;
+    var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
+    //TODO
+    //new Booking.....
+    //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
+    selectedRanges = [];
+
+  }
 })
-
-
 
 .controller('AccountCtrl', function($scope) {
   $scope.settings = {
     enableFriends: true
   };
 })
-
 
 .controller('SetAvalability', function($scope, $stateParams, Utility, MockData) {
 

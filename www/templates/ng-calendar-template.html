@@ -6,6 +6,7 @@
     <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus({pos:day})" ng-click="dayClicked({pos:day})" >
       <div ng-switch-when="booked" class="booked">{{day}}</div>
       <div ng-switch-when="selectedBooked" class="selected-booked">{{day}}</div>
+      <div ng-switch-when="avalaible" class="avalaible">{{day}}</div>
       <div ng-switch-when="selectedDays" class="selected">{{day}}</div>
       <div ng-switch-default class="free">{{day}}</div>
 

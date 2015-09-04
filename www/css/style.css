@@ -28,4 +28,8 @@ table tr:nth-child(even) {
   background-color: #ededed;
 }
 
+.avalaible{
+  background-color: rgb(18, 142, 61);
+}
+
 </style>
