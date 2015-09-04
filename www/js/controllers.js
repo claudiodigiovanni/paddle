@@ -177,8 +177,8 @@ angular.module('starter.controllers', [])
   var prenotazioni = MockData.getPrenotazioni (8,2015);
   var daysInMonth = Utility.getDaysInMonth(8,2015)
   //In una giornata ci sono 48 slot prenotabili....
-  var days = _.range(1,parseInt(daysInMonth));
-  var ranges = _.range(1, parseInt(config.slotsNumber));
+  var days = _.range(1,parseInt(daysInMonth) +1);
+  var ranges = _.range(1, parseInt(config.slotsNumber) + 1);
   var avalabilities = []
 
   _.each(days,function(d){
