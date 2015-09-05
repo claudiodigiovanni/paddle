@@ -12,24 +12,21 @@ table tr:nth-child(even) {
   background-color: #dbd2f0;
 }
 
-
-.booked{
-  background-color: #df6a38;
-}
-.selected{
-  background-color: #4adf38;
-}
-
-.selected-booked{
-  background-color: #3862df;
-}
-
-.free{
-  background-color: #ededed;
+.badge{ position: relative !important;
+  top:0 !important;
+  right: 0 !important;
 }
 
 .avalaible{
-  background-color: rgb(18, 142, 61);
+
+}
+.selected{
+
+}
+
+
+.na{
+
 }
 
 </style>

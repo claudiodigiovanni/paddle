@@ -1,15 +1,20 @@
-<div>
-  <div class="row">
-    <div class="col" ng-repeat="weekDay in weekDays" >{{weekDay}}...</div>
-  </div>
-  <div class="row" ng-repeat="week in weeks">
-    <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus({pos:day})" ng-click="dayClicked({pos:day})" >
-      <div ng-switch-when="booked" class="booked">{{day}}</div>
-      <div ng-switch-when="selectedBooked" class="selected-booked">{{day}}</div>
-      <div ng-switch-when="avalaible" class="avalaible">{{day}}</div>
-      <div ng-switch-when="selectedDays" class="selected">{{day}}</div>
-      <div ng-switch-default class="free">{{day}}</div>
 
+<div class="card">
+  <div class="item item-divider">
+    <div class="row">
+      <div class="col" ng-repeat="weekDay in weekDays" ><span class="badge badge-dark">{{weekDay}}</span></div>
     </div>
   </div>
+  <div class="item">
+
+    <div class="row" ng-repeat="week in weeks">
+      <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus({pos:day})" ng-click="dayClicked({pos:day})" >
+        <span class="badge badge-positive" ng-switch-when="avalaible">{{day}}</span>
+        <span class="badge badge-energized" ng-switch-when="selected">{{day}}</span>
+        <span class="badge badge-balanced" ng-switch-when="multiple-select">{{day}}</span>
+        <span class="badge badge-light" ng-switch-default>{{day}}</span>
+      </div>
+    </div>
+  </div>
+
 </div>

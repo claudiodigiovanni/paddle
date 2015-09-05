@@ -28,7 +28,7 @@ angular.module('starter.controllers', [])
   $scope.currentMonth = parseInt(currentDate.getMonth())  ;
   $scope.currentYear = currentDate.getFullYear();
 
-  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  var weekDays = ['L','Ma','Me','G','V','S','D']
   $scope.weekDays = weekDays;
 
   $scope.changeMonth = function (pos){
@@ -69,15 +69,15 @@ angular.module('starter.controllers', [])
 
 
     if (e && $scope.selectedDay == day){
-      return "selectedBooked";
+      return "selected";
     }
 
     if ( e ){
-      return 'booked';
+      return 'avalaible';
     }
 
     else {
-      return 'free'
+      return 'na'
     }
   };
 
@@ -153,7 +153,7 @@ angular.module('starter.controllers', [])
   $scope.currentMonth = parseInt(currentDate.getMonth())  ;
   $scope.currentYear = currentDate.getFullYear();
 
-  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  var weekDays = ['L','Ma','Me','G','V','S','D']
   $scope.weekDays = weekDays;
 
   var avalaibleRanges = [];
@@ -204,13 +204,13 @@ angular.module('starter.controllers', [])
         return (obj.day == day && obj.avalaibleRanges.length >  0);
     });
     if (e && $scope.selectedDay == day){
-      return "selectedBooked";
+      return "selected";
     }
     if ( e ){
       return 'avalaible';
     }
     else {
-      return 'free'
+      return 'na'
     }
   };
 
@@ -294,7 +294,7 @@ angular.module('starter.controllers', [])
   $scope.currentMonth = parseInt(currentDate.getMonth()) ;
   $scope.currentYear = currentDate.getFullYear();
 
-  var weekDays = ['LUN','MAR','MER','GIO','VEN','SAB','DOM'];
+  var weekDays = ['L','Ma','Me','G','V','S','D']
   $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
 
   $scope.weekDays = weekDays;
@@ -389,16 +389,16 @@ angular.module('starter.controllers', [])
     });
 
     if ( e && $scope.clickedDay == day){
-      return 'selectedBooked';
+      return 'selected';
     }
     else if (e){
-      return "booked";
+      return "avalaible";
     }
     else if (selectedDays.indexOf(day) != -1){
-      return 'selectedDays';
+      return 'multiple-select';
     }
     else {
-      return 'free'
+      return 'na'
     }
   };
 
