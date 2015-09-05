@@ -6,13 +6,21 @@ angular.module('starter.services', [])
   return {
     getPrenotazioni :function(month,year){
       var user1 = "user1";
-      var prenotazioni = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1},{user:user1, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1}];
+      var prenotazioni = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1, callToAction:1},{user:user1, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1, callToAction:1}];
       return prenotazioni;
 
     },
     getDisponibilitaCoach:function(month,year){
       var disponibilitaCoach = [{date:new Date("2015/09/2"),ranges:[1,2,3,4,6],maestro:1},{date:new Date("2015/09/9"),ranges:[1,2,3,4,8],maestro:1}];
       return disponibilitaCoach;
+    },
+
+    getCallToActionOpenFrom: function(date){
+      var user1 = "user1";
+      var user2 = "user2";
+      var user3 = "user3";
+      var cta = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1, callToAction:1,players:[user2,user3]},{user:user2, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1, callToAction:1, players:[user1,user3]}];
+      return cta;
     }
   }
 

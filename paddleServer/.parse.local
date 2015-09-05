@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "paddleServer"
+    },
+    "paddleServer": {
+      "applicationId": "BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf"
+    }
+  }
+}

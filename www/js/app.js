@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','starter.directives'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform,$rootScope, $state) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -21,8 +21,23 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
       StatusBar.styleLightContent();
     }
   });
-    Parse.initialize("coSL7yZiTPaWCJ2RupEoJU1Fah8KrZOzn36O7JGT","rVaK5TeMUTrHjEpzizDy4RF4fmIYsvbCpCfG9bPM");
+    Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
+    var currentUser = Parse.User.current();
+    console.log("currentUser:");
+    console.log(currentUser);
+    if (currentUser) {
+        // do stuff with the user
+
+        $state.go('tab.dash');
+    } else {
+        // show the signup or login page
+        console.log('currentUser is null!!');
+        $state.go('login');
+    }
+
 })
+
+
 .constant('config', {
   TennisCourtsNumber: 2,
   PaddleCourtsNumber: 2,
@@ -36,11 +51,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   // Each state's controller can be found in controllers.js
   $stateProvider
 
+    .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'Login'
+
+  })
+
+  .state('signUp', {
+  url: '/signUp',
+  templateUrl: 'templates/login.html',
+  controller: 'SignUp'
+
+})
+
   // setup an abstract state for the tabs directive
     .state('tab', {
     url: '/tab',
     abstract: true,
     templateUrl: 'templates/tabs.html'
+
   })
 
   // Each tab has its own nav history stack:
@@ -95,6 +125,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
       }
     })
 
+  .state('tab.callToAction', {
+      url: '/callToAction',
+      views: {
+        'tab-callToAction': {
+          templateUrl: 'templates/callToAction.html',
+          controller: 'callToAction'
+        }
+      }
+    })
 
   .state('tab.account', {
     url: '/account',
@@ -107,6 +146,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/login');
 
 });

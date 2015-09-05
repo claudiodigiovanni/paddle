@@ -9,12 +9,64 @@
 
 <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
 
+<div class="row">
+  <div class="col">
+    <label class="item item-radio">
+      <input type="radio" name="group">
+      <div class="item-content">
+        Tennis Singolo
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
 
-<button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
-  Aggiungi Orario
-</button>
+  </div>
+  <div class="col">
+    <label class="item item-radio">
+      <input type="radio" name="group">
+      <div class="item-content">
+        Tennis Doppio
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
 
-<hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+  </div>
+  <div class="col">
+    <label class="item item-radio">
+      <input type="radio" name="group">
+      <div class="item-content">
+        Paddle
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+  </div>
+</div>
+  <div class="row">
+    <div class="col">
+      <ion-toggle  ng-model="settings.enableFriends">
+          Call To Action!
+      </ion-toggle>
+
+    </div>
+  </div>
 
 </ion-content>
+
+<script id="ranges-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Scegli Orario</h1>
+      <button class="button button-light" ng-click="closeModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+    <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
+      Aggiungi Orario
+    </button>
+
+    </ion-content>
+  </div>
+</script>
+
+
 </ion-view>

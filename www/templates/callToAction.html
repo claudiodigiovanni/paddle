@@ -1,0 +1,32 @@
+<ion-view view-title="Call To Action Aperte">
+
+
+
+<ion-content>
+
+  <div class="list">
+
+    <a class="item" ng-repeat="cta in callToActionOpen" >
+      <div class="row"><div class="col-25"><img src="img/tennisx4.png"></div><div class="col-25"><h3>Data:{{cta.date}}</h3>
+      <p>Organizzatore:{{cta.user}}</p></div></div>
+
+
+      <div class="list list-inset">
+        <div class="item">
+          <b>Partecipanti</b>
+        </div>
+        <div class="item" ng-repeat="player in cta.players">
+          {{player}}
+        </div>
+      </div>
+      <button class="button button-calm">
+         Unisciti!
+      </button>
+    </a>
+  </div>
+
+
+
+
+</ion-content>
+</ion-view>

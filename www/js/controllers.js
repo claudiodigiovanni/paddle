@@ -4,9 +4,59 @@ angular.module('starter.controllers', [])
 
   var TestObject = Parse.Object.extend("TestObject");
   var testObject = new TestObject();
-  testObject.save({foo: "bar"}).then(function(object) {
-    console.log("yay! it worked");
+  testObject.save({foo: "barxxx"}).then(function(object) {
+    console.log("yay! it worked once again");
   });
+
+})
+
+.controller('Login', function($scope, $stateParams, config,MockData,$state) {
+
+//$scope.currentUser = Parse.User.current();
+
+
+
+$scope.currentUser = {};
+$scope.registered = true;
+
+
+$scope.login = function(){
+  $state.go('tab.dash');
+}
+
+$scope.logOut = function(form) {
+  Parse.User.logOut();
+  $scope.currentUser = null;
+};
+
+})
+
+.controller('SignUp', function($scope, $stateParams, config,MockData,$state) {
+
+//$scope.currentUser = Parse.User.current();
+var currentUser = {}
+$scope.currentUser = currentUser;
+$scope.registered = false;
+
+$scope.signUp = function() {
+  console.log('username:' + currentUser.email );
+  var user = new Parse.User();
+  user.set("email", currentUser.email);
+  user.set("username", currentUser.email);
+  user.set("password", currentUser.password);
+
+  user.signUp(null, {
+    success: function(user) {
+      $scope.currentUser = user;
+      $scope.$apply(); // Notify AngularJS to sync currentUser
+      $state.go('tab.dash');
+
+    },
+    error: function(user, error) {
+      alert("Unable to sign up:  " + error.code + " " + error.message);
+    }
+  });
+};
 
 })
 
@@ -147,7 +197,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility) {
+.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, $ionicModal) {
 
   var currentDate = new Date();
   $scope.currentMonth = parseInt(currentDate.getMonth())  ;
@@ -158,6 +208,29 @@ angular.module('starter.controllers', [])
 
   var avalaibleRanges = [];
   var selectedRanges = [];
+
+  $scope.settings = {
+    CallToAction: false
+  };
+
+  $ionicModal.fromTemplateUrl('ranges-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal
+  })
+
+  $scope.openModal = function() {
+    $scope.modal.show()
+  }
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
 
 
 
@@ -236,6 +309,7 @@ angular.module('starter.controllers', [])
       selectedRanges = [];
       console.log(avalaibleRanges);
       $scope.showAddButton = true;
+      $scope.modal.show()
     }
 
   }
@@ -279,6 +353,8 @@ angular.module('starter.controllers', [])
     //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
     selectedRanges = [];
 
+    $scope.modal.hide();
+
   }
 })
 
@@ -287,6 +363,19 @@ angular.module('starter.controllers', [])
     enableFriends: true
   };
 })
+
+
+.controller('callToAction', function($scope, MockData) {
+
+  var currentDate = new Date();
+  var cta = MockData.getCallToActionOpenFrom (currentDate);
+
+  $scope.callToActionOpen = cta
+
+
+})
+
+
 
 .controller('SetAvalability', function($scope, $stateParams, Utility, MockData) {
 
@@ -415,6 +504,7 @@ angular.module('starter.controllers', [])
     selectedDays = [];
     selectedRanges = [];
   }
+
 
 
 
