@@ -22,18 +22,30 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
     }
   });
     Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
-    var currentUser = Parse.User.current();
-    console.log("currentUser:");
-    console.log(currentUser);
-    if (currentUser) {
-        // do stuff with the user
 
-        $state.go('tab.dash');
-    } else {
-        // show the signup or login page
-        console.log('currentUser is null!!');
-        $state.go('login');
-    }
+    $rootScope.$on('$stateChangeStart', function (event, next) {
+        var currentUser = Parse.User.current();
+        console.log("currentUser:");
+        console.log(currentUser);
+        console.log('nextname....' + next.name);
+
+        if(next.name =='login' || next.name== 'signUp') {
+           //event.preventDefault();
+           //$state.go('login');
+         }
+
+        else if (currentUser) {
+            // do stuff with the user
+            //event.preventDefault();
+            //$state.go('tab.dash');
+        } else {
+            // show the signup or login page
+            console.log('currentUser is null!!');
+            event.preventDefault();
+            $state.go('login');
+        }
+
+    });
 
 })
 

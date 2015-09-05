@@ -1,5 +1,25 @@
 angular.module('starter.services', [])
 
+.factory('Presentation', function() {
+
+    var Presentation = Parse.Object.extend("Presentation", {
+      // Instance methods
+    }, {
+      // Class methods
+    }
+    });
+ 
+    // Title property
+    Presentation.prototype.__defineGetter__("title", function() {
+      return this.get("title");
+    });
+    Presentation.prototype.__defineSetter__("title", function(aValue) {
+      return this.set("title", aValue);
+    });
+
+    return Presentation;
+  })
+
 
 .factory('MockData',function(){
 

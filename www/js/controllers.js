@@ -8,6 +8,15 @@ angular.module('starter.controllers', [])
     console.log("yay! it worked once again");
   });
 
+  Parse.Cloud.run('hello', { }, {
+  success: function(result) {
+    // ratings should be 4.5
+    console.log(result);
+  },
+  error: function(error) {
+  }
+});
+
 })
 
 .controller('Login', function($scope, $stateParams, config,MockData,$state) {
@@ -15,13 +24,29 @@ angular.module('starter.controllers', [])
 //$scope.currentUser = Parse.User.current();
 
 
-
-$scope.currentUser = {};
+var currentUser = {}
+$scope.currentUser = currentUser;
 $scope.registered = true;
 
 
 $scope.login = function(){
-  $state.go('tab.dash');
+
+  var username = currentUser.email;
+  var pwd = currentUser.password;
+
+  Parse.User.logIn(username, pwd, {
+  success: function(user) {
+    // Do stuff after successful login.
+    $state.go('tab.dash');
+  },
+  error: function(user, error) {
+    // The login failed. Check error to see why.
+    //alert (error);
+    console.log(error);
+
+  }
+});
+
 }
 
 $scope.logOut = function(form) {
