@@ -132,7 +132,7 @@ angular.module('starter.services', [])
     test: function() {
       console.log('test');
     },
-    
+
     getHoursFromRanges: function(ranges){
       var ret = "";
       _.each(ranges,function(r){

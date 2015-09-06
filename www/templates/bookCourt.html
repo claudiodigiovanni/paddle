@@ -1,20 +1,16 @@
 <ion-view view-title="Disponibilità Campi">
 <ion-content class="padding">
 
-<div class="card" style="text-align:center">
-  <div class="item item-text-wrap">
-    <i class="icon ion-chevron-left" ng-click="changeMonth(-1)"></i> &nbsp;&nbsp;&nbsp;{{currentMonth}}&nbsp;&nbsp;&nbsp;   <i class="icon ion-chevron-right" ng-click="changeMonth(1)"></i>
-  </div>
-</div>
+<month-changer weeks="weeks">xxx</month-changer>
 
 <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
 
 <div class="row">
   <div class="col">
     <label class="item item-radio">
-      <input type="radio" name="group">
+      <input type="radio" name="group" ng-model="booking.gameType" value="P">
       <div class="item-content">
-        Tennis Singolo
+        Tennis Singolo..
       </div>
       <i class="radio-icon ion-checkmark"></i>
     </label>
@@ -22,7 +18,7 @@
   </div>
   <div class="col">
     <label class="item item-radio">
-      <input type="radio" name="group">
+      <input type="radio" name="group" ng-model="booking.gameType" value="Tx2">
       <div class="item-content">
         Tennis Doppio
       </div>
@@ -32,7 +28,7 @@
   </div>
   <div class="col">
     <label class="item item-radio">
-      <input type="radio" name="group">
+      <input type="radio" name="group" ng-model="booking.gameType" value="Tx4">
       <div class="item-content">
         Paddle
       </div>
@@ -43,7 +39,7 @@
 </div>
   <div class="row">
     <div class="col">
-      <ion-toggle  ng-model="settings.enableFriends">
+      <ion-toggle  ng-model="booking.callToAction">
           Call To Action!
       </ion-toggle>
 

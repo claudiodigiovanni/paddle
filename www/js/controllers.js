@@ -226,19 +226,18 @@ $scope.signUp = function() {
 
 .controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, $ionicModal) {
 
-  var currentDate = new Date();
-  $scope.currentMonth = parseInt(currentDate.getMonth())  ;
-  $scope.currentYear = currentDate.getFullYear();
-
   var weekDays = ['L','Ma','Me','G','V','S','D']
   $scope.weekDays = weekDays;
 
   var avalaibleRanges = [];
   var selectedRanges = [];
 
-  $scope.settings = {
-    CallToAction: false
-  };
+
+  var booking = {};
+  booking.gameType = "P";
+  booking.callToAction = false;
+  booking.ranges = selectedRanges;
+  $scope.booking = booking;
 
   $ionicModal.fromTemplateUrl('ranges-modal.html', {
     scope: $scope,
@@ -259,20 +258,6 @@ $scope.signUp = function() {
   $scope.$on('$destroy', function() {
     $scope.modal.remove();
   });
-
-
-
-
-  $scope.changeMonth = function (pos){
-
-      $scope.currentMonth = parseInt($scope.currentMonth) + parseInt(pos);
-
-  }
-
-  $scope.$watch('currentMonth', function() {
-    //alert("month:" + $scope.currentMonth);
-    $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
-  })
 
 
   var prenotazioni = MockData.findBookings (8,2015);
