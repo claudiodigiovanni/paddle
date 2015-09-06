@@ -1,30 +1,61 @@
 angular.module('starter.services', [])
 
-.factory('Presentation', function() {
+.factory('MyObjects', function(Utility) {
 
-    var Presentation = Parse.Object.extend("Presentation", {
-      // Instance methods
-    }, {
-      // Class methods
-    }
-    });
- 
-    // Title property
-    Presentation.prototype.__defineGetter__("title", function() {
-      return this.get("title");
-    });
-    Presentation.prototype.__defineSetter__("title", function(aValue) {
-      return this.set("title", aValue);
-    });
 
-    return Presentation;
+    return {
+
+      createBooking:function(obj){
+        var Booking = Parse.Object.extend("Booking");
+        var book = new Booking();
+        book.set("user", Parse.User.current());
+        book.set("date", obj.date);
+        book.set("ranges", obj.ranges);
+        book.set("court",obj.court);
+        book.set("callToAction",obj.callToAction);
+        book.set("gameType",obj.gameType);
+        book.save(null).then(function(object) {
+          console.log("yay! Booking Confirmed");
+        },function(error){
+          console.log(error);
+        });
+      },
+
+      findBookings: function(month,year){
+        var daysInMonth = Utility.getDaysInMonth(month,year);
+        var startDate = new Date(year + "/" + (parseInt(month) -1) + "/" + 1);
+        var endDate =new Date( year + "/" + (parseInt(month) -1) + "/" + daysInMonth);
+        console.log('findBookings called.....' + (parseInt(month) -1)  + "/" + year);
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.greaterThanOrEqualTo("date", startDate);
+        query.lessThanOrEqualTo("date", endDate);
+        var ret = [];
+        query.find({
+          success: function(results){
+            console.log('findBookings successful! JSON Converting...');
+            _.each(results, function (obj){
+              ret.push(obj.toJSON());
+            })
+            console.log(ret);
+          },
+          error: function(error){
+            console.log(error);
+
+          }
+        })
+
+
+      }
+
+    };
   })
 
 
 .factory('MockData',function(){
 
   return {
-    getPrenotazioni :function(month,year){
+    findBookings :function(month,year){
       var user1 = "user1";
       var prenotazioni = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1, callToAction:1},{user:user1, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1, callToAction:1}];
       return prenotazioni;
@@ -100,6 +131,17 @@ angular.module('starter.services', [])
     },
     test: function() {
       console.log('test');
+    },
+    
+    getHoursFromRanges: function(ranges){
+      var ret = "";
+      _.each(ranges,function(r){
+        var end = (parseInt(r) % 2) == 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        r  = r - 0.5
+        var start = (parseInt(r) % 2) == 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        ret += "  " + start + "-" + end;
+      })
+      return ret;
     }
 
 

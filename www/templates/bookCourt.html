@@ -49,6 +49,9 @@
 
     </div>
   </div>
+  <button class="button button-block button-positive" ng-click="book()">
+    Prenota!
+  </button>
 
 </ion-content>
 
@@ -60,7 +63,7 @@
     </ion-header-bar>
     <ion-content>
     <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
-    <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
+    <button class="button button-block button-positive" ng-click="closeModal()" ng-show="showAddButton">
       Aggiungi Orario
     </button>
 

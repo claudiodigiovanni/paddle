@@ -1,21 +1,23 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope) {
+.controller('DashCtrl', function($scope, MyObjects, Utility) {
 
-  var TestObject = Parse.Object.extend("TestObject");
-  var testObject = new TestObject();
-  testObject.save({foo: "barxxx"}).then(function(object) {
-    console.log("yay! it worked once again");
-  });
 
   Parse.Cloud.run('hello', { }, {
-  success: function(result) {
-    // ratings should be 4.5
-    console.log(result);
-  },
-  error: function(error) {
-  }
-});
+    success: function(result) {
+      // ratings should be 4.5
+      console.log(result);
+    },
+    error: function(error) {
+
+    }
+  });
+  //MyObjects.createBooking();
+  MyObjects.findBookings(10,2015);
+  console.log(Utility.getHoursFromRanges([1,2,3,4,5,6]));
+
+
+
 
 })
 
@@ -118,7 +120,7 @@ $scope.signUp = function() {
   })
 
 
-  var prenotazioni = MockData.getPrenotazioni (8,2015);
+  var prenotazioni = MockData.findBookings (8,2015);
   var disponibilitaCoach = MockData.getDisponibilitaCoach (8,2015);
 
   var avalaibleRanges = [];
@@ -246,6 +248,7 @@ $scope.signUp = function() {
   })
 
   $scope.openModal = function() {
+    selectedRanges = [];
     $scope.modal.show()
   }
 
@@ -272,7 +275,7 @@ $scope.signUp = function() {
   })
 
 
-  var prenotazioni = MockData.getPrenotazioni (8,2015);
+  var prenotazioni = MockData.findBookings (8,2015);
   var daysInMonth = Utility.getDaysInMonth(8,2015)
   //In una giornata ci sono 48 slot prenotabili....
   var days = _.range(1,parseInt(daysInMonth) +1);
@@ -369,16 +372,19 @@ $scope.signUp = function() {
 
   }
 
-  $scope.book = function(){
 
-    var m = parseInt($scope.currentMonth) + 1;
+
+  $scope.book = function(MyObjects){
+
+    var m = parseInt($scope.currentMonth) ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     //TODO
     //new Booking.....
     //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
+
+    MyObjects.createBooking()
     selectedRanges = [];
 
-    $scope.modal.hide();
 
   }
 })
