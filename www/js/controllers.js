@@ -18,12 +18,35 @@ angular.module('starter.controllers', [])
 
 
 
-
 })
 
-.controller('Login', function($scope, $stateParams, config,MockData,$state) {
+.controller('Login', function($scope, $stateParams, config,MockData,$state, $ionicModal,$ionicBackdrop, $timeout) {
 
 //$scope.currentUser = Parse.User.current();
+
+$ionicModal.fromTemplateUrl('login-modal.html', {
+  scope: $scope,
+  animation: 'slide-in-up',
+  backdropClickToClose:false
+}).then(function(modal) {
+  $scope.modal = modal;
+  $scope.modal.show();
+})
+
+
+$ionicBackdrop.retain();
+$timeout(function() {
+  $ionicBackdrop.release();
+}, 1000);
+
+
+$scope.closeModal = function() {
+  $scope.modal.hide();
+};
+
+$scope.$on('$destroy', function() {
+  $scope.modal.remove();
+});
 
 
 var currentUser = {}
@@ -39,6 +62,8 @@ $scope.login = function(){
   Parse.User.logIn(username, pwd, {
   success: function(user) {
     // Do stuff after successful login.
+    $scope.modal.hide();
+    console.log("......maestro: " + user.get('maestro'));
     $state.go('tab.dash');
   },
   error: function(user, error) {
@@ -58,12 +83,34 @@ $scope.logOut = function(form) {
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,MockData,$state) {
+.controller('SignUp', function($scope, $stateParams, config,MockData,$state,$ionicModal) {
 
 //$scope.currentUser = Parse.User.current();
 var currentUser = {}
 $scope.currentUser = currentUser;
 $scope.registered = false;
+
+$ionicModal.fromTemplateUrl('signup-modal.html', {
+  scope: $scope,
+  animation: 'slide-in-up',
+  backdropClickToClose: false
+}).then(function(modal) {
+  $scope.modal = modal;
+  $scope.modal.show();
+})
+
+
+
+
+
+$scope.closeModal = function() {
+  $scope.modal.hide();
+};
+
+$scope.$on('$destroy', function() {
+  $scope.modal.remove();
+});
+
 
 $scope.signUp = function() {
   console.log('username:' + currentUser.email );
@@ -76,6 +123,7 @@ $scope.signUp = function() {
     success: function(user) {
       $scope.currentUser = user;
       $scope.$apply(); // Notify AngularJS to sync currentUser
+      $scope.modal.hide();
       $state.go('tab.dash');
 
     },
@@ -99,32 +147,45 @@ $scope.signUp = function() {
 })
 
 
-.controller('CoachAvalabilities', function($scope, $stateParams, config,MockData,Coaches,Utility) {
+.controller('CoachAvalabilities', function($scope, $stateParams, config,MockData,Coaches,Utility,$ionicModal) {
 
+  console.log("coachId:" + $stateParams.coachId);
   var currentDate = new Date();
   $scope.currentMonth = parseInt(currentDate.getMonth())  ;
   $scope.currentYear = currentDate.getFullYear();
-
-  var weekDays = ['L','Ma','Me','G','V','S','D']
-  $scope.weekDays = weekDays;
-
-  $scope.changeMonth = function (pos){
-
-      $scope.currentMonth = parseInt($scope.currentMonth) + parseInt(pos);
-
-  }
-
-  $scope.$watch('currentMonth', function() {
-    //alert("month:" + $scope.currentMonth);
-    $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
-  })
-
 
   var prenotazioni = MockData.findBookings (8,2015);
   var disponibilitaCoach = MockData.getDisponibilitaCoach (8,2015);
 
   var avalaibleRanges = [];
   var selectedRanges = [];
+
+  var booking = {};
+  booking.gameType = "P";
+  booking.callToAction = false;
+  $scope.booking = booking;
+
+  $ionicModal.fromTemplateUrl('ranges-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal
+  })
+
+
+  $scope.openModal = function() {
+    selectedRanges = [];
+    $scope.modal.show()
+  }
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
 
   var avalabilities = []
   _.each(disponibilitaCoach,function (d){
@@ -161,6 +222,7 @@ $scope.signUp = function() {
   $scope.dayClicked = function(day){
 
     $scope.showAddButton = false;
+    $scope.resolved = null;
 
     if (day == "-")
       return;
@@ -178,6 +240,8 @@ $scope.signUp = function() {
       console.log('dayClicked');
       $scope.showAddButton = true;
     }
+
+    $scope.modal.show();
 
   }
 
@@ -209,25 +273,46 @@ $scope.signUp = function() {
 
     }
 
+    $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
+
   }
 
-  $scope.book = function(){
+  $scope.book = function(booking){
 
-    var m = parseInt($scope.currentMonth) + 1;
+
+    console.log('booking');
+    console.log(selectedRanges);
+    var m = parseInt($scope.currentMonth) ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
+    var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
+    booking.date = date;
+    booking.ranges = selectedRanges;
     //TODO
     //new Booking.....
     //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
+    console.log('inserim booking....');
+    console.log(booking);
+    MyObjects.createBooking(booking).then(function(result){
+
+      $scope.resolved = "Prenotazione Effettuata!" ;
+
+    }, function(error){
+
+    })
     selectedRanges = [];
 
   }
 
+
 })
 
-.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, $ionicModal) {
+.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, MyObjects, $ionicModal) {
 
-  var weekDays = ['L','Ma','Me','G','V','S','D']
-  $scope.weekDays = weekDays;
+  var currentDate = new Date();
+  var currentMonth = parseInt(currentDate.getMonth())  ;
+  var currentYear = currentDate.getFullYear();
+  $scope.currentMonth = currentMonth;
+  $scope.currentYear = currentYear;
 
   var avalaibleRanges = [];
   var selectedRanges = [];
@@ -236,7 +321,6 @@ $scope.signUp = function() {
   var booking = {};
   booking.gameType = "P";
   booking.callToAction = false;
-  booking.ranges = selectedRanges;
   $scope.booking = booking;
 
   $ionicModal.fromTemplateUrl('ranges-modal.html', {
@@ -245,6 +329,7 @@ $scope.signUp = function() {
   }).then(function(modal) {
     $scope.modal = modal
   })
+
 
   $scope.openModal = function() {
     selectedRanges = [];
@@ -260,7 +345,7 @@ $scope.signUp = function() {
   });
 
 
-  var prenotazioni = MockData.findBookings (8,2015);
+  var prenotazioni = MyObjects.findBookings (8,2015);
   var daysInMonth = Utility.getDaysInMonth(8,2015)
   //In una giornata ci sono 48 slot prenotabili....
   var days = _.range(1,parseInt(daysInMonth) +1);
@@ -283,7 +368,6 @@ $scope.signUp = function() {
 
   $scope.showAddButton = false;
 
-
   $scope.getDayStatus = function(day){
 
     var e = _.find(avalabilities,function(obj){
@@ -304,6 +388,7 @@ $scope.signUp = function() {
 
     console.log('dayClicked' + day);
     selectedRanges = [];
+    $scope.resolved = null;
 
     $scope.showAddButton = false;
 
@@ -354,24 +439,41 @@ $scope.signUp = function() {
     else {
 
     }
+    console.log('setRangeStatus');
+    console.log(selectedRanges);
+
+    $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
 
   }
 
 
+  $scope.book = function(booking){
 
-  $scope.book = function(MyObjects){
 
+    console.log('booking');
+    console.log(selectedRanges);
     var m = parseInt($scope.currentMonth) ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
+    var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
+    booking.date = date;
+    booking.ranges = selectedRanges;
     //TODO
     //new Booking.....
     //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
+    console.log('inserim booking....');
+    console.log(booking);
+    MyObjects.createBooking(booking).then(function(result){
 
-    MyObjects.createBooking()
+      $scope.resolved = "Prenotazione Effettuata!" ;
+
+    }, function(error){
+
+    })
     selectedRanges = [];
 
-
   }
+
+
 })
 
 .controller('AccountCtrl', function($scope) {
@@ -392,38 +494,34 @@ $scope.signUp = function() {
 })
 
 
-
-.controller('SetAvalability', function($scope, $stateParams, Utility, MockData) {
+//{date: new Date(d), ranges:selectedRanges, maestro:maestro1}
+.controller('SetAvalability', function($scope, $stateParams, Utility, MyObjects) {
 
   var currentDate = new Date();
-  $scope.currentMonth = parseInt(currentDate.getMonth()) ;
-  $scope.currentYear = currentDate.getFullYear();
+  var currentMonth = parseInt(currentDate.getMonth())  ;
+  var currentYear = currentDate.getFullYear();
+  $scope.currentMonth = currentMonth;
+  $scope.currentYear = currentYear;
 
-  var weekDays = ['L','Ma','Me','G','V','S','D']
-  $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
-
-  $scope.weekDays = weekDays;
-  var avalabilities = MockData.getDisponibilitaCoach(8,2015);
-
+  var avalabilities = [];
   $scope.avalabilities = avalabilities;
+
+
+  $scope.$on('currentMonthChanged', function(event, x) {
+      console.log('currentMonthChanged:' + x);
+      MyObjects.getDisponibilitaCoach(x,$scope.currentYear).then(
+        function(ret){
+          avalabilities = ret;
+        },
+        function(error){
+          console.log(error);
+        }
+      )
+  });
   var selectedDays = [];
   var selectedRanges = [];
   $scope.selectedDays = selectedDays;
-
   $scope.bookedDay = false;
-
-
-  $scope.changeMonth = function (pos){
-
-      $scope.currentMonth = parseInt($scope.currentMonth) + parseInt(pos);
-
-  }
-
-  $scope.$watch('currentMonth', function() {
-    //alert("month:" + $scope.currentMonth);
-    $scope.weeks = Utility.getCalendar($scope.currentMonth,currentDate.getFullYear());
-  })
-
 
   $scope.getRangeStatus = function(pos){
     //alert('getRangeStatus' + pos);
@@ -435,27 +533,31 @@ $scope.signUp = function() {
 
   $scope.setRangeStatus = function(pos){
     //alert('getRangeStatus' + pos);
+    $scope.mymessage = null;
+
     if (selectedRanges.indexOf(pos) != -1){
       selectedRanges.splice(selectedRanges.indexOf(pos),1);
     }
     else {
       selectedRanges.push(pos);
     }
-
   }
 
   $scope.deleteAvalability = function(){
-
 
     var day = $scope.clickedDay;
     var ix = _.findIndex(avalabilities,function(obj){
         return (obj.date.getDate() == day);
     });
-
-      avalabilities.splice(ix ,1);
+    MyObjects.deleteDisponibilitaCoach(avalabilities[ix])
+      .then(
+        function(success){
+        avalabilities.splice(ix ,1);
+      }, function(error){
+        console.log(error);
+      });
       selectedRanges = [];
       $scope.showDeleteButton = false;
-
   }
 
 
@@ -490,9 +592,9 @@ $scope.signUp = function() {
   $scope.getDayStatus = function(day){
 
     var e = _.find(avalabilities,function(obj){
+
         return (obj.date.getDate() == day);
     });
-
     if ( e && $scope.clickedDay == day){
       return 'selected';
     }
@@ -507,18 +609,39 @@ $scope.signUp = function() {
     }
   };
 
+
+
+
+
   $scope.addRange = function(range){
+
+    console.log('....click addRange:' );
+
+    if (selectedRanges.length == 0)
+      $scope.mymessage = "Occorre selezionare almeno una fascia oraria...."
 
     var m = parseInt($scope.currentMonth) + 1;
     _.each(selectedDays,function(value, key, list){
 
       var d = $scope.currentYear + "/" + m + "/" + value;
-      avalabilities.push({date: new Date(d), ranges:selectedRanges})
 
+      MyObjects.addDisponibilitaCoach({date: new Date(d), ranges:selectedRanges}).then(
+        function(result){
+          avalabilities.push({objectId:result.id, date: new Date(d), ranges:selectedRanges})
+          selectedDays = [];
+          selectedRanges = [];
+          $scope.clickedDay= null;
+          $scope.$apply();
+      }, function(error){
+
+        selectedDays = [];
+        selectedRanges = [];
+        $scope.clickedDay= null;
+        $scope.$apply();
+      })
 
     })
-    selectedDays = [];
-    selectedRanges = [];
+
   }
 
 

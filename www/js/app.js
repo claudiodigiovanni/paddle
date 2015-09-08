@@ -27,8 +27,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
         var currentUser = Parse.User.current();
         console.log("currentUser:");
         console.log(currentUser);
-        console.log('nextname....' + next.name);
-
+        //console.log(currentUser.get('maestro') != undefined);
         if(next.name =='login' || next.name== 'signUp') {
            //event.preventDefault();
            //$state.go('login');
@@ -38,6 +37,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
             // do stuff with the user
             //event.preventDefault();
             //$state.go('tab.dash');
+            $rootScope.currentUser = currentUser;
         } else {
             // show the signup or login page
             console.log('currentUser is null!!');
@@ -158,6 +158,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/login');
+  $urlRouterProvider.otherwise('/tab/dash');
 
 });

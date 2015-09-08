@@ -1,27 +1,80 @@
 <ion-view view-title="Disponibilità Maestro">
 
+<ion-content class="padding">
 
 
-  <ion-content class="padding">
 
-      <div class="card" style="text-align:center">
-      <div class="item item-text-wrap">
-        <i class="icon ion-chevron-left" ng-click="changeMonth(-1)"></i> &nbsp;&nbsp;&nbsp;{{currentMonth}}&nbsp;&nbsp;&nbsp;   <i class="icon ion-chevron-right" ng-click="changeMonth(1)"></i>
+<month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
+<calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+
+<div class="list">
+
+    <label class="item item-radio">
+      <input type="radio" name="group" ng-model="booking.gameType" value="P">
+      <div class="item-content">
+        Paddle
       </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+    <label class="item item-radio">
+      <input type="radio" name="group" ng-model="booking.gameType" value="Tx2">
+      <div class="item-content">
+        Singolare Tennis
       </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
 
-<calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
+    <label class="item item-radio">
+      <input type="radio" name="group" ng-model="booking.gameType" value="Tx4">
+      <div class="item-content">
+        Doppio Tennis
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+  </div>
+</div>
+<ion-toggle  ng-model="booking.callToAction">
+    Call To Action!
+</ion-toggle>
 
 
-<button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
-  Aggiungi Orario
+<div class="card" style="text-align:center" ng-if="selectedHours">
+  <div class="item item-text-wrap">
+    <i class="icon ion-clock"></i>
+    {{selectedHours}}
+  </div>
+</div>
+
+<button class="button button-block button-positive" ng-click="book(booking)">
+  Prenota!
 </button>
 
-<hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+<div class="card" style="text-align:center" ng-if="resolved">
+  <div class="item item-text-wrap">
+    <i class="icon ion-checkmark-circled energized"></i>
+    {{resolved}}
+  </div>
+</div>
 
 
+</ion-content>
 
+<script id="ranges-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Scegli Orario</h1>
+      <button class="button button-light" ng-click="closeModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+    <button class="button button-block button-positive" ng-click="closeModal()" ng-show="showAddButton">
+      Aggiungi Orario
+    </button>
 
+    </ion-content>
+  </div>
+</script>
 
-  </ion-content>
 </ion-view>

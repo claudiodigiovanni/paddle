@@ -2,23 +2,24 @@
 
 <ion-content class="padding">
 
-<div class="card" style="text-align:center">
-  <div class="item item-text-wrap">
-    <i class="icon ion-chevron-left" ng-click="changeMonth(-1)"></i> &nbsp;&nbsp;&nbsp;{{currentMonth}}&nbsp;&nbsp;&nbsp;   <i class="icon ion-chevron-right" ng-click="changeMonth(1)"></i>
-  </div>
-</div>
-
-<calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' week-days='weekDays' weeks='weeks'></calendar>
+  <month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
+  <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
 
 <button class="button button-block button-positive" ng-click="addRange()" ng-hide="showDeleteButton">
-  Aggiungi Orario
-</button>
+  Aggiungi Orario </button>
 
 <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'></hours-range>
 
 <button class="button button-block button-positive" ng-click="deleteAvalability()" ng-show="showDeleteButton">
   Elimina Prenotazione giorno
 </button>
+
+<div class="card" style="text-align:center" ng-show="mymessage">
+  <div class="item item-text-wrap">
+    <i class="icon ion-clock"></i>
+    {{mymessage}}
+  </div>
+</div>
 
   </ion-content>
 </ion-view>

@@ -1,11 +1,16 @@
 angular.module('starter.services', [])
 
-.factory('MyObjects', function(Utility) {
+.factory('MyObjects', function(Utility,$ionicLoading, $rootScope) {
 
 
     return {
 
+
       createBooking:function(obj){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+
         var Booking = Parse.Object.extend("Booking");
         var book = new Booking();
         book.set("user", Parse.User.current());
@@ -14,10 +19,12 @@ angular.module('starter.services', [])
         book.set("court",obj.court);
         book.set("callToAction",obj.callToAction);
         book.set("gameType",obj.gameType);
-        book.save(null).then(function(object) {
-          console.log("yay! Booking Confirmed");
+        return book.save(null).then(function(object) {
+              console.log("yay! Booking Confirmed");
+              $ionicLoading.hide();
         },function(error){
           console.log(error);
+              $ionicLoading.hide();
         });
       },
 
@@ -44,8 +51,88 @@ angular.module('starter.services', [])
 
           }
         })
+      },
+      getDisponibilitaCoach:function(month,year){
+
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+
+        var currentUser = Parse.User.current();
+        var maestro = currentUser.get('maestro');
+
+        var daysInMonth = Utility.getDaysInMonth(month,year);
+        var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
+        var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
+        console.log('getDisponibilitaCoach called.....' + (parseInt(month) +1)  + "/" + year);
+        var CoachAvalability = Parse.Object.extend("CoachAvalability");
+        var query = new Parse.Query(CoachAvalability);
+        query.greaterThanOrEqualTo("date", startDate);
+        query.lessThanOrEqualTo("date", endDate);
+        query.equalTo("maestro",maestro);
+        var ret = [];
+        return query.find()
+        .then(
+          function(results){
+            console.log('CoachAvalability successful! JSON Converting...');
+            _.each(results, function (obj){
+              var tmp = obj.toJSON();
+              tmp.date = obj.get('date');
+              ret.push(tmp);
+            })
+            $ionicLoading.hide();
+            console.log("ret");
+            console.log(ret);
+            return ret;
+          },function(error){
+            console.log(error);
+
+          }
+        )
 
 
+
+      },
+      addDisponibilitaCoach:function(obj){
+        console.log('addDisponibilitaCoach called.....' );
+        var currentUser = Parse.User.current();
+        var maestro = currentUser.get('maestro');
+
+        var CoachAvalability = Parse.Object.extend("CoachAvalability");
+        var ca = new CoachAvalability();
+        ca.set('date',obj.date);
+        ca.set('ranges',obj.ranges);
+        ca.set('maestro',maestro);
+        return ca.save(null);
+      },
+      deleteDisponibilitaCoach:function(obj){
+        //var deferred = $q.defer();
+        console.log('deleteDisponibilitaCoach called inside service.....' );
+        console.log(obj);
+        var CoachAvalability = Parse.Object.extend("CoachAvalability");
+        var query = new Parse.Query(CoachAvalability);
+        return query.get(obj.objectId)
+              .then(
+                  function(myObject) {
+
+                    console.log('get ok...');
+                    console.log(myObject);
+                    return myObject;
+                  },
+                  function(object, error) {
+
+                    console.log(error);
+              }
+              ).then(
+                    function(obj){
+                    console.log('delete ...');
+                    console.log(obj);
+                    console.log(obj.destroy());
+                    //return obj.destroy();
+
+                  }, function(error){
+                    console.log(error);
+                  });
       }
 
     };
