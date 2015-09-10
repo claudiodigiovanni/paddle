@@ -172,13 +172,15 @@ $scope.signUp = function() {
   .then(
     function(maestro){
         $scope.nomeMaestro = maestro.nome;
+        console.log($scope.nomeMaestro);
   }, function(error){
         console.log(error);
   })
 
 
   var currentDate = new Date();
-  $scope.currentMonth = parseInt(currentDate.getMonth())  ;
+  var currentMonth = parseInt(currentDate.getMonth())
+  $scope.currentMonth =  currentMonth
   $scope.currentYear = currentDate.getFullYear();
 
   var avalabilities = []
@@ -193,7 +195,8 @@ $scope.signUp = function() {
   $scope.booking = booking;
 
   $scope.$on('currentMonthChanged', function(event, x) {
-      MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear, $stateParams.coachId, booking.gameType )
+    
+      MyObjects.getCoachAvalabilitiesFilteredByBookings(x,$scope.currentYear, $stateParams.coachId, booking.gameType )
       .then(
         function(results){
           avalabilities = results
