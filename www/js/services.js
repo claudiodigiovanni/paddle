@@ -77,16 +77,29 @@ angular.module('starter.services', [])
         book.set("court",obj.court);
         book.set("callToAction",obj.callToAction);
         book.set("gameType",obj.gameType);
-        return book.save(null).then(function(object) {
-              console.log("yay! Booking Confirmed");
-              $ionicLoading.hide();
-              return object;
-        },function(error){
-          console.log(error);
-              $ionicLoading.hide();
-        });
-      },
+        var Maestro = Parse.Object.extend("Maestro");
+        var query = new Parse.Query(Maestro);
+        var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
 
+        if (maestroId != -1){
+          return query.get(maestroId)
+          .then(
+            function(maestro){
+                book.set("maestro",maestro)
+                $ionicLoading.hide();
+                return book.save(null)
+          }, function(error){
+                console.log(error);
+                $ionicLoading.hide();
+          })
+        }
+        else {
+          $ionicLoading.hide();
+          return book.save(null)
+        }
+
+
+      },
       findBookings: function(month,year){
         $ionicLoading.show({
           template: 'Loading...'
@@ -123,6 +136,8 @@ angular.module('starter.services', [])
               }
           )
       },
+      //Se sono un maestro prende le prenotazioni che mi riguardano
+      //altrimenti prende le prenotazione dell'utente in sessione
       findMyBookings: function(){
         $ionicLoading.show({
           template: 'Loading...'
@@ -130,7 +145,11 @@ angular.module('starter.services', [])
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", new Date());
-        query.equalTo("user", Parse.User.current());
+        var user = Parse.User.current()
+        if (user.get('maestro') != null){
+          query.equalTo("maestro", user.get('maestro'));
+        }
+        else query.equalTo("user", user );
         query.ascending("date");
         var ret = [];
         return query.find()

@@ -172,7 +172,9 @@ $scope.signUp = function() {
   .then(
     function(maestro){
         $scope.nomeMaestro = maestro.nome;
-        console.log($scope.nomeMaestro);
+
+        $scope.maestro = maestro;
+        console.log($scope.maestro);
   }, function(error){
         console.log(error);
   })
@@ -192,7 +194,10 @@ $scope.signUp = function() {
   var booking = {};
   booking.gameType = "P";
   booking.callToAction = false;
+
   $scope.booking = booking;
+  console.log('xxxxxx');
+  console.log(booking);
 
   $scope.$on('currentMonthChanged', function(event, x) {
 
@@ -325,6 +330,7 @@ $scope.signUp = function() {
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
     booking.ranges = selectedRanges;
+        booking.maestro = $scope.maestro
 
     MyObjects.createBooking(booking).then(function(result){
 
