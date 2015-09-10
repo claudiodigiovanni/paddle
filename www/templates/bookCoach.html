@@ -2,21 +2,19 @@
 
 <ion-content>
   <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right card" ng-repeat="coach in coaches" type="item-text-wrap" href="#/tab/coachAvalabilities/{{coach.id}}">
+      <ion-item class="item-remove-animate item-avatar item-icon-right card" ng-repeat="coach in coaches" type="item-text-wrap" href="#/tab/coachAvalabilities/{{coach.objectId}}">
 
 
         <div class="item item-avatar item-icon-right" >
-          <img src="{{coach.face}}">
-          <h2>{{coach.name}}</h2>
-          <p>{{coach.date}}</p>
+          <img src="img/{{coach.img}}">
+          <h2>{{coach.nome}}</h2>
+
           <i class="icon ion-chevron-right icon-accessory" ></i>
         </div>
 
         <div class="item item-body">
           <p>
-            This is a "Facebook" styled Card. The header is created from a Thumbnail List item,
-            the content is from a card-body consisting of an image and paragraph text. The footer
-            consists of tabs, icons aligned left, within the card-footer.
+            {{coach.descrizione}}
           </p>
           <p>
             <a href="#" class="subdued">1 Like</a>

@@ -12,10 +12,6 @@ angular.module('starter.controllers', [])
 
     }
   });
-  //MyObjects.createBooking();
-  MyObjects.findBookings(10,2015);
-  console.log(Utility.getHoursFromRanges([1,2,3,4,5,6]));
-
 
 
 })
@@ -141,29 +137,89 @@ $scope.signUp = function() {
 2) Seleziona Prenotazoni
 
 */
-.controller('BookCoach', function($scope, $stateParams, config,MockData,Coaches) {
+.controller('BookCoach', function($scope, $stateParams, config,MyObjects) {
 
-  $scope.coaches = Coaches.all();
+  MyObjects.getCoaches().then(function(results){
+    $scope.coaches = results
+  },function(error){
+    console.log(error);
+  })
+
 })
 
 
-.controller('CoachAvalabilities', function($scope, $stateParams, config,MockData,Coaches,Utility,$ionicModal) {
+.controller('CoachAvalabilities', function($scope, $stateParams, config,MyObjects,Utility,$ionicModal, $state) {
+
+  $ionicModal.fromTemplateUrl('ok-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modalok = modal;
+  })
+
+  $scope.closeModalok = function() {
+    $scope.modalok.hide();
+    $state.go('tab.account');
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modalok.remove();
+  });
+
 
   console.log("coachId:" + $stateParams.coachId);
+  MyObjects.getCoach($stateParams.coachId)
+  .then(
+    function(maestro){
+        $scope.nomeMaestro = maestro.nome;
+  }, function(error){
+        console.log(error);
+  })
+
+
   var currentDate = new Date();
   $scope.currentMonth = parseInt(currentDate.getMonth())  ;
   $scope.currentYear = currentDate.getFullYear();
 
-  var prenotazioni = MockData.findBookings (8,2015);
-  var disponibilitaCoach = MockData.getDisponibilitaCoach (8,2015);
-
+  var avalabilities = []
   var avalaibleRanges = [];
   var selectedRanges = [];
+
+  $scope.showAddButton = false;
 
   var booking = {};
   booking.gameType = "P";
   booking.callToAction = false;
   $scope.booking = booking;
+
+  $scope.$on('currentMonthChanged', function(event, x) {
+      MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear, $stateParams.coachId, booking.gameType )
+      .then(
+        function(results){
+          avalabilities = results
+          console.log(results);
+
+      }, function(error){
+        console.log(error);
+      })
+
+      console.log(avalabilities);
+  });
+
+  $scope.$watch('booking.gameType',function(obj){
+    MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear, $stateParams.coachId, booking.gameType )
+    .then(
+      function(results){
+        avalabilities = results
+        console.log(results);
+
+    }, function(error){
+      console.log(error);
+    })
+
+    console.log(avalabilities);
+  })
 
   $ionicModal.fromTemplateUrl('ranges-modal.html', {
     scope: $scope,
@@ -186,34 +242,19 @@ $scope.signUp = function() {
     $scope.modal.remove();
   });
 
-
-  var avalabilities = []
-  _.each(disponibilitaCoach,function (d){
-    _.each(d.ranges, function(r){
-        var px = _.where(prenotazioni,{date:d.date,ranges:[r]});
-        if (px && px.length < config.TennisCourtsNumber)
-          avalabilities.push({date:d.date,range:r});
-    })
-  })
-
-  $scope.showAddButton = false;
-
-
   $scope.getDayStatus = function(day){
-
+    //console.log('getDayStatus');
+    //console.log(avalabilities);
     var e = _.find(avalabilities,function(obj){
-        return (obj.date.getDate() == day);
+        //console.log(obj);
+        return (obj.date == day);
     });
-
-
     if (e && $scope.selectedDay == day){
       return "selected";
     }
-
     if ( e ){
       return 'avalaible';
     }
-
     else {
       return 'na'
     }
@@ -227,7 +268,7 @@ $scope.signUp = function() {
     if (day == "-")
       return;
     var ranges = _.pluck(_.filter(avalabilities,function(obj){
-        return (obj.date.getDate() == day);
+        return (obj.date == day);
     }),'range');
 
     if ( ranges.length == 0 ){
@@ -272,9 +313,7 @@ $scope.signUp = function() {
     else {
 
     }
-
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
-
   }
 
   $scope.book = function(booking){
@@ -282,7 +321,7 @@ $scope.signUp = function() {
 
     console.log('booking');
     console.log(selectedRanges);
-    var m = parseInt($scope.currentMonth) ;
+    var m = parseInt($scope.currentMonth) + 1;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
@@ -295,9 +334,10 @@ $scope.signUp = function() {
     MyObjects.createBooking(booking).then(function(result){
 
       $scope.resolved = "Prenotazione Effettuata!" ;
+      $scope.modalok.show();
 
     }, function(error){
-
+        console.log(error);
     })
     selectedRanges = [];
 
@@ -306,7 +346,7 @@ $scope.signUp = function() {
 
 })
 
-.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, MyObjects, $ionicModal) {
+.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, MyObjects, $ionicModal, $state) {
 
   var currentDate = new Date();
   var currentMonth = parseInt(currentDate.getMonth())  ;
@@ -317,11 +357,31 @@ $scope.signUp = function() {
   var avalaibleRanges = [];
   var selectedRanges = [];
 
+  var avalabilities = []
+
 
   var booking = {};
   booking.gameType = "P";
   booking.callToAction = false;
   $scope.booking = booking;
+
+  $ionicModal.fromTemplateUrl('ok-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modalok = modal;
+  })
+
+  $scope.closeModalok = function() {
+    $scope.modalok.hide();
+    $state.go('tab.account');
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modalok.remove();
+  });
+
 
   $ionicModal.fromTemplateUrl('ranges-modal.html', {
     scope: $scope,
@@ -344,27 +404,30 @@ $scope.signUp = function() {
     $scope.modal.remove();
   });
 
-
-  var prenotazioni = MyObjects.findBookings (8,2015);
-  var daysInMonth = Utility.getDaysInMonth(8,2015)
-  //In una giornata ci sono 48 slot prenotabili....
-  var days = _.range(1,parseInt(daysInMonth) +1);
-  var ranges = _.range(1, parseInt(config.slotsNumber) + 1);
-  var avalabilities = []
-
-  _.each(days,function(d){
-      var avalability = {day:d, avalaibleRanges: []};
-      var m = parseInt($scope.currentMonth) + 1;
-      var dx = $scope.currentYear + "/" + m + "/" + d;
-      _.each(ranges, function(r){
-        var px = _.where(prenotazioni,{date:new Date(dx), ranges:[r]});
-        if (px.length < config.TennisCourtsNumber){
-          avalability.avalaibleRanges.push(r);
-        }
+  $scope.$on('currentMonthChanged', function(event, x) {
+      MyObjects.findAvalabilities($scope.currentMonth, $scope.currentYear, booking.gameType)
+      .then(
+        function(results){
+          avalabilities = results;
+      }, function(error){
+        console.log(error);
       })
-      avalabilities.push(avalability);
+
+      console.log(avalabilities);
+  });
+
+  $scope.$watch('booking.gameType',function(obj){
+      MyObjects.findAvalabilities($scope.currentMonth, $scope.currentYear, booking.gameType)
+      .then(
+        function(results){
+          avalabilities = results;
+      }, function(error){
+        console.log(error);
+      })
+
+      console.log(avalabilities);
   })
-  console.log(avalabilities);
+
 
   $scope.showAddButton = false;
 
@@ -452,7 +515,7 @@ $scope.signUp = function() {
 
     console.log('booking');
     console.log(selectedRanges);
-    var m = parseInt($scope.currentMonth) ;
+    var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
@@ -465,6 +528,7 @@ $scope.signUp = function() {
     MyObjects.createBooking(booking).then(function(result){
 
       $scope.resolved = "Prenotazione Effettuata!" ;
+      $scope.modalok.show();
 
     }, function(error){
 
@@ -476,25 +540,83 @@ $scope.signUp = function() {
 
 })
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('AccountCtrl', function($scope,MyObjects) {
+
+  MyObjects.findMyBookings()
+  .then(
+    function(results){
+      $scope.bookings = results
+
+  }, function(error){
+    console.log(error);
+  })
+
+
 })
 
 
-.controller('callToAction', function($scope, MockData) {
+.controller('callToAction', function($scope, MyObjects,$ionicModal) {
 
-  var currentDate = new Date();
-  var cta = MockData.getCallToActionOpenFrom (currentDate);
+  $ionicModal.fromTemplateUrl('ok-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
+  })
 
-  $scope.callToActionOpen = cta
 
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
+
+  MyObjects.findCallToAction()
+  .then(
+    function(results){
+      $scope.callToActionOpen = results
+  }, function(error){
+    console.log(error);
+  })
+
+
+  $scope.add = function(cta){
+    console.log(cta);
+
+    MyObjects.addCallToActionPlayer(cta)
+    .then(
+      function(obj){
+
+        $scope.modal.show();
+        MyObjects.findCallToAction()
+        .then(
+          function(results){
+            console.log(results);
+            $scope.callToActionOpen = results
+        }, function(error){
+          console.log(error);
+        })
+
+      //  $scope.$apply();
+
+    }, function(error){
+      console.log(error);
+    })
+
+
+
+
+  }
 
 })
 
 
 //{date: new Date(d), ranges:selectedRanges, maestro:maestro1}
+//Funzione disponibile solo a Maestro!!!!
 .controller('SetAvalability', function($scope, $stateParams, Utility, MyObjects) {
 
   var currentDate = new Date();
@@ -506,12 +628,18 @@ $scope.signUp = function() {
   var avalabilities = [];
   $scope.avalabilities = avalabilities;
 
+  var currentUser = Parse.User.current();
+  var maestro = currentUser.get('maestro');
+  console.log('setAvalability');
+  console.log(maestro);
+
 
   $scope.$on('currentMonthChanged', function(event, x) {
       console.log('currentMonthChanged:' + x);
-      MyObjects.getDisponibilitaCoach(x,$scope.currentYear).then(
+      MyObjects.getDisponibilitaCoach(x,$scope.currentYear, maestro.id).then(
         function(ret){
           avalabilities = ret;
+          console.log(avalabilities);
         },
         function(error){
           console.log(error);
@@ -547,7 +675,7 @@ $scope.signUp = function() {
 
     var day = $scope.clickedDay;
     var ix = _.findIndex(avalabilities,function(obj){
-        return (obj.date.getDate() == day);
+        return (obj.date == day);
     });
     MyObjects.deleteDisponibilitaCoach(avalabilities[ix])
       .then(
@@ -571,7 +699,7 @@ $scope.signUp = function() {
     $scope.clickedDay = day;
 
     var e = _.find(avalabilities,function(obj){
-        return (obj.date.getDate() == day);
+        return (obj.date == day);
     });
     if ( e ){
       //booked.splice(e,1);
@@ -593,7 +721,7 @@ $scope.signUp = function() {
 
     var e = _.find(avalabilities,function(obj){
 
-        return (obj.date.getDate() == day);
+        return (obj.date == day);
     });
     if ( e && $scope.clickedDay == day){
       return 'selected';
@@ -627,7 +755,7 @@ $scope.signUp = function() {
 
       MyObjects.addDisponibilitaCoach({date: new Date(d), ranges:selectedRanges}).then(
         function(result){
-          avalabilities.push({objectId:result.id, date: new Date(d), ranges:selectedRanges})
+          avalabilities.push({objectId:result.id, date: value, ranges:selectedRanges})
           selectedDays = [];
           selectedRanges = [];
           $scope.clickedDay= null;
@@ -641,11 +769,6 @@ $scope.signUp = function() {
       })
 
     })
-
   }
-
-
-
-
 
 });

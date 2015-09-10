@@ -17,16 +17,13 @@ table tr:nth-child(even) {
   right: 0 !important;
 }
 
-.avalaible{
-
-}
-.selected{
-
+i.ion-ios-tennisball-outline {
+  font-size: 40px;
 }
 
-
-.na{
-
+i.ion-social-pinterest-outline {
+  font-size: 40px;
 }
+
 
 </style>

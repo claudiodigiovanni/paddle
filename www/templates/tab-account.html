@@ -1,9 +1,12 @@
-<ion-view view-title="Account">
+<ion-view view-title="Prossime Prenotazioni">
   <ion-content>
+
     <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
-    </ion-list>
+    <ion-item ng-repeat="booking in bookings">
+      <b>Tipo:</b>{{booking.gameType}} <b>Data:</b> {{booking.date}} &nbsp; <b><i class="icon ion-clock"></b></i> &nbsp;{{booking.ranges}}
+    </ion-item>
+  </ion-list>
+
+
   </ion-content>
 </ion-view>
