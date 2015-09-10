@@ -140,14 +140,10 @@ angular.module('starter.services', [])
                 _.each(results, function (obj){
                   var tmp = obj.toJSON();
                   tmp.date = obj.get('date').getDate() + "/" + obj.get('date').getMonth() + "/" +  obj.get('date').getFullYear()
-
                   tmp.ranges = Utility.getHoursFromRanges(obj.get("ranges"));
                   ret.push(tmp);
-
                 })
                 $ionicLoading.hide();
-
-
                 return ret;
                 //return ret;
               },
@@ -168,11 +164,8 @@ angular.module('starter.services', [])
             var days = _.range(1,parseInt(daysInMonth) +1);
             var ranges = _.range(1, parseInt(config.slotsNumber) + 1);
 
-
             _.each(days,function(d){
                 var avalability = {day:d, avalaibleRanges: []};
-                //var m = parseInt($scope.currentMonth) + 1;
-                //var dx = $scope.currentYear + "/" + m + "/" + d;
                 _.each(ranges, function(r){
                   var px = _.where(bookings,{date:d, ranges:[r],gameType: gameT});
                   var num = 0;
@@ -181,16 +174,13 @@ angular.module('starter.services', [])
                   else {
                     num = config.PaddleCourtsNumber
                   }
-
                   if (px.length < num){
                     avalability.avalaibleRanges.push(r);
                   }
                 })
                 avalabilities.push(avalability);
             })
-
             return avalabilities;
-
         }, function(error){
 
         })
@@ -357,51 +347,23 @@ angular.module('starter.services', [])
         return query.get(obj.objectId)
               .then(
                   function(myObject) {
-
                     return myObject;
                   },
                   function(object, error) {
-
                     console.log(error);
               }
               ).then(
                     function(obj){
-                    $ionicLoading.hide();
-                    return obj.destroy();
+                        $ionicLoading.hide();
+                        return obj.destroy();
                   }, function(error){
-                    $ionicLoading.hide();
-                    console.log(error);
+                        $ionicLoading.hide();
+                        console.log(error);
                   });
       }
 
     };
   })
-
-
-.factory('MockData',function(){
-
-  return {
-    findBookings :function(month,year){
-      var user1 = "user1";
-      var prenotazioni = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1, callToAction:1},{user:user1, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1, callToAction:1}];
-      return prenotazioni;
-
-    },
-    getDisponibilitaCoach:function(month,year){
-      var disponibilitaCoach = [{date:new Date("2015/09/2"),ranges:[1,2,3,4,6],maestro:1},{date:new Date("2015/09/9"),ranges:[1,2,3,4,8],maestro:1}];
-      return disponibilitaCoach;
-    },
-
-    getCallToActionOpenFrom: function(date){
-      var user1 = "user1";
-      var user2 = "user2";
-      var user3 = "user3";
-      var cta = [{user:user1, date:new Date("2015/09/2"),ranges:[1,2,3,4],campo:1,maestro:1, callToAction:1,players:[user2,user3]},{user:user2, date:new Date("2015/09/2"),ranges:[3,4,5],campo:1,maestro:1, callToAction:1, players:[user1,user3]}];
-      return cta;
-    }
-  }
-
-})
 
 .factory('Utility',function(){
 
@@ -420,10 +382,6 @@ angular.module('starter.services', [])
       //return date.getDay();
     },
     getCalendar: function(month,year){
-
-    //  alert('month:' +  month)
-      //alert('year:' +  year)
-
       var weekDays = ['L','Ma','Me','G','V','S','D'];
       var firstDateOfMonth = this.getDayOfFirstDateOfMonth(month,year);
       //alert ('firstDateOfMonth'  + firstDateOfMonth);
@@ -455,12 +413,7 @@ angular.module('starter.services', [])
       return weeks;
 
     },
-    test: function() {
-      console.log('test');
-    },
-
     getHoursFromRanges: function(ranges){
-
       var ret = "";
       _.each(ranges,function(r){
         var end = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
@@ -470,7 +423,5 @@ angular.module('starter.services', [])
       })
       return ret;
     }
-
-
   };
 })

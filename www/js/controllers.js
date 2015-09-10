@@ -15,7 +15,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,MockData,$state, $ionicModal,$ionicBackdrop, $timeout) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout) {
 
 //$scope.currentUser = Parse.User.current();
 
@@ -78,7 +78,7 @@ $scope.logOut = function(form) {
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,MockData,$state,$ionicModal) {
+.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal) {
 
 //$scope.currentUser = Parse.User.current();
 var currentUser = {}
@@ -195,7 +195,7 @@ $scope.signUp = function() {
   $scope.booking = booking;
 
   $scope.$on('currentMonthChanged', function(event, x) {
-    
+
       MyObjects.getCoachAvalabilitiesFilteredByBookings(x,$scope.currentYear, $stateParams.coachId, booking.gameType )
       .then(
         function(results){
@@ -335,13 +335,10 @@ $scope.signUp = function() {
         console.log(error);
     })
     selectedRanges = [];
-
   }
-
-
 })
 
-.controller('BookCourt', function($scope, $stateParams, config,MockData,Utility, MyObjects, $ionicModal, $state) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state) {
 
   var currentDate = new Date();
   var currentMonth = parseInt(currentDate.getMonth())  ;
