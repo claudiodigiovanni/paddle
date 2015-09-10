@@ -13,7 +13,6 @@ angular.module('starter.controllers', [])
     }
   });
 
-
 })
 
 .controller('Login', function($scope, $stateParams, config,MockData,$state, $ionicModal,$ionicBackdrop, $timeout) {
@@ -59,7 +58,7 @@ $scope.login = function(){
   success: function(user) {
     // Do stuff after successful login.
     $scope.modal.hide();
-    console.log("......maestro: " + user.get('maestro'));
+
     $state.go('tab.dash');
   },
   error: function(user, error) {
@@ -198,13 +197,13 @@ $scope.signUp = function() {
       .then(
         function(results){
           avalabilities = results
-          console.log(results);
+
 
       }, function(error){
         console.log(error);
       })
 
-      console.log(avalabilities);
+
   });
 
   $scope.$watch('booking.gameType',function(obj){
@@ -212,13 +211,13 @@ $scope.signUp = function() {
     .then(
       function(results){
         avalabilities = results
-        console.log(results);
+
 
     }, function(error){
       console.log(error);
     })
 
-    console.log(avalabilities);
+
   })
 
   $ionicModal.fromTemplateUrl('ranges-modal.html', {
@@ -271,7 +270,7 @@ $scope.signUp = function() {
         return (obj.date == day);
     }),'range');
 
-    if ( ranges.length == 0 ){
+    if ( ranges.length === 0 ){
       return;
     }
     else{
@@ -318,19 +317,12 @@ $scope.signUp = function() {
 
   $scope.book = function(booking){
 
-
-    console.log('booking');
-    console.log(selectedRanges);
     var m = parseInt($scope.currentMonth) + 1;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
     booking.ranges = selectedRanges;
-    //TODO
-    //new Booking.....
-    //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
-    console.log('inserim booking....');
-    console.log(booking);
+
     MyObjects.createBooking(booking).then(function(result){
 
       $scope.resolved = "Prenotazione Effettuata!" ;
@@ -412,8 +404,6 @@ $scope.signUp = function() {
       }, function(error){
         console.log(error);
       })
-
-      console.log(avalabilities);
   });
 
   $scope.$watch('booking.gameType',function(obj){
@@ -424,8 +414,6 @@ $scope.signUp = function() {
       }, function(error){
         console.log(error);
       })
-
-      console.log(avalabilities);
   })
 
 
@@ -461,32 +449,28 @@ $scope.signUp = function() {
         return (obj.day == day);
     }).avalaibleRanges;
 
-    if ( ranges.length == 0 ){
+    if ( ranges.length === 0 ){
       return;
     }
     else{
       $scope.selectedDay =  day;
       avalaibleRanges = ranges;
       selectedRanges = [];
-      console.log(avalaibleRanges);
+
       $scope.showAddButton = true;
       $scope.modal.show()
     }
 
   }
 
-
   $scope.getRangeStatus = function(pos){
-
     if (selectedRanges.indexOf(pos) != -1){
       return "energized"
     }
-
     if (avalaibleRanges.indexOf(pos) != -1){
       return "positive"
     }
     return "light"
-
   }
 
   $scope.setRangeStatus = function(pos){
@@ -495,16 +479,12 @@ $scope.signUp = function() {
       selectedRanges.splice(selectedRanges.indexOf(pos),1);
       return
     }
-
     if (avalaibleRanges.indexOf(pos) != -1){
       selectedRanges.push(pos);
     }
     else {
 
     }
-    console.log('setRangeStatus');
-    console.log(selectedRanges);
-
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
 
   }
@@ -512,19 +492,12 @@ $scope.signUp = function() {
 
   $scope.book = function(booking){
 
-
-    console.log('booking');
-    console.log(selectedRanges);
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
     booking.ranges = selectedRanges;
-    //TODO
-    //new Booking.....
-    //Aggiornare Prenotazioni...i range a disposizione sono diminuiti a causa della prenotazione
-    console.log('inserim booking....');
-    console.log(booking);
+
     MyObjects.createBooking(booking).then(function(result){
 
       $scope.resolved = "Prenotazione Effettuata!" ;
@@ -585,7 +558,7 @@ $scope.signUp = function() {
 
 
   $scope.add = function(cta){
-    console.log(cta);
+
 
     MyObjects.addCallToActionPlayer(cta)
     .then(
@@ -595,7 +568,7 @@ $scope.signUp = function() {
         MyObjects.findCallToAction()
         .then(
           function(results){
-            console.log(results);
+
             $scope.callToActionOpen = results
         }, function(error){
           console.log(error);
@@ -630,16 +603,13 @@ $scope.signUp = function() {
 
   var currentUser = Parse.User.current();
   var maestro = currentUser.get('maestro');
-  console.log('setAvalability');
-  console.log(maestro);
-
 
   $scope.$on('currentMonthChanged', function(event, x) {
-      console.log('currentMonthChanged:' + x);
+
       MyObjects.getDisponibilitaCoach(x,$scope.currentYear, maestro.id).then(
         function(ret){
           avalabilities = ret;
-          console.log(avalabilities);
+
         },
         function(error){
           console.log(error);
@@ -743,9 +713,7 @@ $scope.signUp = function() {
 
   $scope.addRange = function(range){
 
-    console.log('....click addRange:' );
-
-    if (selectedRanges.length == 0)
+    if (selectedRanges.length === 0)
       $scope.mymessage = "Occorre selezionare almeno una fascia oraria...."
 
     var m = parseInt($scope.currentMonth) + 1;

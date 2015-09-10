@@ -20,7 +20,7 @@ angular.module('starter.services', [])
 
         }, function(error){
           $ionicLoading.hide();
-          console.log(error);
+
         })
       },
       findCallToAction:function(){
@@ -44,7 +44,7 @@ angular.module('starter.services', [])
               var tmp = obj.toJSON();
               var dx1 = obj.get('date');
               tmp.date = dx1.getDate() + "/" + dx1.getMonth() + "/" + dx1.getFullYear()
-              console.log(tmp.ranges);
+
               tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
               tmp.playersName = []
               tmp.user = obj.get('user').get('username')
@@ -55,7 +55,7 @@ angular.module('starter.services', [])
               ret.push(tmp);
             })
 
-            console.log(ret);
+
             $ionicLoading.hide();
             return ret;
 
@@ -94,7 +94,7 @@ angular.module('starter.services', [])
         var daysInMonth = Utility.getDaysInMonth(month,year);
         var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
         var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
-        console.log('findBookings called.....' + (parseInt(month) +1)  + "/" + year);
+
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", startDate);
@@ -103,7 +103,7 @@ angular.module('starter.services', [])
         return query.find()
           .then(
               function(results){
-                console.log('findBookings successful! JSON Converting...');
+
                 _.each(results, function (obj){
                   var tmp = obj.toJSON();
                   tmp.date = new Date(obj.get('date')).getDate();
@@ -112,7 +112,7 @@ angular.module('starter.services', [])
                 })
                 $ionicLoading.hide();
 
-                console.log(ret);
+
                 return ret;
                 //return ret;
               },
@@ -136,7 +136,7 @@ angular.module('starter.services', [])
         return query.find()
           .then(
               function(results){
-                console.log('findBookings successful! JSON Converting...');
+
                 _.each(results, function (obj){
                   var tmp = obj.toJSON();
                   tmp.date = obj.get('date').getDate() + "/" + obj.get('date').getMonth() + "/" +  obj.get('date').getFullYear()
@@ -147,7 +147,7 @@ angular.module('starter.services', [])
                 })
                 $ionicLoading.hide();
 
-                console.log(ret);
+
                 return ret;
                 //return ret;
               },
@@ -188,11 +188,11 @@ angular.module('starter.services', [])
                 })
                 avalabilities.push(avalability);
             })
-            console.log(avalabilities);
+
             return avalabilities;
 
         }, function(error){
-          console.log(error);
+
         })
       },
       getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
@@ -216,9 +216,7 @@ angular.module('starter.services', [])
             })
             .then(
               function(disponibilitaCoach){
-                console.log('dispocoach');
-                console.log(disponibilitaCoach);
-                console.log(prenotazioni);
+
                 _.each(disponibilitaCoach,function (d){
                   _.each(d.ranges, function(r){
                       var px = _.where(prenotazioni,{date:d.date,ranges:[r], gameType: typeG });
@@ -230,15 +228,12 @@ angular.module('starter.services', [])
                       else {
                         num = config.PaddleCourtsNumber
                       }
-                      console.log('px length....');
-                      console.log(px.length);
-                      console.log(config.PaddleCourtsNumber);
+
                       if (px.length < num)
                         avalabilities.push({date:d.date,range:r});
                   })
                 })
-                console.log('zzzzz1');
-                console.log(avalabilities);
+
                 return avalabilities;
 
             }, function(error){
@@ -258,8 +253,7 @@ angular.module('starter.services', [])
         .then(
             function(obj){
               maestro = obj
-              console.log('risolto maestro....');
-              console.log(maestro);
+
             },
             function (error){
               console.log(error);
@@ -270,7 +264,7 @@ angular.module('starter.services', [])
             var daysInMonth = Utility.getDaysInMonth(month,year);
             var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
             var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
-            console.log('getDisponibilitaCoach called.....' + (parseInt(month) +1)  + "/" + year);
+
             var CoachAvalability = Parse.Object.extend("CoachAvalability");
             var query = new Parse.Query(CoachAvalability);
             query.greaterThanOrEqualTo("date", startDate);
@@ -284,7 +278,7 @@ angular.module('starter.services', [])
         .then(
           function(results){
             var ret = [];
-            console.log('CoachAvalability successful! JSON Converting...');
+
             _.each(results, function (obj){
               var tmp = obj.toJSON();
               tmp.date = new Date(obj.get('date')).getDate();
@@ -292,8 +286,7 @@ angular.module('starter.services', [])
               ret.push(tmp);
             })
             $ionicLoading.hide();
-            console.log("ret");
-            console.log(ret);
+
             return ret;
         }, function(error){
           console.log(error);
@@ -337,7 +330,7 @@ angular.module('starter.services', [])
         $ionicLoading.show({
           template: 'Loading...'
         });
-        console.log('addDisponibilitaCoach called.....' );
+
         var currentUser = Parse.User.current();
         var maestro = currentUser.get('maestro');
 
@@ -358,17 +351,13 @@ angular.module('starter.services', [])
 
       },
       deleteDisponibilitaCoach:function(obj){
-        //var deferred = $q.defer();
-        console.log('deleteDisponibilitaCoach called inside service.....' );
-        console.log(obj);
+
         var CoachAvalability = Parse.Object.extend("CoachAvalability");
         var query = new Parse.Query(CoachAvalability);
         return query.get(obj.objectId)
               .then(
                   function(myObject) {
 
-                    console.log('get ok...');
-                    console.log(myObject);
                     return myObject;
                   },
                   function(object, error) {
@@ -377,12 +366,8 @@ angular.module('starter.services', [])
               }
               ).then(
                     function(obj){
-                    console.log('delete ...');
-                    console.log(obj);
-                    console.log(obj.destroy());
                     $ionicLoading.hide();
-                    //return obj.destroy();
-
+                    return obj.destroy();
                   }, function(error){
                     $ionicLoading.hide();
                     console.log(error);
@@ -478,9 +463,9 @@ angular.module('starter.services', [])
 
       var ret = "";
       _.each(ranges,function(r){
-        var end = (parseInt(r) % 2) == 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        var end = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
         r  = r - 0.5
-        var start = (parseInt(r) % 2) == 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        var start = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
         ret += "  " + start + "-" + end;
       })
       return ret;

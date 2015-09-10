@@ -138,6 +138,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
   .state('tab.callToAction', {
       url: '/callToAction',
+      cache: false,
       views: {
         'tab-callToAction': {
           templateUrl: 'templates/callToAction.html',

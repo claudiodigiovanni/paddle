@@ -1,27 +1,23 @@
 <ion-view view-title="Prenota Lezione">
 
 <ion-content>
-  <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right card" ng-repeat="coach in coaches" type="item-text-wrap" href="#/tab/coachAvalabilities/{{coach.objectId}}">
 
+<div class="list card">
 
-        <div class="item item-avatar item-icon-right" >
-          <img src="img/{{coach.img}}">
-          <h2>{{coach.nome}}</h2>
+  <a href="#/tab/coachAvalabilities/{{coach.objectId}}" class="item item-icon-left item-avatar" ng-repeat="coach in coaches">
+    <img src="img/{{coach.img}}">
+    <h2>{{coach.nome}}</h2>
+    <i class="icon ion-chevron-right icon-accessory" ></i>
+    <p>
+      {{coach.descrizione}}
+    </p>
+    <p>
+      <a href="#" class="subdued">1 Like</a>
+      <a href="#" class="subdued">5 Comments</a>
+    </p>
+  </a>
 
-          <i class="icon ion-chevron-right icon-accessory" ></i>
-        </div>
+</div>
 
-        <div class="item item-body">
-          <p>
-            {{coach.descrizione}}
-          </p>
-          <p>
-            <a href="#" class="subdued">1 Like</a>
-            <a href="#" class="subdued">5 Comments</a>
-          </p>
-        </div>
-      </ion-item>
-</ion-list>
 </ion-content>
 </ion-view>
