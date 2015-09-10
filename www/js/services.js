@@ -173,6 +173,19 @@ angular.module('starter.services', [])
               }
           )
       },
+      deleteBooking: function(item){
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        return query.get(item.objectId)
+        .then(
+          function(obj){
+            return obj.destroy();
+
+        }, function(error){
+          console.log(error);
+        })
+
+      },
       findAvalabilities: function(month,year,gameT){
         var avalabilities = [];
         return this.findBookings (month,year)

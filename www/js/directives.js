@@ -33,15 +33,14 @@ angular.module('starter.directives', [])
       var weekDays = ['L','Ma','Me','G','V','S','D']
       $scope.weekDays = weekDays;
       $scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
-      console.log("Calendar controller:" );
-      console.log("currentMonth:" + $scope.currentMonth);
-      console.log("currentYear:" + $scope.currentYear);
+
       console.log($scope.weeks);
 
       $scope.$watch('currentMonth', function() {
-        console.log("month:" + $scope.currentMonth);
+        console.log(" watch current month:" + $scope.currentMonth);
+        console.log(" watch current year:" + $scope.currentYear);
         $scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
-        $rootScope.$broadcast('currentMonthChanged', $scope.currentMonth);
+        $rootScope.$broadcast('currentDateChanged', $scope.currentMonth + ":" + $scope.currentYear );
       })
 
     }]
@@ -61,7 +60,7 @@ angular.module('starter.directives', [])
     link: function(scope, elm, attrs) {
             console.log('monthChanger link....' + scope.currentMonth) ;
           },
-    controller: ['$scope', '$http', 'Utility', function($scope, $http, Utility) {
+    controller: ['$scope', '$http', 'Utility', '$rootScope', function($scope, $http, Utility, $rootScope) {
 
       console.log('monthChanger controller....');
       $scope.monthName = months[$scope.currentMonth];
@@ -82,6 +81,7 @@ angular.module('starter.directives', [])
             $scope.currentMonth = tmp;
           }
           $scope.monthName = months[$scope.currentMonth];
+
 
       }
 

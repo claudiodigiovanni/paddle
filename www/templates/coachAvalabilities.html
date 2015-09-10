@@ -42,14 +42,11 @@
 
 <div class="card" style="text-align:center" ng-if="selectedHours">
   <div class="item item-text-wrap">
-    <i class="icon ion-clock"></i>
-    {{selectedHours}}
+
+    Giorno: {{selectedDay}}
+    <i class="icon ion-clock"></i>{{selectedHours}}
   </div>
 </div>
-
-<button class="button button-block button-positive" ng-click="book(booking)">
-  Prenota!
-</button>
 
 <div class="card" style="text-align:center" ng-if="resolved">
   <div class="item item-text-wrap">
@@ -57,6 +54,12 @@
     {{resolved}}
   </div>
 </div>
+
+<button class="button button-block button-positive" ng-click="book(booking)">
+  Prenota!
+</button>
+
+
 
 
 </ion-content>
