@@ -53,7 +53,15 @@ $scope.mymessage = mymessage;
 
 $scope.login = function(){
 
-  var username = currentUser.username;
+  var missing = currentUser.username == null || currentUser.password == null
+
+  if (missing){
+    mymessage.text = "Email o password errata...."
+    return
+  }
+
+
+  var username = currentUser.username.toLowerCase();
   var pwd = currentUser.password;
 
   Parse.User.logIn(username, pwd, {
@@ -125,8 +133,8 @@ $scope.signUp = function() {
   }
   console.log('username:' + currentUser.email );
   var user = new Parse.User();
-  user.set("email", currentUser.email);
-  user.set("username", currentUser.username);
+  user.set("email", currentUser.email.toLowerCase());
+  user.set("username", currentUser.username.toLowerCase());
   user.set("password", currentUser.password);
 
 

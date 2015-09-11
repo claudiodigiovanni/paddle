@@ -332,7 +332,7 @@ angular.module('starter.services', [])
             })
             return ret;
         }, function (error){
-          
+
           $ionicLoading.hide();
         })
       },
