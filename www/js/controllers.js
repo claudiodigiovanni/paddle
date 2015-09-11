@@ -47,8 +47,8 @@ $scope.$on('$destroy', function() {
 var currentUser = {}
 $scope.currentUser = currentUser;
 $scope.registered = true;
-var message = null
-$scope.message = message;
+var mymessage = {text:""}
+$scope.mymessage = mymessage;
 
 
 $scope.login = function(){
@@ -65,8 +65,9 @@ $scope.login = function(){
   error: function(user, error) {
     // The login failed. Check error to see why.
     //alert (error);
-    message = "Email o password errata...."
+    mymessage.text = "Email o password errata...."
     console.log(error);
+    $scope.$apply();
   }
   });
 }
@@ -89,6 +90,9 @@ $scope.logOut = function(form) {
 var currentUser = {}
 $scope.currentUser = currentUser;
 $scope.registered = false;
+
+var mymessage = {text:""}
+$scope.mymessage = mymessage;
 
 $ionicModal.fromTemplateUrl('signup-modal.html', {
   scope: $scope,
@@ -116,7 +120,7 @@ $scope.signUp = function() {
   });
 
   if (currentUser.email === null || currentUser.password === null || currentUser.username === null){
-    $scope.message = "Occorre inserire email, username e password..."
+    mymessage.text = "Occorre inserire email, username e password..."
     return
   }
   console.log('username:' + currentUser.email );
@@ -138,7 +142,7 @@ $scope.signUp = function() {
     },
     error: function(user, error) {
       $ionicLoading.hide();
-      alert("Non è possibile registrarsi:  " + error.code + " " + error.message);
+      mymessage.text = "Non è possibile registrarsi. (Error code:  " + error.code + " " + error.message + ")";
     }
   });
 };
