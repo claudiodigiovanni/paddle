@@ -1,0 +1,33 @@
+<div>
+<script id="signup-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Registrati</h1>
+    </ion-header-bar>
+    <ion-content>
+    <div class="list" ng-hide="registered">
+      <label class="item item-input item-floating-label">
+        <span class="input-label">email</span>
+        <input type="email" placeholder="email" ng-model="currentUser.email">
+      </label>
+      <label class="item item-input item-floating-label">
+        <span class="input-label">username</span>
+        <input type="text" placeholder="username" ng-model="currentUser.username">
+      </label>
+      <label class="item item-input item-floating-label">
+        <span class="input-label">password</span>
+        <input type="password" placeholder="password" ng-model="currentUser.password">
+      </label>
+
+      <p>
+        {{message}}
+      </p>
+      <button class="button button-full button-positive" ng-click="signUp()">
+          Registrati
+      </button>
+    </div>
+
+    </ion-content>
+  </div>
+</script>
+</div>

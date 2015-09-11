@@ -47,28 +47,33 @@ $scope.$on('$destroy', function() {
 var currentUser = {}
 $scope.currentUser = currentUser;
 $scope.registered = true;
+var message = null
+$scope.message = message;
 
 
 $scope.login = function(){
 
-  var username = currentUser.email;
+  var username = currentUser.username;
   var pwd = currentUser.password;
 
   Parse.User.logIn(username, pwd, {
   success: function(user) {
     // Do stuff after successful login.
     $scope.modal.hide();
-
     $state.go('tab.dash');
   },
   error: function(user, error) {
     // The login failed. Check error to see why.
     //alert (error);
+    message = "Email o password errata...."
     console.log(error);
-
   }
-});
+  });
+}
 
+$scope.gotoSignUp = function(){
+  $scope.modal.hide();
+  $state.go('signUp');
 }
 
 $scope.logOut = function(form) {
@@ -78,7 +83,7 @@ $scope.logOut = function(form) {
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal) {
+.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading) {
 
 //$scope.currentUser = Parse.User.current();
 var currentUser = {}
@@ -106,22 +111,34 @@ $scope.$on('$destroy', function() {
 
 
 $scope.signUp = function() {
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
+
+  if (currentUser.email === null || currentUser.password === null || currentUser.username === null){
+    $scope.message = "Occorre inserire email, username e password..."
+    return
+  }
   console.log('username:' + currentUser.email );
   var user = new Parse.User();
   user.set("email", currentUser.email);
-  user.set("username", currentUser.email);
+  user.set("username", currentUser.username);
   user.set("password", currentUser.password);
+
 
   user.signUp(null, {
     success: function(user) {
       $scope.currentUser = user;
       $scope.$apply(); // Notify AngularJS to sync currentUser
       $scope.modal.hide();
+      $ionicLoading.hide();
       $state.go('tab.dash');
+
 
     },
     error: function(user, error) {
-      alert("Unable to sign up:  " + error.code + " " + error.message);
+      $ionicLoading.hide();
+      alert("Non è possibile registrarsi:  " + error.code + " " + error.message);
     }
   });
 };
@@ -329,7 +346,7 @@ $scope.signUp = function() {
 
   $scope.book = function(booking){
 
-    if ($scope.selectedDay == null || $scope.selectedRanges == null || $scope.selectedRanges.length === 0) {
+    if ($scope.selectedDay === null || selectedRanges === null || selectedRanges.length === 0) {
       $scope.resolved = "Selezionare giorno e fascia oraria."
       return;
     }
@@ -339,7 +356,7 @@ $scope.signUp = function() {
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
     booking.ranges = selectedRanges;
-        booking.maestro = $scope.maestro
+    booking.maestro = $scope.maestro
 
     MyObjects.createBooking(booking).then(function(result){
 
@@ -519,7 +536,7 @@ $scope.signUp = function() {
 
   $scope.book = function(booking){
 
-    if ($scope.selectedDay == null  || selectedRanges.length === 0) {
+    if ($scope.selectedDay === null  || selectedRanges.length === 0) {
       $scope.resolved = "Selezionare giorno e fascia oraria."
       return;
     }
@@ -760,9 +777,6 @@ $scope.signUp = function() {
       return 'na'
     }
   };
-
-
-
 
 
   $scope.addRange = function(range){

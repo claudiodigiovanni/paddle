@@ -27,10 +27,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
         var currentUser = Parse.User.current();
         console.log("currentUser:");
         console.log(currentUser);
+        console.log(next);
         //console.log(currentUser.get('maestro') != undefined);
         if(next.name =='login' || next.name== 'signUp') {
-           //event.preventDefault();
-           //$state.go('login');
+
+           console.log('verso login');
+
          }
 
         else if (currentUser) {
@@ -40,10 +42,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
             $rootScope.currentUser = currentUser;
         } else {
             // show the signup or login page
-            console.log('currentUser is null!!');
-            event.preventDefault();
+            console.log('currentUser is null.!!');
             $state.go('login');
+            event.preventDefault();
+
         }
+        return;
 
     });
 
@@ -71,7 +75,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
   .state('signUp', {
   url: '/signUp',
-  templateUrl: 'templates/login.html',
+  templateUrl: 'templates/signup.html',
   controller: 'SignUp'
 
 })
@@ -118,6 +122,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
   .state('tab.coachAvalabilities', {
       url: '/coachAvalabilities/:coachId',
+      cache: false,
       views: {
         'tab-bookCoach': {
           templateUrl: 'templates/coachAvalabilities.html',
@@ -128,6 +133,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
   .state('tab.bookCourt', {
       url: '/bookCourt',
+      cache: false,
       views: {
         'tab-bookCourt': {
           templateUrl: 'templates/bookCourt.html',
@@ -159,6 +165,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  //$urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise( function($injector, $location) {
+            var $state = $injector.get("$state");
+            $state.go("tab.dash");
+        });
 
 });

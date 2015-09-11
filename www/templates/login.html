@@ -10,8 +10,8 @@
       <ion-content>
       <div class="list" ng-show="registered">
         <label class="item item-input item-floating-label">
-          <span class="input-label">email</span>
-          <input type="email" placeholder="email" ng-model="currentUser.email">
+          <span class="input-label">username</span>
+          <input type="text" placeholder="username" ng-model="currentUser.username">
         </label>
         <label class="item item-input item-floating-label">
           <span class="input-label">password</span>
@@ -21,7 +21,12 @@
             entra
         </button>
         <p>
-        Non sei ancora registrato? <a ui-sref="signUp">Registrati!</a>
+          {{message}}
+        </p>
+        <p class="item">
+        Non sei ancora registrato? <button class="button button-small button-positive" ng-click="gotoSignUp()">
+            Registrati!
+        </button>
         </p>
       </div>
       </ion-content>
@@ -29,28 +34,6 @@
     </div>
   </script>
 
-  <script id="signup-modal.html" type="text/ng-template">
-    <div class="modal">
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">Registrati</h1>
-      </ion-header-bar>
-      <ion-content>
-      <div class="list" ng-hide="registered">
-        <label class="item item-input item-floating-label">
-          <span class="input-label">email</span>
-          <input type="text" placeholder="email" ng-model="currentUser.email">
-        </label>
-        <label class="item item-input item-floating-label">
-          <span class="input-label">password</span>
-          <input type="text" placeholder="password" ng-model="currentUser.password">
-        </label>
-        <button class="button button-full button-positive" ng-click="signUp()">
-            Registrati
-        </button>
-      </div>
 
-      </ion-content>
-    </div>
-  </script>
 
 </div>
