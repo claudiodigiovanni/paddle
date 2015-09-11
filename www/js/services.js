@@ -79,7 +79,8 @@ angular.module('starter.services', [])
         book.set("gameType",obj.gameType);
         var Maestro = Parse.Object.extend("Maestro");
         var query = new Parse.Query(Maestro);
-        var maestroId = obj.maestro !== null ? obj.maestro.objectId : -1
+        //console.log(obj.maestro);
+        var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
 
         if (maestroId != -1){
           return query.get(maestroId)
@@ -146,7 +147,7 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", new Date());
         var user = Parse.User.current()
-        if (user.get('maestro') !== null){
+        if (user.get('maestro') != null){
           query.equalTo("maestro", user.get('maestro'));
         }
         else query.equalTo("user", user );
@@ -331,6 +332,7 @@ angular.module('starter.services', [])
             })
             return ret;
         }, function (error){
+          
           $ionicLoading.hide();
         })
       },
