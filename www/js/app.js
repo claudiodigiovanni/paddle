@@ -80,6 +80,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
 })
 
+
   // setup an abstract state for the tabs directive
     .state('tab', {
     url: '/tab',
@@ -162,7 +163,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
         controller: 'AccountCtrl'
       }
     }
-  });
+  })
+
+  .state('tab.statistics', {
+  url: '/statistics',
+  views: {
+    'tab-account': {
+      templateUrl: 'templates/bookingList.html',
+      controller: 'statistics'
+    }
+  }
+
+});
 
   // if none of the above states are matched, use this as the fallback
   //$urlRouterProvider.otherwise('/tab/dash');

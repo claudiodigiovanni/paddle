@@ -4,6 +4,51 @@ angular.module('starter.services', [])
 
     return {
 
+      findStatistics : function(date){
+
+
+        var Booking = Parse.Object.extend("Booking");
+        var queryT2 = new Parse.Query(Booking);
+        queryT2.equalTo("date", date);
+        queryT2.equalTo("gameType", "Tx2");
+        var ret = {}
+        return queryT2.count()
+
+        .then(
+          function(obj){
+            ret.Tx2 = obj
+            var queryT4 = new Parse.Query(Booking);
+            queryT4.equalTo("date", date);
+            queryT4.equalTo("gameType", "Tx4");
+            return queryT4.count()
+
+        }, function(error){
+          console.log(error);
+        })
+        .then(
+          function(obj){
+            ret.Tx4 = obj
+            var queryP = new Parse.Query(Booking);
+            queryP.equalTo("date", date);
+            queryP.equalTo("gameType", "P");
+            return queryP.count()
+        }, function(error){
+          console.log(error);
+        })
+        .then(
+          function(obj){
+            ret.P = obj
+            return ret;
+        }, function(error){
+          console.log(error);
+        })
+
+
+
+
+
+      },
+
       addCallToActionPlayer: function(cta){
         $ionicLoading.show({
           template: 'Loading...'

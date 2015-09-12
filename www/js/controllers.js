@@ -574,7 +574,7 @@ $scope.signUp = function() {
 
 })
 
-.controller('AccountCtrl', function($scope,MyObjects) {
+.controller('AccountCtrl', function($scope,MyObjects, $state) {
 
   MyObjects.findMyBookings()
   .then(
@@ -598,6 +598,40 @@ $scope.signUp = function() {
     })
   }
 
+  $scope.gotoStatistics = function(){
+    $state.go('tab.statistics');
+  }
+
+
+})
+
+.controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading){
+
+  var currentDate = new Date();
+  var currentMonth = parseInt(currentDate.getMonth())  ;
+  var currentYear = currentDate.getFullYear();
+  $scope.currentMonth = currentMonth;
+  $scope.currentYear = currentYear;
+
+
+
+  $scope.dayClicked = function(day){
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
+    console.log('dayClicked' + day);
+    var m = parseInt($scope.currentMonth) + 1
+    var datex = $scope.currentYear + "/" + m + "/" + day
+    MyObjects.findStatistics(new Date(datex))
+    .then(
+      function(obj){
+        console.log(obj);
+        $scope.results = obj;
+        $ionicLoading.hide();
+    }, function(error){
+      console.log(error);
+    })
+  }
 
 })
 
