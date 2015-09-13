@@ -613,12 +613,35 @@ $scope.signUp = function() {
   $scope.currentMonth = currentMonth;
   $scope.currentYear = currentYear;
 
+  $scope.$on('currentDateChanged', function(event, x) {
+      var m = x.split(":")[0]
+      var y = x.split(":")[1]
+      $scope.currentMonth = m
+      $scope.currentYear = y
+
+      $scope.selectedDay = null;
+
+  });
+
+  $scope.getDayStatus = function(day){
+
+
+    if ($scope.selectedDay == day){
+      return "selected";
+    }
+    else {
+      return 'na'
+    }
+  };
+
+
 
 
   $scope.dayClicked = function(day){
     $ionicLoading.show({
       template: 'Loading...'
     });
+    $scope.selectedDay =  day;
     console.log('dayClicked' + day);
     var m = parseInt($scope.currentMonth) + 1
     var datex = $scope.currentYear + "/" + m + "/" + day
