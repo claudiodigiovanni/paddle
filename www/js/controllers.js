@@ -1,9 +1,9 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, MyObjects, Utility) {
+.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
 
-  Parse.Cloud.run('hello', { }, {
+  /*Parse.Cloud.run('hello', { }, {
     success: function(result) {
       // ratings should be 4.5
       console.log(result);
@@ -11,7 +11,50 @@ angular.module('starter.controllers', [])
     error: function(error) {
 
     }
+  });*/
+
+  var edit = {text:"xxxx"}
+
+  $scope.edit = edit
+
+  MyObjects.getDashboardText()
+  .then(
+    function(text){
+
+      $scope.text = text
+
+  }, function(error){
+    console.log(error);
+  })
+
+
+  $ionicModal.fromTemplateUrl('edit.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
+  })
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+    MyObjects.saveDashboardText($scope.index,edit.text)
+    $scope.text[$scope.index] = edit.text
+    //$state.go('tab.account');
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
   });
+
+  $scope.openModal = function(index) {
+
+    edit.text = $scope.text[index]
+    $scope.index = index
+    $scope.modal.show();
+    //$state.go('tab.account');
+  };
+
 
 })
 

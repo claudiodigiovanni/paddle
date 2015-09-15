@@ -4,6 +4,52 @@ angular.module('starter.services', [])
 
     return {
 
+      getDashboardText : function(){
+        var text = []
+        var Dashboard = Parse.Object.extend("Dashboard");
+        var query = new Parse.Query(Dashboard);
+        return query.find()
+        .then(
+          function(results){
+            var item = results[0];
+            console.log(results);
+            text.push(item.get('area1'))
+            text.push(item.get('area2'))
+            text.push(item.get('area3'))
+            return text;
+
+        }, function(error){
+          console.log(error);
+        })
+      },
+
+      saveDashboardText: function (index,text){
+        var i = parseInt(index) + 1
+
+        var Dashboard = Parse.Object.extend("Dashboard");
+        var query = new Parse.Query(Dashboard);
+        return query.find()
+        .then(
+          function(results){
+            var item = results[0];
+
+            return item;
+
+        }, function(error){
+          console.log(error);
+        })
+        .then(
+          function(item){
+
+            item.set('area'+i, text)
+            return item.save()
+
+        }, function(error){
+          console.log(error);
+        })
+
+      },
+
       findStatistics : function(date){
 
 

@@ -4,8 +4,10 @@
       <div class="item item-divider">News</div>
       <div class="item item-body">
         <div>
-          Il 1 Ottobre prenderà il via la nuova stagione dedicata al tennis e al paddle.
-          Per le iscrizioni dei bambini sono previste....
+          {{text[0]}}
+          <button class="button button-small button-positive" ng-click="openModal(0)" ng-show="userRole == 'admin'">
+            Edit
+          </button>
         </div>
       </div>
     </div>
@@ -13,7 +15,10 @@
       <div class="item item-divider">Tornei</div>
       <div class="item item-body">
         <div>
-          Torneo adulti - Premio finale: 2 racchette Wilson
+            {{text[1]}}
+            <button class="button button-small button-positive" ng-click="openModal(1)" ng-show="userRole == 'admin'">
+              Edit
+            </button>
         </div>
       </div>
     </div>
@@ -21,9 +26,32 @@
       <div class="item item-divider">Comunicazioni</div>
       <div class="item item-body">
         <div>
-          Il 10 Ottobre è prevista una seessione speciale di allenamento per gli iscritti al torneo di Paddle....
+            {{text[2]}}
+            <button class="button button-small button-positive" ng-click="openModal(2)" ng-show="userRole == 'admin'">
+              Edit
+            </button>
         </div>
       </div>
     </div>
   </ion-content>
+
+  <script id="edit.html" type="text/ng-template">
+    <div class="modal">
+      <ion-header-bar class="bar-stable">
+        <h1 class="title">Edit</h1>
+
+      </ion-header-bar>
+      <ion-content>
+      <label class="item item-input">
+        <textarea  ng-model="edit.text"></textarea>
+      </label>
+
+      <button class="button button-block button-positive" ng-click="closeModal()">
+        Invia
+      </button>
+
+      </ion-content>
+    </div>
+  </script>
+
 </ion-view>
