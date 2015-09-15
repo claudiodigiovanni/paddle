@@ -11,6 +11,12 @@
       </b>
       &nbsp;&nbsp;
       <b><i class="icon ion-calendar"></i></b> {{booking.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{booking.ranges}}
+
+
+        &nbsp;&nbsp;<i class="icon ion-person-stalker" ng-show="userRole == 'segreteria'"></i>&nbsp;
+        {{booking.note}}
+
+
       <ion-option-button class="button-assertive"
                        ng-click="delete(booking)">
       Cancella
@@ -18,7 +24,26 @@
     </ion-item>
   </ion-list>
 
-  <button class="button button-block button-positive" ng-click="gotoStatistics()">
+  <ion-list >
+
+<ion-item><b>Call To Action</b></ion-item>
+
+  <ion-item ng-repeat="cta in callToActions">
+    <b>
+      <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx2'"></i>
+      <i class="icon ion-social-pinterest-outline" ng-show="cta.gameType == 'P'"></i>
+      <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
+      <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
+    </b>
+    &nbsp;&nbsp;
+    <b><i class="icon ion-calendar"></i></b> {{cta.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{cta.ranges}}
+    &nbsp;&nbsp;<i class="icon ion-person-stalker"></i>&nbsp;
+    {{cta.playersName}}
+
+  </ion-item>
+</ion-list>
+
+  <button class="button button-block button-positive" ng-click="gotoStatistics()" ng-show="userRole == 'admin'">
       Statistiche
   </button>
 

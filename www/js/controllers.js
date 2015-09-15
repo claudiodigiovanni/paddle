@@ -174,7 +174,7 @@ $scope.signUp = function() {
 })
 
 
-.controller('CoachAvalabilities', function($scope, $stateParams, config,MyObjects,Utility,$ionicModal, $state) {
+.controller('CoachAvalabilities', function($scope, $stateParams, config,MyObjects,Utility,$ionicModal, $state, $rootScope) {
 
   $ionicModal.fromTemplateUrl('ok-modal.html', {
     scope: $scope,
@@ -360,6 +360,13 @@ $scope.signUp = function() {
 
     if ($scope.selectedDay === null || selectedRanges === null || selectedRanges.length === 0) {
       $scope.resolved = "Selezionare giorno e fascia oraria."
+      return;
+    }
+
+    console.log(booking.note);
+
+    if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
+      $scope.resolved = "Inserire il nome del giocatore."
       return;
     }
 
@@ -585,6 +592,16 @@ $scope.signUp = function() {
     console.log(error);
   })
 
+  MyObjects.findCallToActionWithUserAsPlayer()
+  .then(
+    function(results){
+      console.log(results);
+      $scope.callToActions = results
+
+  }, function(error){
+    console.log(error);
+  })
+
   $scope.delete = function(item){
 
     MyObjects.deleteBooking(item);
@@ -596,6 +613,18 @@ $scope.signUp = function() {
     }, function(error){
       console.log(error);
     })
+
+    MyObjects.findCallToActionWithUserAsPlayer()
+    .then(
+      function(results){
+        console.log(results);
+
+    }, function(error){
+      console.log(error);
+    })
+
+
+
   }
 
   $scope.gotoStatistics = function(){

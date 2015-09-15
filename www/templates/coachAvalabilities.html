@@ -55,6 +55,11 @@
   </div>
 </div>
 
+<label class="item item-input item-floating-label" ng-show="userRole == 'segreteria'">
+  <span class="input-label">Utente</span>
+  <input type="text" placeholder="Utente" ng-model="booking.note">
+</label>
+
 <button class="button button-block button-positive" ng-click="book(booking)">
   Prenota!
 </button>

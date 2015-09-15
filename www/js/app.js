@@ -40,6 +40,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
             //event.preventDefault();
             //$state.go('tab.dash');
             $rootScope.currentUser = currentUser;
+            $rootScope.userRole = currentUser.get('role')
+            //console.log(currentUser.get('role'));
         } else {
             // show the signup or login page
             console.log('currentUser is null.!!');

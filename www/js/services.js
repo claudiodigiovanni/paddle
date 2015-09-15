@@ -60,8 +60,13 @@ angular.module('starter.services', [])
         .then(
           function(cta){
             $ionicLoading.hide();
-            cta.add('players',user);
-            return cta.save();
+            var players = cta.get('players')
+            var x = _.find(players,{id:user.id})
+            if (!x){
+              cta.add('players',user);
+              return cta.save();
+            }
+
 
         }, function(error){
           $ionicLoading.hide();
@@ -84,11 +89,68 @@ angular.module('starter.services', [])
         return query.find()
         .then(
           function(results){
+              _.each(results, function (obj){
+              var stdNumPlayers = obj.get('gameType') == 'Tx2' ? 2 : 4
 
-            _.each(results, function (obj){
+              if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
+                return
+
               var tmp = obj.toJSON();
               var dx1 = obj.get('date');
-              tmp.date = dx1.getDate() + "/" + dx1.getMonth() + "/" + dx1.getFullYear()
+              var m = parseInt(dx1.getMonth()) + 1
+              tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
+
+              tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
+              tmp.playersName = []
+              tmp.user = obj.get('user').get('username')
+
+              _.each(obj.get('players'), function (p){
+                tmp.playersName.push(p.get("username"))
+              })
+              ret.push(tmp);
+            })
+
+
+            $ionicLoading.hide();
+            return ret;
+
+        }, function(error){
+          console.log(error);
+        })
+
+      },
+      findCallToActionWithUserAsPlayer:function(){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.greaterThanOrEqualTo("date", new Date());
+        query.equalTo("callToAction", true)
+        query.equalTo("players", Parse.User.current());
+        query.include('user')
+        query.include('players')
+        query.limit(30);
+        query.ascending("date");
+        var ret = []
+        return query.find()
+        .then(
+          function(results){
+              _.each(results, function (obj){
+              var stdNumPlayers = obj.get('gameType') == 'Tx2' ? 2 : 4
+
+              var tmp = obj.toJSON();
+
+              if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
+                tmp.complete = true
+              else {
+                tmp.complete = false
+              }
+
+
+              var dx1 = obj.get('date');
+              var m = parseInt(dx1.getMonth()) + 1
+              tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
 
               tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
               tmp.playersName = []
@@ -122,6 +184,7 @@ angular.module('starter.services', [])
         book.set("court",obj.court);
         book.set("callToAction",obj.callToAction);
         book.set("gameType",obj.gameType);
+        book.set("note",obj.note);
         var Maestro = Parse.Object.extend("Maestro");
         var query = new Parse.Query(Maestro);
         //console.log(obj.maestro);
@@ -204,7 +267,8 @@ angular.module('starter.services', [])
 
                 _.each(results, function (obj){
                   var tmp = obj.toJSON();
-                  tmp.date = obj.get('date').getDate() + "/" + obj.get('date').getMonth() + "/" +  obj.get('date').getFullYear()
+                  var m = parseInt(obj.get('date').getMonth()) + 1
+                  tmp.date = obj.get('date').getDate() + "/" + m + "/" +  obj.get('date').getFullYear()
                   tmp.ranges = Utility.getHoursFromRanges(obj.get("ranges"));
                   ret.push(tmp);
                 })
@@ -272,6 +336,7 @@ angular.module('starter.services', [])
             .then(
                 function(prenotazioniRet){
                   prenotazioni = prenotazioniRet
+                  console.log(prenotazioni);
 
                 }, function(error){
                   console.log(error);
@@ -287,6 +352,18 @@ angular.module('starter.services', [])
 
                 _.each(disponibilitaCoach,function (d){
                   _.each(d.ranges, function(r){
+                      var py =  _.filter(prenotazioni,function(item){
+                        console.log(item);
+                        if (item.date == d.date &&
+                            item.ranges.indexOf(r) != -1 && item.maestro.objectId == maestroId)
+                            return item;
+                      });
+
+                      //console.log(py);
+
+                      if (py.length > 0)
+                        return
+
                       var px = _.where(prenotazioni,{date:d.date,ranges:[r], gameType: typeG });
                       //console.log('param');
                       //console.log({date:d.date,ranges:[r], gameType: typeG });
