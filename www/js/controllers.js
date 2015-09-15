@@ -363,7 +363,6 @@ $scope.signUp = function() {
       return;
     }
 
-    console.log(booking.note);
 
     if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
       $scope.resolved = "Inserire il nome del giocatore."
@@ -389,7 +388,7 @@ $scope.signUp = function() {
   }
 })
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope) {
 
   var currentDate = new Date();
   var currentMonth = parseInt(currentDate.getMonth())  ;
@@ -557,6 +556,11 @@ $scope.signUp = function() {
 
     if ($scope.selectedDay === null  || selectedRanges.length === 0) {
       $scope.resolved = "Selezionare giorno e fascia oraria."
+      return;
+    }
+
+    if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
+      $scope.resolved = "Inserire il nome del giocatore."
       return;
     }
 
