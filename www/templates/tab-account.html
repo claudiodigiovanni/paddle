@@ -1,51 +1,185 @@
-<ion-view view-title="I tuoi prossimi impegni...">
+<ion-view view-title="Account">
   <ion-content>
 
-    <ion-list >
-    <ion-item ng-repeat="booking in bookings">
-      <b>
-        <i class="icon ion-ios-tennisball-outline" ng-show="booking.gameType == 'Tx2'"></i>
-        <i class="icon ion-social-pinterest-outline" ng-show="booking.gameType == 'P'"></i>
-        <i class="icon ion-ios-tennisball-outline" ng-show="booking.gameType == 'Tx4'"></i>
-        <i class="icon ion-ios-tennisball-outline" ng-show="booking.gameType == 'Tx4'"></i>
-      </b>
-      &nbsp;&nbsp;
-      <b><i class="icon ion-calendar"></i></b> {{booking.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{booking.ranges}}
+    <div class="card">
+      <div class="item item-divider">
+        Dettagli
+      </div>
+      <div class="item item-text-wrap">
+        <!-- xxx -->
+        <ion-list >
+          <ion-item>email: {{currentUser.get('email')}}</ion-item>
+          <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; <button class="button  button-outline button-positive" ng-click="changeLevel()">
+                Modifica</button></ion-item>
+          <ion-item>  <button class="button  button-outline button-positive" ng-click="resetPwd()">
+                Reset password</button>
+          </ion-item>
+        </ion-list >
+        <!-- xxx -->
+
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="item item-divider">
+        Prossimi Impegni
+      </div>
+      <div class="item item-text-wrap">
+        <!-- xxx -->
+        <ion-list >
+          <ion-item ng-repeat="booking in bookings">
+            <b>
+              <i class="icon ion-ios-tennisball-outline" ng-show="booking.gameType == 'Tx2'"></i>
+              <i class="icon ion-social-pinterest-outline" ng-show="booking.gameType == 'P'"></i>
+              <i class="icon ion-ios-tennisball-outline" ng-show="booking.gameType == 'Tx4'"></i>
+              <i class="icon ion-ios-tennisball-outline" ng-show="booking.gameType == 'Tx4'"></i>
+            </b>
+            &nbsp;&nbsp;
+            <b><i class="icon ion-calendar"></i></b> {{booking.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{booking.ranges}}
 
 
-        &nbsp;&nbsp;<i class="icon ion-person-stalker" ng-show="userRole == 'segreteria'"></i>&nbsp;
-        {{booking.note}}
+              &nbsp;&nbsp;<i class="icon ion-person-stalker" ng-show="userRole == 'segreteria'"></i>&nbsp;
+              {{booking.note}}
 
 
-      <ion-option-button class="button-assertive"
-                       ng-click="delete(booking)">
-      Cancella
-    </ion-option-button>
-    </ion-item>
-  </ion-list>
+            <ion-option-button class="button-assertive"
+                             ng-click="delete(booking)">
+            Cancella
+          </ion-option-button>
+          </ion-item>
+      </ion-list>
+        <!-- xxx -->
 
-  <ion-list >
+      </div>
 
-<ion-item><b>Call To Action</b></ion-item>
+    </div>
 
-  <ion-item ng-repeat="cta in callToActions">
-    <b>
-      <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx2'"></i>
-      <i class="icon ion-social-pinterest-outline" ng-show="cta.gameType == 'P'"></i>
-      <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
-      <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
-    </b>
-    &nbsp;&nbsp;
-    <b><i class="icon ion-calendar"></i></b> {{cta.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{cta.ranges}}
-    &nbsp;&nbsp;<i class="icon ion-person-stalker"></i>&nbsp;
-    {{cta.playersName}}
+    <div class="card">
+      <div class="item item-divider">
+        Call To Action
+      </div>
+      <div class="item item-text-wrap">
+        <!-- xxx -->
+        <ion-list>
+            <ion-item><b>Call To Action</b></ion-item>
+            <ion-item ng-repeat="cta in callToActions">
+              <b>
+                <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx2'"></i>
+                <i class="icon ion-social-pinterest-outline" ng-show="cta.gameType == 'P'"></i>
+                <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
+                <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
+              </b>
+              &nbsp;&nbsp;
+              <b><i class="icon ion-calendar"></i></b> {{cta.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{cta.ranges}}
+              &nbsp;&nbsp;<i class="icon ion-person-stalker"></i>&nbsp;
+              {{cta.playersName}}
+            </ion-item>
+        </ion-list>
+        <!-- xxx -->
+      </div>
+    </div>
 
-  </ion-item>
-</ion-list>
+
+
 
   <button class="button button-block button-positive" ng-click="gotoStatistics()" ng-show="userRole == 'admin'">
       Statistiche
   </button>
+
+
+
+  <script id="reset-pwd.html" type="text/ng-template">
+    <div class="modal">
+      <ion-header-bar class="bar-stable">
+        <h1 class="title">Reset Password</h1>
+      </ion-header-bar>
+
+      <ion-content>
+      <ion-item>
+          Invieremo una mail al tuo indirizzo per il reset pwd....
+            <button class="button button-outline button-small button-positive" ng-click="confirmResetPwd()">
+                Conferma!
+            </button>
+      </ion-item>
+
+
+      </ion-content>
+
+    </div>
+  </script>
+
+
+  <script id="set-level.html" type="text/ng-template">
+    <div class="modal">
+      <ion-header-bar class="bar-stable">
+        <h1 class="title">Livello</h1>
+      </ion-header-bar>
+
+      <ion-content>
+      <div class="list">
+
+
+      <!-- xx -->
+      <label class="item item-divider">
+
+        <div class="item-content" style="color:gray">
+          Seleziona il tuo livello di gioco
+        </div>
+
+      </label>
+
+        <label class="item item-radio">
+          <input type="radio" name="group" ng-model="currentLevel.value" value=1>
+          <div class="item-content">
+            1 - Mr Padella
+          </div>
+          <i class="radio-icon ion-checkmark"></i>
+        </label>
+
+        <label class="item item-radio">
+          <input type="radio" name="group" ng-model="currentLevel.value" value=2>
+          <div class="item-content">
+            2 - Vorrei Ma Proprio Non Fa Per Me
+          </div>
+          <i class="radio-icon ion-checkmark"></i>
+        </label>
+
+        <label class="item item-radio">
+          <input type="radio" name="group" ng-model="currentLevel.value" value=3>
+          <div class="item-content">
+            3 - Vorrei Ma Non Riesco
+          </div>
+          <i class="radio-icon ion-checkmark"></i>
+        </label>
+        <label class="item item-radio">
+          <input type="radio" name="group" ng-model="currentLevel.value" value=4>
+          <div class="item-content">
+            4 - Se Mi Impegno
+          </div>
+          <i class="radio-icon ion-checkmark"></i>
+        </label>
+
+        <label class="item item-radio">
+          <input type="radio" name="group" ng-model="currentLevel.value" value=5>
+          <div class="item-content">
+            5 - Il mio Nome è Paddle, Tennis O’ Paddle
+          </div>
+          <i class="radio-icon ion-checkmark"></i>
+        </label>
+
+      <!-- xx -->
+
+        <ion-item>
+        <button class="button button-outline button-small button-positive" ng-click="confirmChangeLevel()">
+            Conferma
+        </button>
+        </ion-item>
+      </div>
+      </ion-content>
+
+    </div>
+  </script>
 
 
   </ion-content>

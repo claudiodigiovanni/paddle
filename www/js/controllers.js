@@ -58,7 +58,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope) {
 
 //$scope.currentUser = Parse.User.current();
 
@@ -72,6 +72,7 @@ $ionicModal.fromTemplateUrl('login-modal.html', {
 })
 
 
+
 $ionicBackdrop.retain();
 $timeout(function() {
   $ionicBackdrop.release();
@@ -81,10 +82,6 @@ $timeout(function() {
 $scope.closeModal = function() {
   $scope.modal.hide();
 };
-
-$scope.$on('$destroy', function() {
-  $scope.modal.remove();
-});
 
 
 var currentUser = {}
@@ -123,6 +120,7 @@ $scope.login = function(){
   });
 }
 
+
 $scope.gotoSignUp = function(){
   $scope.modal.hide();
   $state.go('signUp');
@@ -135,10 +133,10 @@ $scope.logOut = function(form) {
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading) {
+.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope) {
 
 //$scope.currentUser = Parse.User.current();
-var currentUser = {}
+var currentUser = {level:3}
 $scope.currentUser = currentUser;
 $scope.registered = false;
 
@@ -154,15 +152,18 @@ $ionicModal.fromTemplateUrl('signup-modal.html', {
   $scope.modal.show();
 })
 
+$scope.login = function() {
+  $scope.modal.hide();
+  $state.go('login');
+  //$rootScope.$broadcast('openLoginModal', 'x' );
+};
+
 
 
 $scope.closeModal = function() {
   $scope.modal.hide();
 };
 
-$scope.$on('$destroy', function() {
-  $scope.modal.remove();
-});
 
 
 $scope.signUp = function() {
@@ -179,6 +180,7 @@ $scope.signUp = function() {
   user.set("email", currentUser.email.toLowerCase());
   user.set("username", currentUser.username.toLowerCase());
   user.set("password", currentUser.password);
+  user.set("level", currentUser.level)
 
 
   user.signUp(null, {
@@ -628,7 +630,72 @@ $scope.signUp = function() {
 
 })
 
-.controller('AccountCtrl', function($scope,MyObjects, $state) {
+  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope) {
+    var currentLevel = {value: $rootScope.currentUser.get('level')}
+    $scope.currentLevel = currentLevel
+
+    $ionicModal.fromTemplateUrl('set-level.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.setLevelModal = modal;
+      console.log($scope.setLevel);
+    })
+
+    $ionicModal.fromTemplateUrl('reset-pwd.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.resetPwdModal = modal;
+
+
+    })
+
+
+    $scope.changeLevel = function(){
+      $scope.setLevelModal.show();
+    }
+
+    $scope.confirmChangeLevel = function(){
+
+      var currentUser = Parse.User.current();
+      currentUser.set('level' , parseInt($scope.currentLevel.value));
+      currentUser.save()
+      .then(
+        function(obj){
+
+      }, function(error){
+        console.log(error);
+      })
+
+      $scope.setLevelModal.hide();
+
+    }
+
+
+    $scope.resetPwd = function(){
+      console.log('ooo');
+      $scope.resetPwdModal.show();
+    }
+
+    $scope.confirmResetPwd = function(){
+      var email = Parse.User.current().get('email')
+      Parse.User.requestPasswordReset(email, {
+          success: function() {
+          // Password reset request was sent successfully
+          Parse.User.logOut();
+          },
+          error: function(error) {
+            // Show the error message somewhere
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
+
+      $scope.resetPwdModal.hide();
+    }
+
 
   MyObjects.findMyBookings()
   .then(
@@ -744,6 +811,10 @@ $scope.signUp = function() {
   }).then(function(modal) {
     $scope.modal = modal;
   })
+
+  $scope.mayIJoin = function(cta){
+    return _.inRange(Parse.User.current().get('level'), cta.level - 1, cta.level + 1 );
+  }
 
 
   $scope.closeModal = function() {

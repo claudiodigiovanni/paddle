@@ -70,6 +70,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
     .state('login', {
     url: '/login',
+    cache: false,
     templateUrl: 'templates/login.html',
     controller: 'Login'
 
@@ -77,6 +78,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
 
   .state('signUp', {
   url: '/signUp',
+  cache: false,
   templateUrl: 'templates/signup.html',
   controller: 'SignUp'
 

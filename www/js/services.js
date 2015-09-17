@@ -149,6 +149,7 @@ angular.module('starter.services', [])
               tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
               tmp.playersName = []
               tmp.user = obj.get('user').get('username')
+              tmp.level = obj.get('user').get('level')
 
               _.each(obj.get('players'), function (p){
                 tmp.playersName.push(p.get("username"))
