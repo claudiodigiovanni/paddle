@@ -383,7 +383,7 @@ angular.module('starter.services', [])
             .then(
                 function(prenotazioniRet){
                   prenotazioni = prenotazioniRet
-                  console.log(prenotazioni);
+                  //console.log(prenotazioni);
 
                 }, function(error){
                   console.log(error);
@@ -400,7 +400,7 @@ angular.module('starter.services', [])
                 _.each(disponibilitaCoach,function (d){
                   _.each(d.ranges, function(r){
                       var py =  _.filter(prenotazioni,function(item){
-                        console.log(item);
+
                         if (item.date == d.date &&
                             item.ranges.indexOf(r) != -1 && item.maestro.objectId == maestroId)
                             return item;

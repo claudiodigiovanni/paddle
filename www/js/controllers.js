@@ -17,16 +17,6 @@ angular.module('starter.controllers', [])
 
   $scope.edit = edit
 
-  MyObjects.getDashboardText()
-  .then(
-    function(text){
-
-      $scope.text = text
-
-  }, function(error){
-    console.log(error);
-  })
-
 
   $ionicModal.fromTemplateUrl('edit.html', {
     scope: $scope,
@@ -35,6 +25,24 @@ angular.module('starter.controllers', [])
   }).then(function(modal) {
     $scope.modal = modal;
   })
+  .then(
+    function(obj){
+
+      return MyObjects.getDashboardText()
+
+  }, function(error){
+    console.log(error);
+  })
+  .then(
+    function(text){
+
+        $scope.text = text
+
+  }, function(error){
+    console.log(error);
+  })
+
+
 
   $scope.closeModal = function() {
     $scope.modal.hide();
@@ -58,7 +66,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading) {
 
 //$scope.currentUser = Parse.User.current();
 
@@ -93,6 +101,10 @@ $scope.mymessage = mymessage;
 
 $scope.login = function(){
 
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
+
   var missing = currentUser.username == null || currentUser.password == null
 
   if (missing){
@@ -118,6 +130,7 @@ $scope.login = function(){
     $scope.$apply();
   }
   });
+  $ionicLoading.hide();
 }
 
 
@@ -274,9 +287,6 @@ $scope.signUp = function() {
       var y = x.split(":")[1]
       $scope.currentMonth = m
       $scope.currentYear = y
-
-      console.log(m);
-      console.log(y);
 
       MyObjects.getCoachAvalabilitiesFilteredByBookings(m,y, $stateParams.coachId, booking.gameType )
       .then(
@@ -516,10 +526,7 @@ $scope.signUp = function() {
       })
   })
 
-
   $scope.showAddButton = false;
-
-
 
   $scope.getDayStatus = function(day){
     var today = new Date();

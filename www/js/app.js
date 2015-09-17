@@ -60,7 +60,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   PaddleCourtsNumber: 3,
   slotsNumber: 48
 })
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider,$httpProvider) {
+
+  $httpProvider.interceptors.push(function($rootScope) {
+    return {
+      request: function(config) {
+        console.log('request...');
+        return config
+      },
+      response: function(response) {
+        console.log('response...');
+        return response
+      }
+    }
+  })
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
