@@ -84,6 +84,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
         return config
       },
       response: function(response) {
+        console.log('response........');
         $rootScope.$broadcast('loading:hide')
         return response
       }
