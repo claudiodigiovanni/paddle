@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','starter.directives'])
 
-.run(function($ionicPlatform,$rootScope, $state) {
+.run(function($ionicPlatform,$rootScope, $state,$ionicLoading) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -21,7 +21,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
       StatusBar.styleLightContent();
     }
   });
+
+
     Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
+
+
+    $rootScope.$on('loading:show', function() {
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+    })
+
+    $rootScope.$on('loading:hide', function() {
+      $ionicLoading.hide()
+    })
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
         var currentUser = Parse.User.current();
@@ -60,7 +73,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   PaddleCourtsNumber: 3,
   slotsNumber: 48
 })
-.config(function($stateProvider, $urlRouterProvider) {
+
+.config(function($stateProvider, $urlRouterProvider,$httpProvider) {
+
+  $httpProvider.interceptors.push(function($rootScope) {
+    return {
+      request: function(config) {
+        console.log('request........');
+        $rootScope.$broadcast('loading:show')
+        return config
+      },
+      response: function(response) {
+        $rootScope.$broadcast('loading:hide')
+        return response
+      }
+    }
+  })
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

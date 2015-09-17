@@ -96,16 +96,14 @@ angular.module('starter.services', [])
       },
 
       addCallToActionPlayer: function(cta){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var user = Parse.User.current();
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         return query.get(cta.objectId)
         .then(
           function(cta){
-            $ionicLoading.hide();
+
             var players = cta.get('players')
             var x = _.find(players,{id:user.id})
             if (!x){
@@ -115,14 +113,12 @@ angular.module('starter.services', [])
 
 
         }, function(error){
-          $ionicLoading.hide();
+          console.log(error);
 
         })
       },
       findCallToAction:function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", new Date());
@@ -158,7 +154,7 @@ angular.module('starter.services', [])
             })
 
 
-            $ionicLoading.hide();
+
             return ret;
 
         }, function(error){
@@ -167,9 +163,7 @@ angular.module('starter.services', [])
 
       },
       findCallToActionWithUserAsPlayer:function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", new Date());
@@ -210,7 +204,7 @@ angular.module('starter.services', [])
             })
 
 
-            $ionicLoading.hide();
+
             return ret;
 
         }, function(error){
@@ -219,9 +213,7 @@ angular.module('starter.services', [])
 
       },
       createBooking:function(obj){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
 
         var Booking = Parse.Object.extend("Booking");
         var book = new Booking();
@@ -242,24 +234,22 @@ angular.module('starter.services', [])
           .then(
             function(maestro){
                 book.set("maestro",maestro)
-                $ionicLoading.hide();
+
                 return book.save(null)
           }, function(error){
                 console.log(error);
-                $ionicLoading.hide();
+
           })
         }
         else {
-          $ionicLoading.hide();
+
           return book.save(null)
         }
 
 
       },
       findBookings: function(month,year){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var daysInMonth = Utility.getDaysInMonth(month,year);
         var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
         var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
@@ -279,14 +269,14 @@ angular.module('starter.services', [])
                   ret.push(tmp);
 
                 })
-                $ionicLoading.hide();
+
 
 
                 return ret;
                 //return ret;
               },
               function(error){
-                $ionicLoading.hide();
+
                 console.log(error);
 
               }
@@ -295,9 +285,7 @@ angular.module('starter.services', [])
       //Se sono un maestro prende le prenotazioni che mi riguardano
       //altrimenti prende le prenotazione dell'utente in sessione
       findMyBookings: function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", new Date());
@@ -319,12 +307,12 @@ angular.module('starter.services', [])
                   tmp.ranges = Utility.getHoursFromRanges(obj.get("ranges"));
                   ret.push(tmp);
                 })
-                $ionicLoading.hide();
+
                 return ret;
                 //return ret;
               },
               function(error){
-                $ionicLoading.hide();
+
                 console.log(error);
 
               }
@@ -383,7 +371,6 @@ angular.module('starter.services', [])
             .then(
                 function(prenotazioniRet){
                   prenotazioni = prenotazioniRet
-                  console.log(prenotazioni);
 
                 }, function(error){
                   console.log(error);
@@ -400,7 +387,7 @@ angular.module('starter.services', [])
                 _.each(disponibilitaCoach,function (d){
                   _.each(d.ranges, function(r){
                       var py =  _.filter(prenotazioni,function(item){
-                        console.log(item);
+
                         if (item.date == d.date &&
                             item.ranges.indexOf(r) != -1 && item.maestro.objectId == maestroId)
                             return item;
@@ -435,9 +422,7 @@ angular.module('starter.services', [])
       },
       getDisponibilitaCoach:function(month,year,maestroId){
 
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var maestro = null;
         var Maestro = Parse.Object.extend("Maestro");
         var query = new Parse.Query(Maestro);
@@ -477,7 +462,7 @@ angular.module('starter.services', [])
 
               ret.push(tmp);
             })
-            $ionicLoading.hide();
+
 
             return ret;
         }, function(error){
@@ -486,14 +471,12 @@ angular.module('starter.services', [])
 
       },
       getCoaches: function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var Maestro = Parse.Object.extend("Maestro");
         var query = new Parse.Query(Maestro);
         return query.find().then(
           function(results){
-            $ionicLoading.hide();
+
             var ret = [];
             _.each(results, function (obj){
               var tmp = obj.toJSON();
@@ -502,7 +485,7 @@ angular.module('starter.services', [])
             return ret;
         }, function (error){
 
-          $ionicLoading.hide();
+
         })
       },
 
@@ -511,7 +494,7 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Maestro);
         return query.get(objectId).then(
           function(obj){
-            $ionicLoading.hide();
+
             return obj.toJSON();
           },
           function (error){
@@ -520,9 +503,7 @@ angular.module('starter.services', [])
         )
       },
       addDisponibilitaCoach:function(obj){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
 
         var currentUser = Parse.User.current();
         var maestro = currentUser.get('maestro');
@@ -535,10 +516,10 @@ angular.module('starter.services', [])
         return ca.save(null)
         .then(
           function(obj){
-            $ionicLoading.hide();
+
             return obj;
         }, function(error){
-          $ionicLoading.hide();
+
             console.log(error);
         })
 
@@ -557,10 +538,10 @@ angular.module('starter.services', [])
               }
               ).then(
                     function(obj){
-                        $ionicLoading.hide();
+
                         return obj.destroy();
                   }, function(error){
-                        $ionicLoading.hide();
+
                         console.log(error);
                   });
       }

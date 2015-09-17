@@ -288,6 +288,7 @@ $scope.signUp = function() {
   });
 
   $scope.$watch('booking.gameType',function(obj){
+    //console.log('$watch booking.gameType');
     MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear, $stateParams.coachId, booking.gameType )
     .then(
       function(results){
