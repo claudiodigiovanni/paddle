@@ -60,11 +60,14 @@
                 </div>
                 <i class="radio-icon ion-checkmark"></i>
               </label>
-            <div vc-recaptcha
-            key="'6Le_Kg0TAAAAABpGvJYm8U5DeHUgdIFaxHolPUWA'"
-            on-success="setResponse(response)">
               
-            </div>
+              <div ng-hide="platform == 'ios' || platform == 'android'">
+                  <div vc-recaptcha
+                  key="'6Le_Kg0TAAAAABpGvJYm8U5DeHUgdIFaxHolPUWA'"
+                  on-success="setResponse(response)">
+                  </div>
+              </div>
+
 
       <div class="item alert" ng-show="mymessage.text">
         {{mymessage.text}}

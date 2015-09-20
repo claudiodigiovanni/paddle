@@ -21,10 +21,12 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 
       StatusBar.styleLightContent();
     }
   });
+
     Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
         var currentUser = Parse.User.current();
+        $rootScope.platform = ionic.Platform.platform()
 
         if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled') {
 
@@ -36,6 +38,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 
 
             $rootScope.currentUser = currentUser;
             $rootScope.userRole = currentUser.get('role')
+
+
             //console.log(currentUser.get('role'));
         } else {
             // show the signup or login page

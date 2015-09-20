@@ -122,6 +122,15 @@ $scope.closeModal = function() {
   $scope.modal.hide();
 };
 
+$ionicModal.fromTemplateUrl('reset-pwd.html', {
+  scope: $scope,
+  animation: 'slide-in-up',
+  backdropClickToClose:false
+}).then(function(modal) {
+  $scope.resetPwdModal = modal;
+
+})
+
 
 var currentUser = {}
 $scope.currentUser = currentUser;
@@ -167,24 +176,30 @@ $scope.login = function(){
     }
   })
 
-/*  Parse.User.logIn(username, pwd, {
-    success: function(user) {
-      // Do stuff after successful login.
-      $scope.modal.hide();
-      $state.go('tab.dash');
-    },
-    error: function(user, error) {
-      // The login failed. Check error to see why.
-      //alert (error);
-      mymessage.text = "Email o password errata...."
-      console.log(error);
-      $scope.$apply();
-    }
-  });
-  $ionicLoading.hide();
-  */
 }
 
+$scope.resetPwd = function(){
+  $scope.modal.hide();
+  $scope.resetPwdModal.show();
+}
+
+$scope.confirmResetPwd = function(){
+  console.log($scope.resetPwd.email);
+  var email = $scope.resetPwd.email
+  Parse.User.requestPasswordReset(email, {
+      success: function() {
+      // Password reset request was sent successfully
+      Parse.User.logOut();
+      },
+      error: function(error) {
+        // Show the error message somewhere
+        alert("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  $scope.resetPwdModal.hide();
+  $scope.modal.show();
+}
 
 $scope.gotoSignUp = function(){
   $scope.modal.hide();
@@ -236,15 +251,12 @@ $scope.signUp = function() {
   });
 
 
-  console.log('$scope.captchaResponse ');
-  console.log($scope.captchaResponse );
 
-
-/*if ($scope.captchaResponse == null){
+if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.captchaResponse == null){
   mymessage.text = "Occorre verificare correttamente il captcha..."
   $ionicLoading.hide();
   return
-}*/
+}
 
   if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null){
     console.log(currentUser.email);
@@ -259,7 +271,7 @@ $scope.signUp = function() {
   var p = currentUser.password
   var l = currentUser.level
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,captchaResponse: $scope.captchaResponse}, {
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
     success: function(user) {
       //$scope.modal.hide();
       $ionicLoading.hide();

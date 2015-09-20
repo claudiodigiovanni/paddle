@@ -75,7 +75,7 @@ Parse.Cloud.define("signUp", function(request, response){
           function(httpResponse){
             console.log('Verifica Captcha ok!!!!');
             console.log(httpResponse.text);
-            if (! httpResponse.text.success){
+            if ( httpResponse.text.success == 'false'){
               response.error("Verifica Captcha non superata....");
 
             }
