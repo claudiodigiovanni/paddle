@@ -1,6 +1,43 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
+.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicDeploy) {
+
+
+
+
+
+  // Update app code with new release from Ionic Deploy
+  doUpdate = function() {
+    $ionicDeploy.update().then(function(res) {
+      console.log('Ionic Deploy: Update Success! ', res);
+    }, function(err) {
+      console.log('Ionic Deploy: Update error! ', err);
+    }, function(prog) {
+      console.log('Ionic Deploy: Progress... ', prog);
+    });
+  };
+
+  // Check Ionic Deploy for new code
+  checkForUpdates = function() {
+    console.log('Ionic Deploy: Checking for updates');
+    return $ionicDeploy.check().then(function(hasUpdate) {
+      console.log('Ionic Deploy: Update available: ' + hasUpdate);
+      $scope.hasUpdate = hasUpdate;
+      return hasUpdate;
+    }, function(err) {
+      console.error('Ionic Deploy: Unable to check for updates', err);
+    });
+  }
+
+  checkForUpdates()
+  .then(
+    function(hasUpdate){
+      if (hasUpdate)
+        doUpdate()
+
+  }, function(error){
+    console.log(error);
+  })
 
 
   /*Parse.Cloud.run('hello', { }, {
@@ -43,7 +80,6 @@ angular.module('starter.controllers', [])
   })
 
 
-
   $scope.closeModal = function() {
     $scope.modal.hide();
     MyObjects.saveDashboardText($scope.index,edit.text)
@@ -63,12 +99,9 @@ angular.module('starter.controllers', [])
     //$state.go('tab.account');
   };
 
-
 })
 
 .controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading) {
-
-//$scope.currentUser = Parse.User.current();
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -79,8 +112,6 @@ $ionicModal.fromTemplateUrl('login-modal.html', {
   $scope.modal.show();
 })
 
-
-
 $ionicBackdrop.retain();
 $timeout(function() {
   $ionicBackdrop.release();
@@ -90,6 +121,15 @@ $timeout(function() {
 $scope.closeModal = function() {
   $scope.modal.hide();
 };
+
+$ionicModal.fromTemplateUrl('reset-pwd.html', {
+  scope: $scope,
+  animation: 'slide-in-up',
+  backdropClickToClose:false
+}).then(function(modal) {
+  $scope.resetPwdModal = modal;
+
+})
 
 
 var currentUser = {}
@@ -113,26 +153,53 @@ $scope.login = function(){
   }
 
 
-  var username = currentUser.username.toLowerCase();
+  var uname = currentUser.username.toLowerCase();
   var pwd = currentUser.password;
 
-  Parse.User.logIn(username, pwd, {
-  success: function(user) {
-    // Do stuff after successful login.
-    $scope.modal.hide();
-    $state.go('tab.dash');
-  },
-  error: function(user, error) {
-    // The login failed. Check error to see why.
-    //alert (error);
-    mymessage.text = "Email o password errata...."
-    console.log(error);
-    $scope.$apply();
-  }
-  });
-  $ionicLoading.hide();
+  Parse.Cloud.run('login', {username:uname, password:pwd }, {
+    success: function(sessionToken) {
+        Parse.User.become(sessionToken).then(function (user) {
+          // The current user is now set to user.
+          $scope.modal.hide();
+          $ionicLoading.hide();
+          $state.go('tab.dash');
+        }, function (error) {
+          // The token could not be validated.
+        });
+    },
+    error: function(error) {
+      $ionicLoading.hide();
+      mymessage.text = error.message
+      console.log(error);
+      $scope.$apply();
+
+    }
+  })
+
 }
 
+$scope.resetPwd = function(){
+  $scope.modal.hide();
+  $scope.resetPwdModal.show();
+}
+
+$scope.confirmResetPwd = function(){
+  console.log($scope.resetPwd.email);
+  var email = $scope.resetPwd.email
+  Parse.User.requestPasswordReset(email, {
+      success: function() {
+      // Password reset request was sent successfully
+      Parse.User.logOut();
+      },
+      error: function(error) {
+        // Show the error message somewhere
+        alert("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  $scope.resetPwdModal.hide();
+  $scope.modal.show();
+}
 
 $scope.gotoSignUp = function(){
   $scope.modal.hide();
@@ -146,7 +213,7 @@ $scope.logOut = function(form) {
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope) {
+.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope,$http,vcRecaptchaService) {
 
 //$scope.currentUser = Parse.User.current();
 var currentUser = {level:3}
@@ -156,26 +223,25 @@ $scope.registered = false;
 var mymessage = {text:""}
 $scope.mymessage = mymessage;
 
-$ionicModal.fromTemplateUrl('signup-modal.html', {
-  scope: $scope,
-  animation: 'slide-in-up',
-  backdropClickToClose: false
-}).then(function(modal) {
-  $scope.modal = modal;
-  $scope.modal.show();
-})
+
 
 $scope.login = function() {
-  $scope.modal.hide();
+  //$scope.modal.hide();
   $state.go('login');
   //$rootScope.$broadcast('openLoginModal', 'x' );
 };
 
 
 
-$scope.closeModal = function() {
-  $scope.modal.hide();
-};
+
+
+$scope.setResponse= function(response){
+  $scope.captchaResponse = vcRecaptchaService.getResponse();
+  //console.log(response);
+
+}
+
+
 
 
 
@@ -184,33 +250,41 @@ $scope.signUp = function() {
     template: 'Loading...'
   });
 
-  if (currentUser.email === null || currentUser.password === null || currentUser.username === null){
+
+
+if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.captchaResponse == null){
+  mymessage.text = "Occorre verificare correttamente il captcha..."
+  $ionicLoading.hide();
+  return
+}
+
+  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null){
+    console.log(currentUser.email);
     mymessage.text = "Occorre inserire email, username e password..."
+    $ionicLoading.hide();
     return
   }
   console.log('username:' + currentUser.email );
-  var user = new Parse.User();
-  user.set("email", currentUser.email.toLowerCase());
-  user.set("username", currentUser.username.toLowerCase());
-  user.set("password", currentUser.password);
-  user.set("level", currentUser.level)
 
+  var e = currentUser.email.toLowerCase()
+  var u = currentUser.username.toLowerCase()
+  var p = currentUser.password
+  var l = currentUser.level
 
-  user.signUp(null, {
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
     success: function(user) {
-      $scope.currentUser = user;
-      $scope.$apply(); // Notify AngularJS to sync currentUser
-      $scope.modal.hide();
+      //$scope.modal.hide();
       $ionicLoading.hide();
-      $state.go('tab.dash');
-
-
+      //Parse.User.logOut();
+      $state.go('waitingToBeEnabled');
     },
     error: function(user, error) {
       $ionicLoading.hide();
       mymessage.text = "Non è possibile registrarsi. (Error code:  " + error.code + " " + error.message + ")";
     }
-  });
+  })
+
+
 };
 
 })
@@ -335,6 +409,10 @@ $scope.signUp = function() {
   $scope.getDayStatus = function(day){
 
     var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
     var m = parseInt($scope.currentMonth) + 1
     var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
 
@@ -529,7 +607,13 @@ $scope.signUp = function() {
   $scope.showAddButton = false;
 
   $scope.getDayStatus = function(day){
+
     var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
     var m = parseInt($scope.currentMonth) + 1
     var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
     if (selectedDate < today )
@@ -752,6 +836,11 @@ $scope.signUp = function() {
     $state.go('tab.statistics');
   }
 
+  $scope.gotoUserToEnable = function(){
+    $state.go('tab.userToEnable');
+  }
+
+
 
 })
 
@@ -775,7 +864,6 @@ $scope.signUp = function() {
 
   $scope.getDayStatus = function(day){
 
-
     if ($scope.selectedDay == day){
       return "selected";
     }
@@ -783,9 +871,6 @@ $scope.signUp = function() {
       return 'na'
     }
   };
-
-
-
 
   $scope.dayClicked = function(day){
     $ionicLoading.show({
@@ -865,13 +950,9 @@ $scope.signUp = function() {
       console.log(error);
     })
 
-
-
-
   }
 
 })
-
 
 //{date: new Date(d), ranges:selectedRanges, maestro:maestro1}
 //Funzione disponibile solo a Maestro!!!!
@@ -978,6 +1059,11 @@ $scope.signUp = function() {
 
   $scope.getDayStatus = function(day){
     var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
     var m = parseInt($scope.currentMonth) + 1
     var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
     if (selectedDate < today )
@@ -1033,4 +1119,74 @@ $scope.signUp = function() {
     })
   }
 
-});
+})
+
+.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state) {
+
+  var users = []
+  $scope.users = users
+  MyObjects.getUsersToEnable()
+  .then(
+    function(results){
+
+      $scope.users=results
+
+  }, function(error){
+      console.log(error);
+  })
+
+  $scope.enableUser = function(user){
+    console.log(user);
+    Parse.Cloud.run('modifyUser', {objectId:user.id}, {
+      success: function(result) {
+        console.log('ok');
+        var index = _.findIndex($scope.users, function(item){
+          console.log(item);
+          return item.id == user.id
+        })
+        $scope.users.splice(index,1);
+        console.log($scope.users);
+        //$scope.users = users
+        //$state.go('tab.userToEnable')
+        $scope.$apply();
+        //console.log($scope.users);
+      },
+      error: function(error) {
+        console.log(error);
+
+      }
+    })
+
+  }
+
+})
+
+.controller('WaitingToBeEnabled',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal) {
+
+  $ionicModal.fromTemplateUrl('signup-ok-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
+    $scope.modal.show()
+  })
+
+
+
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
+
+$scope.ok = function(){
+  console.log('ok');
+  Parse.User.logOut();
+  $state.go('login');
+}
+})

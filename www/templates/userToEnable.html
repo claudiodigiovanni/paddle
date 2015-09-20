@@ -1,0 +1,25 @@
+<ion-view view-title="Utenti da abilitare">
+
+<ion-content class="padding">
+
+<div class="list">
+
+  <div class="card" ng-repeat="user in users">
+
+    <div class="item item-text-wrap">
+      Username: {{user.get('username')}}
+      Email: {{user.get('email')}}
+      Data Iscrizione: {{user.createdAt}}
+      <button class="button button-small button-calm" ng-click="enableUser(user)">
+          Abilita
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+
+</ion-content>
+
+</ion-view>

@@ -1,0 +1,103 @@
+<ion-view view-title="Disponibilità Campi">
+<ion-content class="padding">
+
+<month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
+
+<calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+
+<div class="list">
+
+    <label class="item item-radio">
+      <input type="radio" name="group" ng-model="booking.gameType" value="P">
+      <div class="item-content">
+        Paddle
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+    <label class="item item-radio">
+      <input type="radio" name="group" ng-model="booking.gameType" value="Tx2">
+      <div class="item-content">
+        Singolare Tennis
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+    <label class="item item-radio">
+      <input type="radio" name="group" ng-model="booking.gameType" value="Tx4">
+      <div class="item-content">
+        Doppio Tennis
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+  </div>
+</div>
+<ion-toggle  ng-model="booking.callToAction">
+    Call To Action!
+</ion-toggle>
+
+<label class="item item-input item-floating-label" ng-show="userRole == 'segreteria'">
+  <span class="input-label">Utente</span>
+  <input type="text" placeholder="Utente" ng-model="booking.note">
+</label>
+
+
+
+  <div class="card" style="text-align:center" ng-if="selectedHours">
+    <div class="item item-text-wrap">
+
+      Giorno: {{selectedDay}}
+      <i class="icon ion-clock"></i>{{selectedHours}}
+    </div>
+  </div>
+
+  <div class="card" style="text-align:center" ng-if="resolved">
+    <div class="item item-text-wrap">
+      <i class="icon ion-checkmark-circled energized"></i>
+      {{resolved}}
+    </div>
+  </div>
+
+
+  <button class="button button-block button-positive" ng-click="book(booking)">
+    Prenota!
+  </button>
+
+
+</ion-content>
+
+<script id="ranges-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Scegli Orario</h1>
+      <button class="button button-light" ng-click="closeModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+    <button class="button button-block button-positive" ng-click="closeModal()" ng-show="showAddButton">
+      Aggiungi Orario
+    </button>
+
+    </ion-content>
+  </div>
+</script>
+
+<script id="ok-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Confermato</h1>
+
+    </ion-header-bar>
+    <ion-content>
+
+    <button class="button button-block button-positive" ng-click="closeModalok()" >
+      Prenotazione Effettuata!
+    </button>
+
+    </ion-content>
+  </div>
+</script>
+
+
+</ion-view>

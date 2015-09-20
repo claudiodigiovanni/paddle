@@ -27,12 +27,44 @@
         Non sei ancora registrato? <button class="button button-outline button-small button-positive" ng-click="gotoSignUp()">
             Registrati!
         </button>
+
+        </ion-item>
+        <ion-item>
+          <button class="button button-outline button-positive button-small" ng-click="resetPwd()">
+            Ho dimenticato la password...
+          </button>
         </ion-item>
       </div>
       </ion-content>
 
     </div>
   </script>
+
+
+  <script id="reset-pwd.html" type="text/ng-template">
+    <div class="modal">
+      <ion-header-bar class="bar-stable">
+        <h1 class="title">Reset Password</h1>
+      </ion-header-bar>
+
+      <ion-content>
+      <label class="item item-input item-floating-label">
+        <span class="input-label">email</span>
+        <input type="text" placeholder="email" ng-model="resetPwd.email">
+      </label>
+      <div class="item item-text-wrap">
+          Invieremo una mail a questo indirizzo per il reset pwd....
+            <button class="button button-outline button-small button-positive" ng-click="confirmResetPwd()">
+                Conferma!
+            </button>
+      </div>
+
+
+      </ion-content>
+
+    </div>
+  </script>
+
 
 
 

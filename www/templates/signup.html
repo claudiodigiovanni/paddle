@@ -1,13 +1,6 @@
-<div>
-<script id="signup-modal.html" type="text/ng-template">
-  <div class="modal">
-    <ion-header-bar class="bar-stable">
-      <h1 class="title">Registrati</h1>
-      <button class="button button-outline button-positive" ng-click="login()">
-          Torna alla login
-      </button>
-    </ion-header-bar>
-    <ion-content>
+<<ion-content>
+
+
     <div class="list" ng-hide="registered">
       <label class="item item-input item-floating-label">
         <span class="input-label">email</span>
@@ -67,6 +60,13 @@
                 </div>
                 <i class="radio-icon ion-checkmark"></i>
               </label>
+              
+              <div ng-hide="platform == 'ios' || platform == 'android'">
+                  <div vc-recaptcha
+                  key="'6Le_Kg0TAAAAABpGvJYm8U5DeHUgdIFaxHolPUWA'"
+                  on-success="setResponse(response)">
+                  </div>
+              </div>
 
 
       <div class="item alert" ng-show="mymessage.text">
@@ -75,9 +75,10 @@
       <button class="button button-full button-positive" ng-click="signUp()">
           Registrati
       </button>
+
+      <ion-item>
+        <a ui-sref="login">...oppure torna alla pagina di login</a>
+      </ion-item>
     </div>
 
-    </ion-content>
-  </div>
-</script>
-</div>
+</ion-content>

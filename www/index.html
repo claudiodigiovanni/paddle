@@ -12,14 +12,22 @@
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
+
+
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+<script src="lib/ionic-service-core/ionic-core.js"></script>
+<script src="lib/ionic-service-deploy/ionic-deploy.js"></script>
 
     <script src="lib/lodash.js"></script>
 
+    <script src="https://www.google.com/recaptcha/api.js?onload=vcRecaptchaApiLoaded&amp;render=explicit" async defer></script>
+
+    <script type="text/javascript" src="angular-recaptcha.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+    <!-- Cordova is bootstrapped by ionic-service-core, uncomment this if you remove ionic-service-core... -->
+<!-- <script src="cordova.js"></script> -->
 
     <script src="lib/parse-1.5.0.min.js"></script>
 
@@ -30,7 +38,7 @@
     <script src="js/directives.js"></script>
   </head>
   <body ng-app="starter">
-  
+
     <!--
       The views will be rendered in the <ion-nav-view> directive below
       Templates are in the /templates folder (but you could also

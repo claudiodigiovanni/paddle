@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','starter.directives'])
+angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 'starter.controllers', 'starter.services','starter.directives','vcRecaptcha'])
 
 .run(function($ionicPlatform,$rootScope, $state) {
   $ionicPlatform.ready(function() {
@@ -21,26 +21,25 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
       StatusBar.styleLightContent();
     }
   });
+
     Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
         var currentUser = Parse.User.current();
-        console.log("currentUser:");
-        console.log(currentUser);
-        console.log(next);
-        //console.log(currentUser.get('maestro') != undefined);
-        if(next.name =='login' || next.name== 'signUp') {
+        $rootScope.platform = ionic.Platform.platform()
 
-           console.log('verso login');
+        if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled') {
+
+           console.log('verso login...');
 
          }
 
         else if (currentUser) {
-            // do stuff with the user
-            //event.preventDefault();
-            //$state.go('tab.dash');
+
             $rootScope.currentUser = currentUser;
             $rootScope.userRole = currentUser.get('role')
+
+
             //console.log(currentUser.get('role'));
         } else {
             // show the signup or login page
@@ -60,20 +59,42 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   PaddleCourtsNumber: 3,
   slotsNumber: 48
 })
-.config(function($stateProvider, $urlRouterProvider,$httpProvider) {
 
-  $httpProvider.interceptors.push(function($rootScope) {
-    return {
-      request: function(config) {
-        console.log('request...');
-        return config
-      },
-      response: function(response) {
-        console.log('response...');
-        return response
+/*.config(
+  function($httpProvider) {
+    $httpProvider.interceptors.push(function($q) {
+        return {
+            request: function(config){
+              //console.log(config);
+              return config;
+
+            },
+            requestError: function(rejection){
+              console.log(rejection);
+              return $q.reject(rejection);
+
+            },
+            response: function(response){
+              //console.log(response);
+              return response;
+
+            },
+            responseError: function(res){
+                console.log("Failed to open url: " + res.config.url, res);
+                //Angular returns "success" by default, but we will call "error" if data were not obtained.
+                if(res.data == null && res.status === 0 && res.statusText === ""){
+                    return $q.reject(res) //callback error()
+                }
+                return res //return default success()
+            }
+        };
+
       }
-    }
-  })
+    );
+  })*/
+
+.config(function($stateProvider, $urlRouterProvider) {
+
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -191,6 +212,24 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
     }
   }
 
+})
+
+.state('tab.userToEnable', {
+url: '/userToEnable',
+cache: false,
+views: {
+  'tab-account': {
+    templateUrl: 'templates/userToEnable.html',
+    controller: 'UserToEnable'
+  }
+}
+
+})
+.state('waitingToBeEnabled', {
+  url: '/waitingToBeEnabled',
+  cache: false,
+  templateUrl: 'templates/waitingToBeEnabled.html',
+  controller: 'WaitingToBeEnabled'
 });
 
   // if none of the above states are matched, use this as the fallback

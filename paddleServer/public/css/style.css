@@ -1,0 +1,40 @@
+/* Empty. Add your own CSS if you like */
+<style>
+table, th , td {
+  border: 1px solid grey;
+  border-collapse: collapse;
+  padding: 5px;
+}
+table tr:nth-child(odd) {
+  background-color: #6338df;
+}
+table tr:nth-child(even) {
+  background-color: #dbd2f0;
+}
+
+.badge{ position: relative !important;
+  top:0 !important;
+  right: 0 !important;
+}
+
+i.ion-ios-tennisball-outline {
+  font-size: 40px;
+}
+
+i.ion-social-pinterest-outline {
+  font-size: 40px;
+}
+
+i.cal.ion-chevron-left{
+  font-size: 36px;
+}
+
+i.cal.ion-chevron-right{
+  font-size: 36px;
+}
+
+.item.alert{
+  color: rgb(219, 110, 31)
+}
+
+</style>
