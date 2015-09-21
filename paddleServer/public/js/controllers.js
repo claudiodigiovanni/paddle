@@ -278,9 +278,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       //Parse.User.logOut();
       $state.go('waitingToBeEnabled');
     },
-    error: function(user, error) {
+    error: function(error) {
       $ionicLoading.hide();
-      mymessage.text = "Non è possibile registrarsi. (Error code:  " + error.code + " " + error.message + ")";
+      mymessage.text = "Non è possibile registrarsi. (Error :  " + error + ")";
+      console.log(error);
     }
   })
 

@@ -59,6 +59,7 @@ Parse.Cloud.define("signUp", function(request, response){
   user.set("password", request.params.password);
   user.set("level", request.params.level)
   user.set("enabled",false)
+  user.set("nome",request.params.nome )
 
   console.log('CaptchaCode:');
   console.log(request.params.captchaResponse);

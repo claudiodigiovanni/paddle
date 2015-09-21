@@ -1,0 +1,54 @@
+<div>
+
+
+
+<!--
+  The nav bar that will be updated as we navigate between views.
+-->
+<ion-nav-bar class="bar-stable">
+  <ion-nav-back-button>
+  </ion-nav-back-button>
+</ion-nav-bar>
+
+<!--
+Create tabs with an icon and label, using the tabs-positive style.
+Each tab's child <ion-nav-view> directive will have its own
+navigation history that also transitions its views in and out.
+-->
+<ion-tabs class="tabs-icon-only tabs-color-active-positive">
+
+  <!-- Dashboard Tab -->
+  <ion-tab title="Status" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/dash">
+    <ion-nav-view name="tab-dash"></ion-nav-view>
+  </ion-tab>
+
+  <!-- setAvalability Tab -->
+  <ion-tab title="Gestisci" icon-off="ion-clipboard" icon-on="ion-clipboard" href="#/tab/setAvalability" disabled="currentUser.get('maestro') == undefined">
+    <ion-nav-view name="tab-setAvalability"></ion-nav-view>
+  </ion-tab>
+
+  <!-- Book Coach Tab -->
+  <ion-tab title="Prenota Lezione" icon-off="ion-person-stalker" icon-on="ion-person-stalker" href="#/tab/bookCoach">
+    <ion-nav-view name="tab-bookCoach"></ion-nav-view>
+  </ion-tab>
+
+  <!-- Book Court Tab -->
+  <ion-tab title="Prenota Campo" icon-off="ion-ios-tennisball" icon-on="ion-ios-tennisball" href="#/tab/bookCourt">
+    <ion-nav-view name="tab-bookCourt"></ion-nav-view>
+  </ion-tab>
+
+  <!-- Book Court Tab -->
+  <ion-tab title="CallToAction Open" icon-off="ion-speakerphone" icon-on="ion-speakerphone" href="#/tab/callToAction">
+    <ion-nav-view name="tab-callToAction"></ion-nav-view>
+  </ion-tab>
+
+
+  <!-- Account Tab -->
+  <ion-tab title="Account" icon-off="ion-ios-gear-outline" icon-on="ion-ios-gear" href="#/tab/account">
+    <ion-nav-view name="tab-account"></ion-nav-view>
+  </ion-tab>
+
+
+</ion-tabs>
+
+</div>

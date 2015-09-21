@@ -11,6 +11,10 @@
         <input type="text" placeholder="username" ng-model="currentUser.username">
       </label>
       <label class="item item-input item-floating-label">
+        <span class="input-label">Nome e Cognome</span>
+        <input type="text" placeholder="Nome e Cognome" ng-model="currentUser.nome">
+      </label>
+      <label class="item item-input item-floating-label">
         <span class="input-label">password</span>
         <input type="password" placeholder="password" ng-model="currentUser.password">
       </label>
@@ -21,46 +25,23 @@
               </div>
 
             </label>
-
-              <label class="item item-radio">
-                <input type="radio" name="group" ng-model="currentUser.level" value="1">
-                <div class="item-content">
+                <ion-radio-fix ng-model="currentUser.level" ng-value="1">
                   1 - Mr Padella
-                </div>
-                <i class="radio-icon ion-checkmark"></i>
-              </label>
-
-              <label class="item item-radio">
-                <input type="radio" name="group" ng-model="currentUser.level" value="2">
-                <div class="item-content">
+                </ion-radio-fix>
+                <ion-radio-fix ng-model="currentUser.level" ng-value="2">
                   2 - Vorrei Ma Proprio Non Fa Per Me
-                </div>
-                <i class="radio-icon ion-checkmark"></i>
-              </label>
-
-              <label class="item item-radio">
-                <input type="radio" name="group" ng-model="currentUser.level" value="3">
-                <div class="item-content">
+                </ion-radio-fix>
+                <ion-radio-fix ng-model="currentUser.level" ng-value="3">
                   3 - Vorrei Ma Non Riesco
-                </div>
-                <i class="radio-icon ion-checkmark"></i>
-              </label>
-              <label class="item item-radio">
-                <input type="radio" name="group" ng-model="currentUser.level" value="4">
-                <div class="item-content">
+                </ion-radio-fix>
+                <ion-radio-fix ng-model="currentUser.level" ng-value="4">
                   4 - Se Mi Impegno
-                </div>
-                <i class="radio-icon ion-checkmark"></i>
-              </label>
-
-              <label class="item item-radio">
-                <input type="radio" name="group" ng-model="currentUser.level" value="5">
-                <div class="item-content">
+                </ion-radio-fix>
+                <ion-radio-fix ng-model="currentUser.level" ng-value="5">
                   5 - Il mio Nome è Paddle, Tennis O’ Paddle
-                </div>
-                <i class="radio-icon ion-checkmark"></i>
-              </label>
-              
+                </ion-radio-fix>
+
+
               <div ng-hide="platform == 'ios' || platform == 'android'">
                   <div vc-recaptcha
                   key="'6Le_Kg0TAAAAABpGvJYm8U5DeHUgdIFaxHolPUWA'"
