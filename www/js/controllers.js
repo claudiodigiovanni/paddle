@@ -1123,8 +1123,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state) {
+.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading) {
 
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
   MyObjects.getUsersToEnable()
   .then(
     function(results){
@@ -1132,9 +1135,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.users=results
       //alert(results[0]);
       $scope.$apply();
+      $ionicLoading.hide();
 
   }, function(error){
       console.log(error);
+      $ionicLoading.hide();
   })
 
   $scope.enableUser = function(user){

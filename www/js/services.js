@@ -164,7 +164,7 @@ angular.module('starter.services', [])
               tmp.level = obj.get('user').get('level')
 
               _.each(obj.get('players'), function (p){
-                tmp.playersName.push(p.get("username"))
+                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
               })
               ret.push(tmp);
             })
@@ -216,7 +216,7 @@ angular.module('starter.services', [])
               tmp.user = obj.get('user').get('username')
 
               _.each(obj.get('players'), function (p){
-                tmp.playersName.push(p.get("username"))
+                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
               })
               ret.push(tmp);
             })

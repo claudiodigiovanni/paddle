@@ -224,8 +224,8 @@ views: {
     controller: 'UserToEnable'
   }
 }
-
 })
+
 .state('waitingToBeEnabled', {
   url: '/waitingToBeEnabled',
   cache: false,

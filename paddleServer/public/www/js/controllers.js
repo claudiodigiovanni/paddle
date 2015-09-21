@@ -268,10 +268,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   var e = currentUser.email.toLowerCase()
   var u = currentUser.username.toLowerCase()
+  var n = currentUser.nome
   var p = currentUser.password
   var l = currentUser.level
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
     success: function(user) {
       //$scope.modal.hide();
       $ionicLoading.hide();
@@ -1124,13 +1125,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 .controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state) {
 
-  var users = []
-  $scope.users = users
   MyObjects.getUsersToEnable()
   .then(
     function(results){
 
       $scope.users=results
+      //alert(results[0]);
+      $scope.$apply();
 
   }, function(error){
       console.log(error);

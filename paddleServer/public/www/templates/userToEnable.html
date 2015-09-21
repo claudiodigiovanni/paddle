@@ -2,15 +2,19 @@
 
 <ion-content class="padding">
 
+
+
 <div class="list">
 
   <div class="card" ng-repeat="user in users">
 
     <div class="item item-text-wrap">
-      Username: {{user.get('username')}}
-      Email: {{user.get('email')}}
-      Data Iscrizione: {{user.createdAt}}
-      <button class="button button-small button-calm" ng-click="enableUser(user)">
+      <b>Username:</b> {{user.get('username')}}<br>
+      <b>Nome:</b> {{user.get('nome')}}<br>
+      <b>email:</b> {{user.get('email')}}<br>
+      <b>Data Iscrizione:</b> {{user.createdAt}}<br><br>
+
+      <button class="button button-small button-positive" ng-click="enableUser(user)">
           Abilita
       </button>
     </div>
