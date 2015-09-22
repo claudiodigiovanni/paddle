@@ -708,13 +708,18 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     booking.date = date;
     booking.ranges = selectedRanges;
 
-    MyObjects.createBooking(booking).then(function(result){
+    MyObjects.createBooking(booking)
+    .then(
+      function(result){
 
       $scope.resolved = "Prenotazione Effettuata!" ;
       $scope.modalok.show();
 
     }, function(error){
 
+      console.log(error);
+      $scope.resolved = "Oooops! L'orario non è più disponibile!"
+      $scope.$apply();
     })
     selectedRanges = [];
 
