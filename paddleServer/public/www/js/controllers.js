@@ -712,7 +712,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     .then(
       function(result){
 
-      $scope.resolved = "Prenotazione Effettuata!" ;
+      $scope.resolved = "Prenotazione Effettuata!";
+      $scope.booking = result
       $scope.modalok.show();
 
     }, function(error){

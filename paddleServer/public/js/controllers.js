@@ -268,10 +268,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   var e = currentUser.email.toLowerCase()
   var u = currentUser.username.toLowerCase()
+  var n = currentUser.nome
   var p = currentUser.password
   var l = currentUser.level
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
     success: function(user) {
       //$scope.modal.hide();
       $ionicLoading.hide();
@@ -707,13 +708,19 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     booking.date = date;
     booking.ranges = selectedRanges;
 
-    MyObjects.createBooking(booking).then(function(result){
+    MyObjects.createBooking(booking)
+    .then(
+      function(result){
 
-      $scope.resolved = "Prenotazione Effettuata!" ;
+      $scope.resolved = "Prenotazione Effettuata!";
+      $scope.booking = result
       $scope.modalok.show();
 
     }, function(error){
 
+      console.log(error);
+      $scope.resolved = "Oooops! L'orario non è più disponibile!"
+      $scope.$apply();
     })
     selectedRanges = [];
 
@@ -895,7 +902,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
 
-.controller('callToAction', function($scope, MyObjects,$ionicModal) {
+.controller('callToAction', function($scope, MyObjects,$ionicModal, config) {
 
   $ionicModal.fromTemplateUrl('ok-modal.html', {
     scope: $scope,
@@ -906,7 +913,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   })
 
   $scope.mayIJoin = function(cta){
-    return _.inRange(Parse.User.current().get('level'), cta.level - 1, cta.level + 1 );
+    return _.inRange(Parse.User.current().get('level'), cta.level - 1, parseInt(config.playersLevels) + 1) ;
   }
 
 
@@ -1122,18 +1129,23 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state) {
+.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading) {
 
-  var users = []
-  $scope.users = users
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
   MyObjects.getUsersToEnable()
   .then(
     function(results){
 
       $scope.users=results
+      //alert(results[0]);
+      $scope.$apply();
+      $ionicLoading.hide();
 
   }, function(error){
       console.log(error);
+      $ionicLoading.hide();
   })
 
   $scope.enableUser = function(user){

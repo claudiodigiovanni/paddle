@@ -4,10 +4,18 @@ angular.module('starter.services', [])
 
     return {
 
+      getUsersToEnableTest: function(){
+        var query = new Parse.Query(Parse.User);
+        query.equalTo('enabled',false)
+        console.log('getUsersToEnable...');
+        return query.find()
+
+      },
+
       getUsersToEnable: function(){
         var query = new Parse.Query(Parse.User);
         query.equalTo('enabled',false)
-
+        console.log('getUsersToEnable...');
         return query.find()
         .then(
           function(results){
@@ -473,7 +481,7 @@ angular.module('starter.services', [])
                       var py =  _.filter(prenotazioni,function(item){
 
                         if (item.date == d.date &&
-                            item.ranges.indexOf(r) != -1 && item.maestro.objectId == maestroId)
+                            item.ranges.indexOf(r) != -1 && item.maestro != null && item.maestro.objectId == maestroId)
                             return item;
                       });
 
@@ -710,3 +718,13 @@ angular.module('starter.services', [])
 }
   };
 })
+
+.factory('Person', function () {
+    return function Person (name) {
+      this.name = name;
+      console.log('Hello ' + this.name + "!");
+      this.changeName = function(){
+         this.name = 'Ben2222'
+      }
+    };
+  });

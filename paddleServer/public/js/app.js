@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 'starter.controllers', 'starter.services','starter.directives','vcRecaptcha'])
+angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','vcRecaptcha'])
 
 .run(function($ionicPlatform,$rootScope, $state) {
   $ionicPlatform.ready(function() {
@@ -57,7 +57,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 
 .constant('config', {
   TennisCourtsNumber: 2,
   PaddleCourtsNumber: 3,
-  slotsNumber: 48
+  slotsNumber: 48,
+  playersLevels:5
 })
 
 /*.config(
@@ -223,8 +224,8 @@ views: {
     controller: 'UserToEnable'
   }
 }
-
 })
+
 .state('waitingToBeEnabled', {
   url: '/waitingToBeEnabled',
   cache: false,

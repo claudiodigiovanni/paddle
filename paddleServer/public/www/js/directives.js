@@ -34,11 +34,8 @@ angular.module('starter.directives', [])
       $scope.weekDays = weekDays;
       $scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
 
-      console.log($scope.weeks);
-
       $scope.$watch('currentMonth', function() {
-        console.log(" watch current month:" + $scope.currentMonth);
-        console.log(" watch current year:" + $scope.currentYear);
+
         $scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
         $rootScope.$broadcast('currentDateChanged', $scope.currentMonth + ":" + $scope.currentYear );
       })
@@ -62,12 +59,12 @@ angular.module('starter.directives', [])
           },
     controller: ['$scope', '$http', 'Utility', '$rootScope', function($scope, $http, Utility, $rootScope) {
 
-      console.log('monthChanger controller....');
+
       $scope.monthName = months[$scope.currentMonth];
       //$scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
 
       $scope.changeMonth = function (pos){
-          console.log('changeMonth....' );
+          
           var tmp = parseInt($scope.currentMonth) + parseInt(pos);
           if (tmp == 12){
               $scope.currentMonth = 0;

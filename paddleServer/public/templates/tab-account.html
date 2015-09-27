@@ -62,7 +62,6 @@
       <div class="item item-text-wrap">
         <!-- xxx -->
         <ion-list>
-            <ion-item><b>Call To Action</b></ion-item>
             <ion-item ng-repeat="cta in callToActions">
               <b>
                 <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx2'"></i>
@@ -135,44 +134,21 @@
 
       </label>
 
-        <label class="item item-radio">
-          <input type="radio" name="group" ng-model="currentLevel.value" value=1>
-          <div class="item-content">
-            1 - Mr Padella
-          </div>
-          <i class="radio-icon ion-checkmark"></i>
-        </label>
-
-        <label class="item item-radio">
-          <input type="radio" name="group" ng-model="currentLevel.value" value=2>
-          <div class="item-content">
-            2 - Vorrei Ma Proprio Non Fa Per Me
-          </div>
-          <i class="radio-icon ion-checkmark"></i>
-        </label>
-
-        <label class="item item-radio">
-          <input type="radio" name="group" ng-model="currentLevel.value" value=3>
-          <div class="item-content">
-            3 - Vorrei Ma Non Riesco
-          </div>
-          <i class="radio-icon ion-checkmark"></i>
-        </label>
-        <label class="item item-radio">
-          <input type="radio" name="group" ng-model="currentLevel.value" value=4>
-          <div class="item-content">
-            4 - Se Mi Impegno
-          </div>
-          <i class="radio-icon ion-checkmark"></i>
-        </label>
-
-        <label class="item item-radio">
-          <input type="radio" name="group" ng-model="currentLevel.value" value=5>
-          <div class="item-content">
-            5 - Il mio Nome è Paddle, Tennis O’ Paddle
-          </div>
-          <i class="radio-icon ion-checkmark"></i>
-        </label>
+      <ion-radio-fix ng-model="currentLevel.value" ng-value="1">
+        1 - Mr Padella
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="currentLevel.value" ng-value="2">
+        2 - Vorrei Ma Proprio Non Fa Per Me
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="currentLevel.value" ng-value="3">
+        3 - Vorrei Ma Non Riesco
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="currentLevel.value" ng-value="4">
+        4 - Se Mi Impegno
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="currentLevel.value" ng-value="5">
+        5 - Il mio Nome è Paddle, Tennis O’ Paddle
+      </ion-radio-fix>
 
       <!-- xx -->
 

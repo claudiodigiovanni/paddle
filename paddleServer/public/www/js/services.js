@@ -232,7 +232,6 @@ angular.module('starter.services', [])
           courtsNumber = config.PaddleCourtsNumber
         }
         var courts = _.range(1,parseInt(courtsNumber) + 1)
-        console.log(courts);
         return this.findBookingsInDate(date,gameT)
         .then(
           function(bookings){
@@ -251,7 +250,6 @@ angular.module('starter.services', [])
                 console.log(p);
                 if ( p != null && p.length > 0){
                   avalaible = false
-                  console.log('xxxx');
                 }
               })
               if (avalaible == true){
@@ -259,20 +257,14 @@ angular.module('starter.services', [])
                 //Esco dal ciclo every courts
                 return false
               }
-              console.log('yyyyyyy');
               return true;
             })
-            console.log("bookedCourt....");
-            console.log(bookedCourt);
-
             if (bookedCourt != "-1"){
               defer.resolve(bookedCourt)
-
             }
             else {
               defer.reject("Prenotazione non disponibile!")
             }
-
             return defer.promise;
 
         }, function(error){
@@ -289,10 +281,6 @@ angular.module('starter.services', [])
         return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
         .then(
           function(bookedCourt){
-
-            console.log("bookedCourt2222....");
-            console.log(bookedCourt);
-
             var Booking = Parse.Object.extend("Booking");
             var book = new Booking();
             book.set("user", Parse.User.current());
@@ -305,24 +293,22 @@ angular.module('starter.services', [])
             var Maestro = Parse.Object.extend("Maestro");
             var query = new Parse.Query(Maestro);
             var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
-            console.log('1111111111111');
+
             if (maestroId != -1){
               return query.get(maestroId)
               .then(
                 function(maestro){
                     book.set("maestro",maestro)
                     $ionicLoading.hide();
-                      console.log('222222222');
+
                     return book.save(null)
               }, function(error){
-                  console.log('3333333');
                   console.log(error);
-                    Utility.handleParseError(error);
-                    $ionicLoading.hide();
+                  Utility.handleParseError(error);
+                  $ionicLoading.hide();
               })
             }
             else {
-                console.log('4444444');
               $ionicLoading.hide();
               return book.save(null)
             }
@@ -353,11 +339,8 @@ angular.module('starter.services', [])
                   var tmp = obj.toJSON();
                   tmp.date = new Date(obj.get('date')).getDate();
                   ret.push(tmp);
-
                 })
                 $ionicLoading.hide();
-
-
                 return ret;
                 //return ret;
               },

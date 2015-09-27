@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('MyObjects', function(Utility,$ionicLoading, $rootScope, config) {
+.factory('MyObjects', function(Utility,$ionicLoading, $rootScope, config,$q) {
 
     return {
 
@@ -164,7 +164,7 @@ angular.module('starter.services', [])
               tmp.level = obj.get('user').get('level')
 
               _.each(obj.get('players'), function (p){
-                tmp.playersName.push(p.get("username"))
+                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
               })
               ret.push(tmp);
             })
@@ -197,16 +197,12 @@ angular.module('starter.services', [])
           function(results){
               _.each(results, function (obj){
               var stdNumPlayers = obj.get('gameType') == 'Tx2' ? 2 : 4
-
               var tmp = obj.toJSON();
-
               if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
                 tmp.complete = true
               else {
                 tmp.complete = false
               }
-
-
               var dx1 = obj.get('date');
               var m = parseInt(dx1.getMonth()) + 1
               tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
@@ -214,59 +210,113 @@ angular.module('starter.services', [])
               tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
               tmp.playersName = []
               tmp.user = obj.get('user').get('username')
-
               _.each(obj.get('players'), function (p){
-                tmp.playersName.push(p.get("username"))
+                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
               })
               ret.push(tmp);
             })
-
-
             $ionicLoading.hide();
             return ret;
-
         }, function(error){
             Utility.handleParseError(error);
         })
+      },
 
+      checkBeforeCreateBooking: function(date,ranges,gameT){
+        var defer = $q.defer()
+        var bookedCourt = -1
+        var courtsNumber = 0;
+        if (gameT == 'Tx2' || gameT == 'Tx4')
+          courtsNumber = config.TennisCourtsNumber
+        else {
+          courtsNumber = config.PaddleCourtsNumber
+        }
+        var courts = _.range(1,parseInt(courtsNumber) + 1)
+        return this.findBookingsInDate(date,gameT)
+        .then(
+          function(bookings){
+            courts.every(function(court){
+              console.log("court:" + court);
+              var avalaible = true
+              ranges.every(function(r){
+                var p = _.filter(bookings, function(item){
+                  if (item.get("ranges") != null &&
+                      item.get("ranges").indexOf(r) != -1 &&
+                      item.get("court") != null &&
+                      item.get("court") == court){
+                    return item
+                  }
+                })
+                console.log(p);
+                if ( p != null && p.length > 0){
+                  avalaible = false
+                }
+              })
+              if (avalaible == true){
+                bookedCourt = court
+                //Esco dal ciclo every courts
+                return false
+              }
+              return true;
+            })
+            if (bookedCourt != "-1"){
+              defer.resolve(bookedCourt)
+            }
+            else {
+              defer.reject("Prenotazione non disponibile!")
+            }
+            return defer.promise;
+
+        }, function(error){
+          console.log(error);
+          defer.reject(error)
+          return defer.promise;
+        })
       },
       createBooking:function(obj){
         $ionicLoading.show({
           template: 'Loading...'
         });
 
-        var Booking = Parse.Object.extend("Booking");
-        var book = new Booking();
-        book.set("user", Parse.User.current());
-        book.set("date", obj.date);
-        book.set("ranges", obj.ranges);
-        book.set("court",obj.court);
-        book.set("callToAction",obj.callToAction);
-        book.set("gameType",obj.gameType);
-        book.set("note",obj.note);
-        var Maestro = Parse.Object.extend("Maestro");
-        var query = new Parse.Query(Maestro);
-        //console.log(obj.maestro);
-        var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
+        return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
+        .then(
+          function(bookedCourt){
+            var Booking = Parse.Object.extend("Booking");
+            var book = new Booking();
+            book.set("user", Parse.User.current());
+            book.set("date", obj.date);
+            book.set("ranges", obj.ranges);
+            book.set("court",bookedCourt.toString());
+            book.set("callToAction",obj.callToAction);
+            book.set("gameType",obj.gameType);
+            book.set("note",obj.note);
+            var Maestro = Parse.Object.extend("Maestro");
+            var query = new Parse.Query(Maestro);
+            var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
 
-        if (maestroId != -1){
-          return query.get(maestroId)
-          .then(
-            function(maestro){
-                book.set("maestro",maestro)
-                $ionicLoading.hide();
-                return book.save(null)
-          }, function(error){
-                Utility.handleParseError(error);
-                $ionicLoading.hide();
-          })
-        }
-        else {
+            if (maestroId != -1){
+              return query.get(maestroId)
+              .then(
+                function(maestro){
+                    book.set("maestro",maestro)
+                    $ionicLoading.hide();
+
+                    return book.save(null)
+              }, function(error){
+                  console.log(error);
+                  Utility.handleParseError(error);
+                  $ionicLoading.hide();
+              })
+            }
+            else {
+              $ionicLoading.hide();
+              return book.save(null)
+            }
+
+        }, function(error){
           $ionicLoading.hide();
-          return book.save(null)
-        }
-
-
+          console.log(error);
+        })
       },
       findBookings: function(month,year){
         $ionicLoading.show({
@@ -289,11 +339,8 @@ angular.module('starter.services', [])
                   var tmp = obj.toJSON();
                   tmp.date = new Date(obj.get('date')).getDate();
                   ret.push(tmp);
-
                 })
                 $ionicLoading.hide();
-
-
                 return ret;
                 //return ret;
               },
@@ -303,6 +350,18 @@ angular.module('starter.services', [])
 
               }
           )
+      },
+      findBookingsInDate: function(date,gameT){
+
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.equalTo("date", date);
+        if (gameT == "Tx2" || gameT == "Tx4")
+          query.containedIn("gameType",['Tx2','Tx4']);
+        else
+          query.equalTo("gameType","P");
+        var ret = [];
+        return query.find()
       },
       //Se sono un maestro prende le prenotazioni che mi riguardano
       //altrimenti prende le prenotazione dell'utente in sessione
@@ -414,7 +473,7 @@ angular.module('starter.services', [])
                       var py =  _.filter(prenotazioni,function(item){
 
                         if (item.date == d.date &&
-                            item.ranges.indexOf(r) != -1 && item.maestro.objectId == maestroId)
+                            item.ranges.indexOf(r) != -1 && item.maestro != null && item.maestro.objectId == maestroId)
                             return item;
                       });
 
