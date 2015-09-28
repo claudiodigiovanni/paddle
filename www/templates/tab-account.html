@@ -38,6 +38,11 @@
             &nbsp;&nbsp;
             <b><i class="icon ion-calendar"></i></b> {{booking.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{booking.ranges}}
 
+            &nbsp;&nbsp;
+            <b><i class="icon ion-android-pin"></i></b> {{booking.court}} &nbsp;
+
+
+
 
               &nbsp;&nbsp;<i class="icon ion-person-stalker" ng-show="userRole == 'segreteria'"></i>&nbsp;
               {{booking.note}}
@@ -72,26 +77,28 @@
               &nbsp;&nbsp;
               <b><i class="icon ion-calendar"></i></b> {{cta.date}} &nbsp; <b><i class="icon ion-clock"></b></i> {{cta.ranges}}
               &nbsp;&nbsp;<i class="icon ion-person-stalker"></i>&nbsp;
-              {{cta.playersName}}
+              <span ng-repeat="p in cta.playersName">
+                {{p.giocatore}} - Livello: {{p.livello}}
+              </span>
+
             </ion-item>
         </ion-list>
         <!-- xxx -->
       </div>
     </div>
 
-
-
-
-  <button class="button button-block button-positive" ng-click="gotoStatistics()" ng-show="userRole == 'admin'">
-      Statistiche
-  </button>
-
-  <button class="button button-block button-positive" ng-click="gotoUserToEnable()" ng-show="userRole == 'admin'">
-      Abilita Utenti
-  </button>
-
-
-
+<div class="row">
+  <div class="col">
+    <button class="button button-block button-positive" ng-click="gotoStatistics()" ng-show="userRole == 'admin' || userRole == 'segreteria'">
+        Gestione Prenotazioni e Pagamenti
+    </button>
+  </div>
+  <div class="col">
+    <button class="button button-block button-positive" ng-click="gotoUserToEnable()" ng-show="userRole == 'admin'">
+        Abilita Utenti
+    </button>
+  </div>
+</div>
 
 
   <script id="reset-pwd.html" type="text/ng-template">

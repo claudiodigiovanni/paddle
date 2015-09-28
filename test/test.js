@@ -62,19 +62,16 @@ describe('Parse.com', function () {
         console.log(error);
       })
 
+
     rootScope.$apply()
-  })
+    })
 
-  })
+    it('getUsersToEnableTest', function (done) {
 
+    console.log(Parse.User.current());
 
-  describe('Constructor', function () {
-
-    it('assigns a name', function (done) {
-    console.log('Going to getUsersToEnableTest');
-    //console.log(Utility.getCalendar(0,2015));
-    var res
     var promise1 = MyObjects.getUsersToEnableTest()
+    //spyOn(MyObjects, 'getUsersToEnableTest').and.callThrough();
     promise1.then(
       function(obj){
           expect(true).toBe(true);
@@ -87,27 +84,14 @@ describe('Parse.com', function () {
       console.log('errore console');
     })
 
-
     rootScope.$apply()
-
-
-
-
-
-
-
-    console.log('GetUsers User.....1111');
-
-
-
-    expect(true).toBe(true);
-     console.log('FINE.....11122');
+    console.log('FINE');
 
 //done()
 
     });
 
+  })
 
 
-  });
 })
