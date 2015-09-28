@@ -9,6 +9,7 @@
 
     <div class="row" ng-repeat="week in weeks">
       <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus({pos:day})" >
+        <span class="badge badge-royal" ng-switch-when="today" ng-click="dayClicked({pos:day})">{{day}}</span>
         <span class="badge badge-positive" ng-switch-when="avalaible" ng-click="dayClicked({pos:day})">{{day}}</span>
         <span class="badge badge-energized" ng-switch-when="selected" ng-click="dayClicked({pos:day})">{{day}}</span>
         <span class="badge badge-balanced" ng-switch-when="multiple-select" ng-click="dayClicked({pos:day})">{{day}}</span>

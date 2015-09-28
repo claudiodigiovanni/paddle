@@ -231,7 +231,21 @@ views: {
   cache: false,
   templateUrl: 'templates/waitingToBeEnabled.html',
   controller: 'WaitingToBeEnabled'
+})
+
+.state('help', {
+  url: '/help',
+  templateUrl: 'templates/help.html',
+  controller: function($scope,$ionicSlideBoxDelegate, $state){
+    $scope.slide = function(index) {
+      $ionicSlideBoxDelegate.slide(index);
+    };
+    $scope.close = function (){
+      $state.go('tab.dash');
+    }
+  }
 });
+
 
   // if none of the above states are matched, use this as the fallback
   //$urlRouterProvider.otherwise('/tab/dash');

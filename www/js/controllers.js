@@ -162,7 +162,9 @@ $scope.login = function(){
           // The current user is now set to user.
           $scope.modal.hide();
           $ionicLoading.hide();
-          $state.go('tab.dash');
+          //$state.go('tab.dash');
+          $state.go('help');
+
         }, function (error) {
           // The token could not be validated.
         });

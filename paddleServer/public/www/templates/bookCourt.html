@@ -59,12 +59,6 @@
     </div>
   </div>
 
-
-  <button class="button button-block button-positive" ng-click="book(booking)">
-    Prenota!
-  </button>
-
-
 </ion-content>
 
 <script id="ranges-modal.html" type="text/ng-template">
@@ -74,10 +68,27 @@
       <button class="button button-light" ng-click="closeModal()">close</button>
     </ion-header-bar>
     <ion-content>
+    <div class="card" style="text-align:center" ng-if="resolved">
+      <div class="item item-text-wrap">
+        <i class="icon ion-checkmark-circled energized"></i>
+        {{resolved}}
+      </div>
+    </div>
     <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
-    <button class="button button-block button-positive" ng-click="closeModal()" ng-show="showAddButton">
-      Aggiungi Orario
-    </button>
+    <div class="row">
+      <div class="col">
+      <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
+        Prenota
+      </button>
+      </div>
+      <div class="col">
+      <button class="button button-block button-assertive" ng-click="closeModal()" ng-show="showAddButton">
+        Annulla
+      </button>
+
+      </div>
+    </div>
+
 
     </ion-content>
   </div>

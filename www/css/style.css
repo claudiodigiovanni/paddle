@@ -12,6 +12,19 @@ table tr:nth-child(even) {
   background-color: #dbd2f0;
 }
 
+.desc {
+
+  
+
+}
+.imageCenter {
+
+  /*text-align: center;*/
+
+
+}
+
+
 .badge{ position: relative !important;
   top:0 !important;
   right: 0 !important;

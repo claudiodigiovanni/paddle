@@ -13,24 +13,25 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="item item-divider">
-    Numero Prenotazioni Tennis
-  </div>
-  <div class="item item-text-wrap">
-    {{results.Tx2 + results.Tx4}}
-  </div>
+<div class="item item-text-wrap">
+  <!-- xxx -->
+  <show-bookings bookings="results.bookingsToPayBeforeToday" text="Prenotazioni precedenti da saldare" pay="pay(b)" delete="delete"></show-bookings>
+  <!-- xxx -->
 
 </div>
-<div class="card">
-  <div class="item item-divider">
-    Numero Prenotazioni Paddle
-  </div>
-  <div class="item item-text-wrap">
-    {{results.P}}
-  </div>
 
+<div class="item item-text-wrap">
+  <!-- xxx -->
+  <show-bookings bookings="results.resultsTennis" date="date" text="Prenotazioni Tennis" pay="pay(b)" delete="delete"></show-bookings>
+  <!-- xxx -->
 </div>
+
+<div class="item item-text-wrap">
+  <!-- xxx -->
+  <show-bookings bookings="results.resultsPaddle" date="date" text="Prenotazioni Paddle" pay="pay(b)" delete="delete"></show-bookings>
+  <!-- xxx -->
+</div>
+
 </ion-content>
 
 </ion-view>
