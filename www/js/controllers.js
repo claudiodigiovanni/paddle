@@ -178,8 +178,34 @@ $rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
         console.log('localStorage deviceToken:' + data.token );
         window.localStorage['deviceToken'] = data.token
 
-        registerToken(currentUser.username,data.token)
+        registerToken(currentUser.username.toLowerCase(),data.token)
 });
+
+registerToken = function(username, token){
+
+  var Token = Parse.Object.extend("Token");
+  var query = new Parse.Query(Token);
+  query.equalTo("username",username)
+  query.first()
+  .then(
+    function(obj){
+      if (obj == null){
+        var t = new Token();
+        t.set("username",username)
+        t.set("token",token)
+        t.save();
+      }
+      else{
+        obj.set("token",token)
+        obj.save();
+      }
+  }, function(error){
+    console.log(error);
+  })
+
+
+}
+
 
 var currentUser = {}
 $scope.currentUser = currentUser;
@@ -231,30 +257,6 @@ $scope.login = function(){
     }
   })
 
-  registerToken = function(username, token){
-
-    var Token = Parse.Object.extend("Token");
-    var query = new Parse.Query(Token);
-    query.equalTo("username",username)
-    query.first()
-    .then(
-      function(obj){
-        if (obj == null){
-          var t = new Token();
-          t.set("username",username)
-          t.set("token",token)
-          t.save();
-        }
-        else{
-          obj.set("token",token)
-          obj.save();
-        }
-    }, function(error){
-      console.log(error);
-    })
-
-
-  }
 
 }
 

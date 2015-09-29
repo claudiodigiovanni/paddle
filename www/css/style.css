@@ -12,21 +12,17 @@ table tr:nth-child(even) {
   background-color: #dbd2f0;
 }
 
-.desc {
 
 
-
-}
-.imageCenter {
-
-  /*text-align: center;*/
-
-
-}
-
-.item.item-text-wrap.center{
+.center{
   text-align: center;
   font-size: 14px;
+  /*background-color:#f5f5f5;*/
+  font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
+line-height: 20px;
+text-rendering: optimizeLegibility;
+color: #444;
+
 }
 
 
