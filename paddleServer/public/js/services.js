@@ -156,7 +156,7 @@ angular.module('starter.services', [])
         .then(
           function(results){
               _.each(results, function (obj){
-              var stdNumPlayers = obj.get('gameType') == 'Tx2' ? 2 : 4
+              var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
 
               if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
                 return
@@ -204,7 +204,7 @@ angular.module('starter.services', [])
         .then(
           function(results){
               _.each(results, function (obj){
-              var stdNumPlayers = obj.get('gameType') == 'Tx2' ? 2 : 4
+              var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
               var tmp = obj.toJSON();
               if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
                 tmp.complete = true
@@ -234,9 +234,12 @@ angular.module('starter.services', [])
         var defer = $q.defer()
         var bookedCourt = -1
         var courtsNumber = 0;
-        if (gameT == 'Tx2' || gameT == 'Tx4')
-          courtsNumber = config.TennisCourtsNumber
-        else {
+        if (gameT == 'Tx2')
+          courtsNumber = config.ClayTennisCourtsNumber
+        else if (gameT == 'Tx4'){
+          courtsNumber = config.HardTennisCourtsNumber
+        }
+        else{
           courtsNumber = config.PaddleCourtsNumber
         }
         var courts = _.range(1,parseInt(courtsNumber) + 1)
@@ -342,14 +345,13 @@ angular.module('starter.services', [])
         today.setSeconds(0);
         today.setMilliseconds(0);
         var ret = {}
-        console.log(date);
+
         this.findBookingsToPayBeforeDate(today)
         .then(
           function(obj){
             console.log(obj);
             ret.bookingsToPayBeforeToday = obj;
             $ionicLoading.hide();
-            console.log(ret);
 
         }, function(error){
           console.log(error);
@@ -359,15 +361,23 @@ angular.module('starter.services', [])
         this.findBookingsInDate(date,"Tx2")
         .then(
           function(obj){
-            console.log(obj);
-            ret.resultsTennis = obj;
+            ret.resultsTennisClay = obj;
             $ionicLoading.hide();
-            console.log(ret);
-
         }, function(error){
           console.log(error);
           $ionicLoading.hide();
         })
+
+        this.findBookingsInDate(date,"Tx4")
+        .then(
+          function(obj){
+            ret.resultsTennisHard = obj;
+            $ionicLoading.hide();
+        }, function(error){
+          console.log(error);
+          $ionicLoading.hide();
+        })
+
         this.findBookingsInDate(date,"P")
         .then(
           function(obj){
@@ -423,10 +433,7 @@ angular.module('starter.services', [])
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.equalTo("date", date);
-        if (gameT == "Tx2" || gameT == "Tx4")
-          query.containedIn("gameType",['Tx2','Tx4']);
-        else
-          query.equalTo("gameType","P");
+        query.equalTo("gameType",gameT);
 
         query.include('user')
 
@@ -508,9 +515,12 @@ angular.module('starter.services', [])
                 _.each(ranges, function(r){
                   var px = _.where(bookings,{date:d, ranges:[r],gameType: gameT});
                   var num = 0;
-                  if (gameT == 'Tx2' || gameT == 'Tx4')
-                    num = config.TennisCourtsNumber
-                  else {
+                  if (gameT == 'Tx2')
+                    num = config.ClayTennisCourtsNumber
+                  else if (gameT == 'Tx4'){
+                    num = config.HardTennisCourtsNumber
+                  }
+                  else{
                     num = config.PaddleCourtsNumber
                   }
                   if (px.length < num){
@@ -565,9 +575,12 @@ angular.module('starter.services', [])
                       //console.log('param');
                       //console.log({date:d.date,ranges:[r], gameType: typeG });
                       var num = 0;
-                      if (typeG == 'Tx2' || typeG == 'Tx4')
-                        num = config.TennisCourtsNumber
-                      else {
+                      if (typeG == 'Tx2')
+                        num = config.ClayTennisCourtsNumber
+                      else if (typeG == 'Tx4'){
+                        num = config.HardTennisCourtsNumber
+                      }
+                      else{
                         num = config.PaddleCourtsNumber
                       }
 

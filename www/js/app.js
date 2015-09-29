@@ -59,7 +59,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 })
 
 .constant('config', {
-  TennisCourtsNumber: 2,
+  ClayTennisCourtsNumber: 2,
+  HardTennisCourtsNumber: 2,
   PaddleCourtsNumber: 3,
   slotsNumber: 48,
   playersLevels:5
