@@ -4,10 +4,18 @@ angular.module('starter.services', [])
 
     return {
 
+      getUsersToEnableTest: function(){
+        var query = new Parse.Query(Parse.User);
+        query.equalTo('enabled',false)
+        console.log('getUsersToEnable...');
+        return query.find()
+
+      },
+
       getUsersToEnable: function(){
         var query = new Parse.Query(Parse.User);
         query.equalTo('enabled',false)
-
+        console.log('getUsersToEnable...');
         return query.find()
         .then(
           function(results){
@@ -211,7 +219,7 @@ angular.module('starter.services', [])
               tmp.playersName = []
               tmp.user = obj.get('user').get('username')
               _.each(obj.get('players'), function (p){
-                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
+                tmp.playersName.push({giocatore:p.get("username"),livello:p.get("level")})
               })
               ret.push(tmp);
             })
@@ -290,6 +298,8 @@ angular.module('starter.services', [])
             book.set("callToAction",obj.callToAction);
             book.set("gameType",obj.gameType);
             book.set("note",obj.note);
+            book.set("payed",false);
+
             var Maestro = Parse.Object.extend("Maestro");
             var query = new Parse.Query(Maestro);
             var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
@@ -317,6 +327,63 @@ angular.module('starter.services', [])
           $ionicLoading.hide();
           console.log(error);
         })
+      },
+
+      payBooking: function(booking){
+
+        booking.set('payed',true);
+        return booking.save();
+
+      },
+      findBookingsForSegreteria: function(date){
+        var today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+        var ret = {}
+        console.log(date);
+        this.findBookingsToPayBeforeDate(today)
+        .then(
+          function(obj){
+            console.log(obj);
+            ret.bookingsToPayBeforeToday = obj;
+            $ionicLoading.hide();
+            console.log(ret);
+
+        }, function(error){
+          console.log(error);
+          $ionicLoading.hide();
+        })
+
+        this.findBookingsInDate(date,"Tx2")
+        .then(
+          function(obj){
+            console.log(obj);
+            ret.resultsTennis = obj;
+            $ionicLoading.hide();
+            console.log(ret);
+
+        }, function(error){
+          console.log(error);
+          $ionicLoading.hide();
+        })
+        this.findBookingsInDate(date,"P")
+        .then(
+          function(obj){
+            console.log(obj);
+            ret.resultsPaddle = obj;
+            $ionicLoading.hide();
+            console.log(ret);
+
+
+        }, function(error){
+          console.log(error);
+          $ionicLoading.hide();
+        })
+
+        return ret;
+
       },
       findBookings: function(month,year){
         $ionicLoading.show({
@@ -360,7 +427,19 @@ angular.module('starter.services', [])
           query.containedIn("gameType",['Tx2','Tx4']);
         else
           query.equalTo("gameType","P");
-        var ret = [];
+
+        query.include('user')
+
+        return query.find()
+      },
+      findBookingsToPayBeforeDate: function(date){
+
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.lessThan("date", date);
+        query.equalTo("payed", false);
+        query.include('user')
+
         return query.find()
       },
       //Se sono un maestro prende le prenotazioni che mi riguardano
@@ -697,6 +776,16 @@ angular.module('starter.services', [])
       })
       return ret;
     },
+
+    formatDate: function formatDate(d) {
+      var dd = d.getDate()
+      if ( dd < 10 ) dd = '0' + dd
+      var mm = d.getMonth()+1
+      if ( mm < 10 ) mm = '0' + mm
+      var yy = d.getFullYear() % 100
+      if ( yy < 10 ) yy = '0' + yy
+      return dd+'.'+mm+'.'+yy
+    },
     handleParseError: function (err) {
         $ionicLoading.hide();
         switch (err.code) {
@@ -710,3 +799,13 @@ angular.module('starter.services', [])
 }
   };
 })
+
+.factory('Person', function () {
+    return function Person (name) {
+      this.name = name;
+      console.log('Hello ' + this.name + "!");
+      this.changeName = function(){
+         this.name = 'Ben2222'
+      }
+    };
+  });

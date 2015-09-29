@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','vcRecaptcha'])
+angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
 .run(function($ionicPlatform,$rootScope, $state) {
   $ionicPlatform.ready(function() {
@@ -20,9 +20,14 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
+
+
   });
 
     Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
+
+
+
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
         var currentUser = Parse.User.current();
@@ -38,7 +43,6 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.deploy', 
 
             $rootScope.currentUser = currentUser;
             $rootScope.userRole = currentUser.get('role')
-
 
             //console.log(currentUser.get('role'));
         } else {
@@ -231,7 +235,21 @@ views: {
   cache: false,
   templateUrl: 'templates/waitingToBeEnabled.html',
   controller: 'WaitingToBeEnabled'
+})
+
+.state('help', {
+  url: '/help',
+  templateUrl: 'templates/help.html',
+  controller: function($scope,$ionicSlideBoxDelegate, $state){
+    $scope.slide = function(index) {
+      $ionicSlideBoxDelegate.slide(index);
+    };
+    $scope.close = function (){
+      $state.go('tab.dash');
+    }
+  }
 });
+
 
   // if none of the above states are matched, use this as the fallback
   //$urlRouterProvider.otherwise('/tab/dash');

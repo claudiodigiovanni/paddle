@@ -14,7 +14,7 @@ table tr:nth-child(even) {
 
 .desc {
 
-  
+
 
 }
 .imageCenter {
@@ -22,6 +22,11 @@ table tr:nth-child(even) {
   /*text-align: center;*/
 
 
+}
+
+.item.item-text-wrap.center{
+  text-align: center;
+  font-size: 14px;
 }
 
 
@@ -38,13 +43,7 @@ i.ion-social-pinterest-outline {
   font-size: 40px;
 }
 
-i.cal.ion-chevron-left{
-  font-size: 36px;
-}
 
-i.cal.ion-chevron-right{
-  font-size: 36px;
-}
 
 .item.alert{
   color: rgb(219, 110, 31)

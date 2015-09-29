@@ -5,7 +5,6 @@ angular.module('starter.controllers', [])
 
 
 
-
   // Update app code with new release from Ionic Deploy
   doUpdate = function() {
     $ionicDeploy.update().then(function(res) {
@@ -101,7 +100,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log) {
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -131,6 +130,56 @@ $ionicModal.fromTemplateUrl('reset-pwd.html', {
 
 })
 
+
+identifyUser = function() {
+  $log.info('Ionic User: Identifying with Ionic User service');
+
+  var user = $ionicUser.get();
+  if(!user.user_id) {
+    // Set your user_id here, or generate a random one.
+    console.log(Parse.User.current().id);
+    user.user_id = Parse.User.current().id
+  }
+
+  // Add some metadata to your user object.
+  angular.extend(user, {
+    name: Parse.User.current().get('email'),
+    bio: 'I come from planet Ion'
+  });
+
+  // Identify your user with the Ionic User Service
+  $ionicUser.identify(user).then(function(){
+    //$scope.identified = true;
+    console.log('Identified user ' + user.name + '\n ID ' + user.user_id);
+  });
+};
+
+pushRegister = function() {
+  $log.info('Ionic Push: Registering user.....xxxx');
+
+  // Register with the Ionic Push service.  All parameters are optional.
+  $ionicPush.register({
+    canShowAlert: true, //Can pushes show an alert on your screen?
+    canSetBadge: true, //Can pushes update app icon badges?
+    canPlaySound: true, //Can notifications play a sound?
+    canRunActionsOnWake: true, //Can run actions outside the app,
+    onNotification: function(notification) {
+      // Handle new push notifications here
+      $log.info(notification);
+      return true;
+    }
+  })
+}
+
+$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
+        console.log("Successfully registered token " + data.token);
+        console.log('Ionic Push: Got token ', data.token, data.platform);
+        //$rootScope.token = data.token;
+        console.log('localStorage deviceToken:' + data.token );
+        window.localStorage['deviceToken'] = data.token
+
+        registerToken(currentUser.username,data.token)
+});
 
 var currentUser = {}
 $scope.currentUser = currentUser;
@@ -165,6 +214,10 @@ $scope.login = function(){
           //$state.go('tab.dash');
           $state.go('help');
 
+          identifyUser();
+          pushRegister();
+
+
         }, function (error) {
           // The token could not be validated.
         });
@@ -177,6 +230,31 @@ $scope.login = function(){
 
     }
   })
+
+  registerToken = function(username, token){
+
+    var Token = Parse.Object.extend("Token");
+    var query = new Parse.Query(Token);
+    query.equalTo("username",username)
+    query.first()
+    .then(
+      function(obj){
+        if (obj == null){
+          var t = new Token();
+          t.set("username",username)
+          t.set("token",token)
+          t.save();
+        }
+        else{
+          obj.set("token",token)
+          obj.save();
+        }
+    }, function(error){
+      console.log(error);
+    })
+
+
+  }
 
 }
 

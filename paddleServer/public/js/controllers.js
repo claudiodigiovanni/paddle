@@ -5,7 +5,6 @@ angular.module('starter.controllers', [])
 
 
 
-
   // Update app code with new release from Ionic Deploy
   doUpdate = function() {
     $ionicDeploy.update().then(function(res) {
@@ -101,7 +100,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log) {
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -131,6 +130,56 @@ $ionicModal.fromTemplateUrl('reset-pwd.html', {
 
 })
 
+
+identifyUser = function() {
+  $log.info('Ionic User: Identifying with Ionic User service');
+
+  var user = $ionicUser.get();
+  if(!user.user_id) {
+    // Set your user_id here, or generate a random one.
+    console.log(Parse.User.current().id);
+    user.user_id = Parse.User.current().id
+  }
+
+  // Add some metadata to your user object.
+  angular.extend(user, {
+    name: Parse.User.current().get('email'),
+    bio: 'I come from planet Ion'
+  });
+
+  // Identify your user with the Ionic User Service
+  $ionicUser.identify(user).then(function(){
+    //$scope.identified = true;
+    console.log('Identified user ' + user.name + '\n ID ' + user.user_id);
+  });
+};
+
+pushRegister = function() {
+  $log.info('Ionic Push: Registering user.....xxxx');
+
+  // Register with the Ionic Push service.  All parameters are optional.
+  $ionicPush.register({
+    canShowAlert: true, //Can pushes show an alert on your screen?
+    canSetBadge: true, //Can pushes update app icon badges?
+    canPlaySound: true, //Can notifications play a sound?
+    canRunActionsOnWake: true, //Can run actions outside the app,
+    onNotification: function(notification) {
+      // Handle new push notifications here
+      $log.info(notification);
+      return true;
+    }
+  })
+}
+
+$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
+        console.log("Successfully registered token " + data.token);
+        console.log('Ionic Push: Got token ', data.token, data.platform);
+        //$rootScope.token = data.token;
+        console.log('localStorage deviceToken:' + data.token );
+        window.localStorage['deviceToken'] = data.token
+
+        registerToken(currentUser.username,data.token)
+});
 
 var currentUser = {}
 $scope.currentUser = currentUser;
@@ -162,7 +211,13 @@ $scope.login = function(){
           // The current user is now set to user.
           $scope.modal.hide();
           $ionicLoading.hide();
-          $state.go('tab.dash');
+          //$state.go('tab.dash');
+          $state.go('help');
+
+          identifyUser();
+          pushRegister();
+
+
         }, function (error) {
           // The token could not be validated.
         });
@@ -175,6 +230,31 @@ $scope.login = function(){
 
     }
   })
+
+  registerToken = function(username, token){
+
+    var Token = Parse.Object.extend("Token");
+    var query = new Parse.Query(Token);
+    query.equalTo("username",username)
+    query.first()
+    .then(
+      function(obj){
+        if (obj == null){
+          var t = new Token();
+          t.set("username",username)
+          t.set("token",token)
+          t.save();
+        }
+        else{
+          obj.set("token",token)
+          obj.save();
+        }
+    }, function(error){
+      console.log(error);
+    })
+
+
+  }
 
 }
 
@@ -402,6 +482,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.closeModal = function() {
     $scope.modal.hide();
+    selectedRanges = [];
+
+    $scope.selectedHours = ""
   };
 
   $scope.$on('$destroy', function() {
@@ -491,7 +574,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
   }
 
-  $scope.book = function(booking){
+  $scope.book = function(){
 
     if ($scope.selectedDay === null || selectedRanges === null || selectedRanges.length === 0) {
       $scope.resolved = "Selezionare giorno e fascia oraria."
@@ -513,6 +596,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     MyObjects.createBooking(booking).then(function(result){
 
+      $scope.modal.hide();
       $scope.resolved = "Prenotazione Effettuata!" ;
       $scope.modalok.show();
 
@@ -575,6 +659,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.closeModal = function() {
     $scope.modal.hide();
+    selectedRanges = [];
+    console.log('ok! closed modal');
+    console.log(selectedRanges);
+    $scope.selectedHours = ""
+    //$scope.$apply();
   };
 
   $scope.$on('$destroy', function() {
@@ -690,7 +779,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
 
-  $scope.book = function(booking){
+  $scope.book = function(){
 
     if ($scope.selectedDay === null  || selectedRanges.length === 0) {
       $scope.resolved = "Selezionare giorno e fascia oraria."
@@ -711,6 +800,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     MyObjects.createBooking(booking)
     .then(
       function(result){
+
+      $scope.modal.hide();
 
       $scope.resolved = "Prenotazione Effettuata!";
       $scope.booking = result
@@ -827,16 +918,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       console.log(error);
     })
 
-    MyObjects.findCallToActionWithUserAsPlayer()
-    .then(
-      function(results){
-        console.log(results);
-
-    }, function(error){
-      console.log(error);
-    })
-
-
 
   }
 
@@ -852,13 +933,23 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-.controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading){
+.controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility){
 
-  var currentDate = new Date();
-  var currentMonth = parseInt(currentDate.getMonth())  ;
-  var currentYear = currentDate.getFullYear();
+  var today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+
+  $scope.date = Utility.formatDate(today)
+
+  var currentMonth = parseInt(today.getMonth())  ;
+  var currentYear = today.getFullYear();
   $scope.currentMonth = currentMonth;
   $scope.currentYear = currentYear;
+
+  var results = MyObjects.findBookingsForSegreteria(today)
+  $scope.results = results
 
   $scope.$on('currentDateChanged', function(event, x) {
       var m = x.split(":")[0]
@@ -872,12 +963,41 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.getDayStatus = function(day){
 
+    var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
+    var m = parseInt($scope.currentMonth) + 1
+    var tmpDate = new Date( $scope.currentYear + "/" + m + "/" + day);
+
+
+    if (tmpDate < today )
+      return "disabled";
+
+    if (tmpDate.getTime()=== today.getTime())
+      return "today"
+
     if ($scope.selectedDay == day){
       return "selected";
     }
     else {
       return 'na'
     }
+  };
+
+
+  $scope.pay = function(booking){
+
+    MyObjects.payBooking(booking)
+    .then(
+      function(obj){
+        console.log('ok');
+    }, function(error){
+      console.log(error);
+    })
+
   };
 
   $scope.dayClicked = function(day){
@@ -888,19 +1008,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     console.log('dayClicked' + day);
     var m = parseInt($scope.currentMonth) + 1
     var datex = $scope.currentYear + "/" + m + "/" + day
-    MyObjects.findStatistics(new Date(datex))
-    .then(
-      function(obj){
-        console.log(obj);
-        $scope.results = obj;
-        $ionicLoading.hide();
-    }, function(error){
-      console.log(error);
-    })
+    $scope.date = Utility.formatDate(new Date(datex))
+    results = MyObjects.findBookingsForSegreteria(new Date(datex))
+    $scope.results = results
   }
 
 })
-
 
 .controller('callToAction', function($scope, MyObjects,$ionicModal, config) {
 

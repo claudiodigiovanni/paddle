@@ -12,6 +12,24 @@ table tr:nth-child(even) {
   background-color: #dbd2f0;
 }
 
+.desc {
+
+
+
+}
+.imageCenter {
+
+  /*text-align: center;*/
+
+
+}
+
+.item.item-text-wrap.center{
+  text-align: center;
+  font-size: 14px;
+}
+
+
 .badge{ position: relative !important;
   top:0 !important;
   right: 0 !important;
@@ -25,13 +43,7 @@ i.ion-social-pinterest-outline {
   font-size: 40px;
 }
 
-i.cal.ion-chevron-left{
-  font-size: 36px;
-}
 
-i.cal.ion-chevron-right{
-  font-size: 36px;
-}
 
 .item.alert{
   color: rgb(219, 110, 31)

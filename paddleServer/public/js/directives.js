@@ -64,7 +64,7 @@ angular.module('starter.directives', [])
       //$scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
 
       $scope.changeMonth = function (pos){
-          
+
           var tmp = parseInt($scope.currentMonth) + parseInt(pos);
           if (tmp == 12){
               $scope.currentMonth = 0;
@@ -90,3 +90,23 @@ angular.module('starter.directives', [])
     }]
   }
 })
+
+
+.directive('showBookings', function() {
+    return {
+        restrict: 'E',
+        scope: {
+          bookings: '=' ,
+          pay: '&',
+          delete: '&',
+          date: '=',
+          text: '@'
+        },
+        templateUrl: 'templates/ng-show-bookings-template.html',
+        controller: ['$scope', '$http', 'Utility', '$rootScope', function($scope, $http, Utility, $rootScope) {
+
+
+
+        }]
+    }
+});
