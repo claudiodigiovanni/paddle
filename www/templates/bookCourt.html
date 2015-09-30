@@ -84,13 +84,11 @@
       <label class="item item-divider">
         Scegli il campo che preferisci
       </label>
-        <label class="item item-radio" ng-repeat="court in avalaivableCourts">
-          <input type="radio" name="group" ng-model="booking.court" value="{{court}}">
-          <div class="item-content">
-            Campo {{court}}
-          </div>
-          <i class="radio-icon ion-checkmark"></i>
-        </label>
+
+      <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
+        Campo {{court}}
+      </ion-radio-fix>
+
       </div>
     <div class="row">
       <div class="col">

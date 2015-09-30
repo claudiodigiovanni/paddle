@@ -305,7 +305,7 @@ angular.module('starter.services', [])
             book.set("date", obj.date);
             book.set("ranges", obj.ranges);
             if (obj.court != null){
-                book.set("court",obj.court)
+                book.set("court",obj.court.toString())
             }
             else {
               //Nel caso di prenotazione con maestro
