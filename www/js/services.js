@@ -231,8 +231,12 @@ angular.module('starter.services', [])
       },
 
       checkBeforeCreateBooking: function(date,ranges,gameT){
+        console.log('checkBeforeCreateBooking');
+        console.log(date);
+        console.log(ranges);
+        console.log(gameT);
         var defer = $q.defer()
-        var bookedCourt = -1
+        var courtsAvalaivable = []
         var courtsNumber = 0;
         if (gameT == 'Tx2')
           courtsNumber = config.ClayTennisCourtsNumber
@@ -246,10 +250,10 @@ angular.module('starter.services', [])
         return this.findBookingsInDate(date,gameT)
         .then(
           function(bookings){
-            courts.every(function(court){
+            courts.forEach(function(court){
               console.log("court:" + court);
               var avalaible = true
-              ranges.every(function(r){
+              ranges.forEach(function(r){
                 var p = _.filter(bookings, function(item){
                   if (item.get("ranges") != null &&
                       item.get("ranges").indexOf(r) != -1 &&
@@ -264,17 +268,15 @@ angular.module('starter.services', [])
                 }
               })
               if (avalaible == true){
-                bookedCourt = court
-                //Esco dal ciclo every courts
-                return false
+                courtsAvalaivable.push(court)
               }
-              return true;
+
             })
-            if (bookedCourt != "-1"){
-              defer.resolve(bookedCourt)
+            if (courtsAvalaivable.length > 0){
+              defer.resolve(courtsAvalaivable)
             }
             else {
-              defer.reject("Prenotazione non disponibile!")
+              defer.reject("Campo non disponibile nella fascia oraria selezionata!")
             }
             return defer.promise;
 
@@ -291,13 +293,20 @@ angular.module('starter.services', [])
 
         return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
         .then(
-          function(bookedCourt){
+          function(courtsAvalaivable){
             var Booking = Parse.Object.extend("Booking");
             var book = new Booking();
             book.set("user", Parse.User.current());
             book.set("date", obj.date);
             book.set("ranges", obj.ranges);
-            book.set("court",bookedCourt.toString());
+            if (obj.court != null){
+                book.set("court",obj.court)
+            }
+            else {
+              //Nel caso di prenotazione con maestro
+                book.set("court",courtsAvalaivable[0].toString());
+            }
+
             book.set("callToAction",obj.callToAction);
             book.set("gameType",obj.gameType);
             book.set("note",obj.note);

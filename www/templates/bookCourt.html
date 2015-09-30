@@ -28,7 +28,7 @@
     </label>
 
   </div>
-</div>
+
 
 
 
@@ -52,6 +52,7 @@
   <div>
     <month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
   </div>
+
   <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
 
 
@@ -79,6 +80,18 @@
       </div>
     </div>
     <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+    <div class="list" ng-show="avalaivableCourts != null">
+      <label class="item item-divider">
+        Scegli il campo che preferisci
+      </label>
+        <label class="item item-radio" ng-repeat="court in avalaivableCourts">
+          <input type="radio" name="group" ng-model="booking.court" value="{{court}}">
+          <div class="item-content">
+            Campo {{court}}
+          </div>
+          <i class="radio-icon ion-checkmark"></i>
+        </label>
+      </div>
     <div class="row">
       <div class="col">
       <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
@@ -107,7 +120,7 @@
     <ion-content>
 
     <button class="button button-block button-positive" ng-click="closeModalok()" >
-      Prenotazione Effettuata! Campo: {{booking.get("court")}}
+      Prenotazione Effettuata! <b>Data:</b> {{booking.get("date") | date:'dd/MM/yyyy'}} <b>Campo:</b> {{booking.get("court")}}
     </button>
 
     </ion-content>

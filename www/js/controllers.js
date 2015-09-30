@@ -772,8 +772,21 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
     if (avalaibleRanges.indexOf(pos) != -1){
       selectedRanges.push(pos);
-    }
-    else {
+
+      var m = parseInt($scope.currentMonth) +1 ;
+      var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
+      var date = new Date(d);
+
+      MyObjects.checkBeforeCreateBooking(date, selectedRanges, booking.gameType)
+      .then(
+        function(obj){
+          $scope.avalaivableCourts = obj
+          console.log('avalaivableCourts');
+          console.log(obj);
+      }, function(error){
+        console.log(error);
+      })
+
 
     }
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
