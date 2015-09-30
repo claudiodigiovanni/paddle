@@ -609,7 +609,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 })
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup) {
 
   var currentDate = new Date();
   var currentMonth = parseInt(currentDate.getMonth())  ;
@@ -770,27 +770,36 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     //alert('getRangeStatus' + pos);
     if (selectedRanges.indexOf(pos) != -1){
       selectedRanges.splice(selectedRanges.indexOf(pos),1);
-      return
+
     }
-    if (avalaibleRanges.indexOf(pos) != -1){
+    else if (avalaibleRanges.indexOf(pos) != -1){
       selectedRanges.push(pos);
-
-      var m = parseInt($scope.currentMonth) +1 ;
-      var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
-      var date = new Date(d);
-
-      MyObjects.checkBeforeCreateBooking(date, selectedRanges, booking.gameType)
-      .then(
-        function(obj){
-          $scope.avalaivableCourts = obj
-          console.log('avalaivableCourts');
-          console.log(obj);
-      }, function(error){
-        console.log(error);
-      })
-
-
     }
+
+    var m = parseInt($scope.currentMonth) +1 ;
+    var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
+    var date = new Date(d);
+
+    MyObjects.checkBeforeCreateBooking(date, selectedRanges, booking.gameType)
+    .then(
+      function(obj){
+        $scope.avalaivableCourts = obj
+        console.log('avalaivableCourts');
+        console.log(obj);
+    }, function(error){
+      console.log(error);
+      $scope.avalaivableCourts=null;
+      var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: 'Nessun campo disponibile nelle fascie orarie selezionate...'
+       });
+       alertPopup.then(function(res) {
+         console.log('Thank you for not eating my delicious ice cream cone');
+         selectedRanges = [];
+       });
+
+    })
+
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
 
   }
@@ -828,7 +837,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
       console.log(error);
       $scope.resolved = "Oooops! L'orario non è più disponibile!"
-      $scope.$apply();
+
     })
     selectedRanges = [];
 
@@ -1158,7 +1167,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     avalabilities.splice(ix ,1);
     selectedRanges = [];
     $scope.showDeleteButton = false;
-      
+
   }
 
 
