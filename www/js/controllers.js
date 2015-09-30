@@ -732,6 +732,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     selectedRanges = [];
     $scope.resolved = null;
 
+    $scope.avalaivableCourts = null
+
     $scope.showAddButton = false;
 
     if (day == "-")
@@ -923,12 +925,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.delete = function(item){
 
-    MyObjects.deleteBooking(item);
+    MyObjects.deleteBooking(item)
     MyObjects.findMyBookings()
     .then(
       function(results){
         $scope.bookings = results
-
     }, function(error){
       console.log(error);
     })
@@ -1154,14 +1155,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
         return (obj.date == day);
     });
     MyObjects.deleteDisponibilitaCoach(avalabilities[ix])
-      .then(
-        function(success){
-        avalabilities.splice(ix ,1);
-      }, function(error){
-        console.log(error);
-      });
-      selectedRanges = [];
-      $scope.showDeleteButton = false;
+    avalabilities.splice(ix ,1);
+    selectedRanges = [];
+    $scope.showDeleteButton = false;
+      
   }
 
 

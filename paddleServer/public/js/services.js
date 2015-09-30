@@ -231,6 +231,9 @@ angular.module('starter.services', [])
       },
 
       checkBeforeCreateBooking: function(date,ranges,gameT){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
         console.log('checkBeforeCreateBooking');
         console.log(date);
         console.log(ranges);
@@ -278,9 +281,11 @@ angular.module('starter.services', [])
             else {
               defer.reject("Campo non disponibile nella fascia oraria selezionata!")
             }
+            $ionicLoading.hide();
             return defer.promise;
 
         }, function(error){
+          $ionicLoading.hide();
           console.log(error);
           defer.reject(error)
           return defer.promise;
@@ -466,7 +471,13 @@ angular.module('starter.services', [])
         });
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
-        query.greaterThanOrEqualTo("date", new Date());
+        var today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+
+        query.greaterThanOrEqualTo("date", today);
         var user = Parse.User.current()
         if (user.get('maestro') != null){
           query.equalTo("maestro", user.get('maestro'));
@@ -498,7 +509,12 @@ angular.module('starter.services', [])
       },
       deleteBooking: function(item){
         var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
+        var b = new Booking();
+        b.id = item.objectId
+        console.log(b);
+        return b.destroy();
+
+        /*var query = new Parse.Query(Booking);
         return query.get(item.objectId)
         .then(
           function(obj){
@@ -506,7 +522,7 @@ angular.module('starter.services', [])
 
         }, function(error){
           console.log(error);
-        })
+        })*/
 
       },
       findAvalabilities: function(month,year,gameT){
@@ -718,23 +734,10 @@ angular.module('starter.services', [])
       deleteDisponibilitaCoach:function(obj){
 
         var CoachAvalability = Parse.Object.extend("CoachAvalability");
-        var query = new Parse.Query(CoachAvalability);
-        return query.get(obj.objectId)
-              .then(
-                  function(myObject) {
-                    return myObject;
-                  },
-                  function(object, error) {
-                    Utility.handleParseError(error);
-              }
-              ).then(
-                    function(obj){
-                        $ionicLoading.hide();
-                        return obj.destroy();
-                  }, function(error){
-                        $ionicLoading.hide();
-                        Utility.handleParseError(error);
-                  });
+        var c = new CoachAvalability();
+        c.id = obj.objectId
+        c.destroy()
+
       }
 
     };
