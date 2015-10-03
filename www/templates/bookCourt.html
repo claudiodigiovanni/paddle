@@ -1,7 +1,7 @@
 <ion-view view-title="Disponibilità Campi">
 <ion-content class="padding">
 
-<div class="list">
+<div class="list" ng-show="false">
 
     <label class="item item-radio">
       <input type="radio" name="group" ng-model="booking.gameType" value="P">
@@ -86,7 +86,7 @@
       </label>
 
       <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
-        Campo {{court}}
+        Campo {{court | courtName}}
       </ion-radio-fix>
 
       </div>
@@ -118,7 +118,7 @@
     <ion-content>
 
     <button class="button button-block button-positive" ng-click="closeModalok()" >
-      Prenotazione Effettuata! <b>Data:</b> {{booking.get("date") | date:'dd/MM/yyyy'}} <b>Campo:</b> {{booking.get("court")}}
+      Prenotazione Effettuata! <b>Data:</b> {{booking.get("date") | date:'dd/MM/yyyy'}} <b>Campo:</b> {{booking.get("court") | courtName}}
     </button>
 
     </ion-content>

@@ -13,7 +13,7 @@
     <i class="icon ion-person-stalker" ></i>&nbsp;{{booking.get('user').get('nome')}}
 
     &nbsp;&nbsp;
-    <b><i class="icon ion-android-pin"></i></b> {{booking.get('court')}} &nbsp;
+    <b><i class="icon ion-android-pin"></i></b> {{booking.get("court") | courtName}} &nbsp;
 
       <div class="item-icon-right" ng-show="booking.get('payed') == true">
         <i class="icon ion-happy-outline balanced"></i>
