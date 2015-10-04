@@ -15,30 +15,31 @@ Create tabs with an icon and label, using the tabs-positive style.
 Each tab's child <ion-nav-view> directive will have its own
 navigation history that also transitions its views in and out.
 -->
-<ion-tabs class="tabs-icon-only tabs-color-active-positive">
+<ion-tabs class="tabs-color-active-positive tabs-icon-top">
 
   <!-- Dashboard Tab -->
-  <ion-tab title="Status" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/dash">
+  <ion-tab title="Home" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/dash">
     <ion-nav-view name="tab-dash"></ion-nav-view>
   </ion-tab>
 
   <!-- setAvalability Tab -->
-  <ion-tab title="Gestisci" icon-off="ion-clipboard" icon-on="ion-clipboard" href="#/tab/setAvalability" disabled="currentUser.get('maestro') == undefined">
+  <ion-tab title="Gestisci" icon-off="ion-clipboard" icon-on="ion-clipboard" href="#/tab/setAvalability" ng-if ="currentUser.get('maestro') != undefined">
     <ion-nav-view name="tab-setAvalability"></ion-nav-view>
   </ion-tab>
 
+
   <!-- Book Coach Tab -->
-  <ion-tab title="Prenota Lezione" icon-off="ion-person-stalker" icon-on="ion-person-stalker" href="#/tab/bookCoach">
+  <ion-tab title="Lezione" icon-off="ion-person-stalker" icon-on="ion-person-stalker" href="#/tab/bookCoach">
     <ion-nav-view name="tab-bookCoach"></ion-nav-view>
   </ion-tab>
 
   <!-- Book Court Tab -->
-  <ion-tab title="Prenota Campo" icon-off="ion-ios-tennisball" icon-on="ion-ios-tennisball" href="#/tab/bookCourt">
+  <ion-tab title="Prenota" icon-off="ion-ios-tennisball" icon-on="ion-ios-tennisball" href="#/tab/bookCourt">
     <ion-nav-view name="tab-bookCourt"></ion-nav-view>
   </ion-tab>
 
   <!-- Book Court Tab -->
-  <ion-tab title="CallToAction Open" icon-off="ion-speakerphone" icon-on="ion-speakerphone" href="#/tab/callToAction">
+  <ion-tab title="Open Game" icon-off="ion-speakerphone" icon-on="ion-speakerphone" href="#/tab/callToAction">
     <ion-nav-view name="tab-callToAction"></ion-nav-view>
   </ion-tab>
 
