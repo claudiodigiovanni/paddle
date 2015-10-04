@@ -1,26 +1,7 @@
 
 
 <ion-slide-box show-pager="true" active-slide="0" pager-click="slide(index)" does-continue="true">
-<ion-slide>
-  <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
-        <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
-  </ion-header-bar>
-  <ion-content>
-    <div class="row">
-      <div class="col">
-        <img src="img/help/loginx.png" style="margin:auto;display:block" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        Questa è la pagina nella quale dovrai inserire la tua username e la password per accedere.
-      </div>
-    </div>
 
-  </ion-content>
-
-</ion-slide>
 
 <ion-slide>
   <ion-header-bar>
@@ -30,12 +11,15 @@
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/dashboardx.png" style="margin:auto;display:block" />
+          <img src="img/help/logo.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
-      <div class="col">
-        La <b>Dashboard</b> è la sezione nella quale potrai trovare le ultime news sul circolo. La Dashboard è la sezione nella quale potrai trovare le ultime news sul circolo.
+      <div class="col center">
+        Ciao {{currentUser.get('username')}}! Qui e nelle pagine successive troverai alcune (poche....) spiegazioni per utilizzare al meglio <b>Magic Padel App.</b>
+        Marco, Giuseppe e Corrado ti danno il loro benvenuto e sono a tua disposizione per ogni (...non esageriamo) richiesta.
+        Potrai prenotare una lezione con un maestro a tua scelta, prenotare un campo o unirti a partite organizzate da altri membri.
+        Ma andiamo con ordine....
       </div>
     </div>
   </ion-content>
@@ -43,19 +27,39 @@
 
 <ion-slide>
   <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
+        <h1 class="title">Home!</h1>
         <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
   </ion-header-bar>
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/tabsx.png" style="margin:auto;display:block" />
+          <img src="img/help/home.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
+      <div class="col center">
+        Questa è la pagina nella quale potrai ricevere notizie riguardanti tornei, promozioni, etc.
+      </div>
+    </div>
+  </ion-content>
+</ion-slide>
+
+
+
+<ion-slide>
+  <ion-header-bar>
+        <h1 class="title">Lezione</h1>
+        <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
+  </ion-header-bar>
+  <ion-content>
+    <div class="row">
       <div class="col">
-        Questa sarà la tua barra di navigazione!
-        L'icona 1) permette di accedere alla bacheca. L'icona 2) permette di prenotare una lezione con il maestro. Con l'icona 3) puoi prenotare un campo. L'icona 4) ti permette di visionare le partite aperte: noi le abbiamo chiamate Call To Action, ovvero partite organizzate da un giocatore alle quale, se vuoi potrai unirti, Infine l'icona 5) ti permette di accedere al tua pagina personale, con il riepilogo delle partite che dovrai giocare e tanto altro.
+          <img src="img/help/maestri.png" style="margin:auto;display:block" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col center">
+        Usa questa pagina se desideri prenotare una lezione con il maestro.
       </div>
     </div>
   </ion-content>
@@ -63,18 +67,18 @@
 
 <ion-slide>
   <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
+        <h1 class="title">Lezione</h1>
         <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
   </ion-header-bar>
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/prenotazione-lezionex.png" style="margin:auto;display:block" />
+          <img src="img/help/lezione1.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
-      <div class="col">
-        Scegli il tuo maestro e divertiti!
+      <div class="col center">
+        Scegli il giorno
       </div>
     </div>
   </ion-content>
@@ -82,18 +86,37 @@
 
 <ion-slide>
   <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
+        <h1 class="title">Lezione</h1>
         <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
   </ion-header-bar>
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/prenota1x.png" style="margin:auto;display:block" />
+          <img src="img/help/lezione2.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
+      <div class="col center">
+        Scegli l'orario e conferma. Fatto!
+      </div>
+    </div>
+  </ion-content>
+</ion-slide>
+
+<ion-slide>
+  <ion-header-bar>
+        <h1 class="title">Prenota</h1>
+        <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
+  </ion-header-bar>
+  <ion-content>
+    <div class="row">
       <div class="col">
-        Seleziona il giorno nel quale vuoi giocare ed il tipo di partita. Se vuoi organizzare una partita aperta puoi farlo da qui selezionando la voce "Call To Action".
+          <img src="img/help/prenota1.png" style="margin:auto;display:block" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col center">
+        Questa è la sezione dalla quale potrai prenotare un campo. Prima seleziona il giorno nel quale vuoi giocare.
       </div>
     </div>
   </ion-content>
@@ -102,18 +125,37 @@
 
 <ion-slide>
   <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
+        <h1 class="title">Prenota</h1>
         <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
   </ion-header-bar>
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/prenota2x.png" style="margin:auto;display:block" />
+          <img src="img/help/prenota2.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
+      <div class="col center">
+        Seleziona l'orario ed il campo tra quelli disponibili. Utilizza l'opzione <b>Call To Action</b> se vuoi organizzare una partita aperta ovvero una partita alla quale potranno prendere parte altri giocatori.
+      </div>
+    </div>
+  </ion-content>
+</ion-slide>
+
+<ion-slide>
+  <ion-header-bar>
+        <h1 class="title">Prenota</h1>
+        <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
+  </ion-header-bar>
+  <ion-content>
+    <div class="row">
       <div class="col">
-        Seleziona l'orario tra quelli disponibili. Riceverai subito conferma dell'avvenuta prenotazione.
+          <img src="img/help/prenota3.png" style="margin:auto;display:block" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col center">
+        Conferma ed il gioco è fatto!
       </div>
     </div>
   </ion-content>
@@ -122,18 +164,18 @@
 
 <ion-slide>
   <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
+        <h1 class="title">Open Game</h1>
         <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
   </ion-header-bar>
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/calltoactionx.png" style="margin:auto;display:block" />
+          <img src="img/help/cta.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
-      <div class="col">
-        Qui potrai vedere le partite aperte: Call To Action. Se hai un livello adeguato potrai unirti alla sfida!
+      <div class="col center">
+        Qui potrai vedere le partite aperte: se hai un livello adeguato potrai unirti alla sfida!
       </div>
     </div>
   </ion-content>
@@ -141,19 +183,20 @@
 
 <ion-slide>
   <ion-header-bar>
-        <h1 class="title">Benvenuto!</h1>
+        <h1 class="title">Account</h1>
         <button class="button button-small button-outline button-positive" ng-click="close()">chiudi</button>
   </ion-header-bar>
   <ion-content>
     <div class="row">
       <div class="col">
-          <img src="img/help/accountx.png" style="margin:auto;display:block" />
+          <img src="img/help/account.png" style="margin:auto;display:block" />
       </div>
     </div>
     <div class="row">
-      <div class="col">
-        Qui potrai visionare la tua pagina personale dalla quale potrai cambiare la password, il tuo livello di gioco e visualizzare i tuoi prossimi appuntamenti.
-        Puoi anche cancellare una prenotazione facendo scorrere l'elemento selezionato da destra verso sinistra.
+      <div class="col center">
+        Da questa pagina potrai cambiare la password, il tuo livello di gioco e visualizzare i tuoi prossimi appuntamenti.
+        Puoi anche cancellare una prenotazione facendo scorrere l'elemento selezionato da destra verso sinistra.<br>
+        Ora tocca a te: <b>buon divertimento!</b>
       </div>
     </div>
   </ion-content>
