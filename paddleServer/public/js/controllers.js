@@ -881,6 +881,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       currentUser.save()
       .then(
         function(obj){
+          console.log(obj);
 
       }, function(error){
         console.log(error);

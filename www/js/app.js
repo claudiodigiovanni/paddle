@@ -62,7 +62,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   HardTennisCourtsNumber: 2,
   PaddleCourtsNumber: 3,
   slotsNumber: 48,
-  playersLevels:5,
+  playersLevels:6,
   PaddleCourtsNames: ['Rosso','Blu','Verde']
 })
 

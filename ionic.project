@@ -1,4 +1,11 @@
 {
   "name": "paddle",
-  "app_id": "2d916e71"
+  "app_id": "2d916e71",
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
+  ]
 }
