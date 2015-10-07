@@ -94,7 +94,7 @@ Parse.Cloud.define("signUp", function(request, response){
       var Mailgun = require('mailgun');
       Mailgun.initialize('sandboxb318624be69540219e6c0e4769735e6b.mailgun.org', 'key-c88b7957c124942a3a24311f0970f929');
       Mailgun.sendEmail({
-              to: "claudio.digiovanni@gmail.com",
+              to: "corrado.graziotti@hotmail.it",
               from: "Mailgun@CloudCode.com",
               subject: "Iscrizione Utente",
               text: "L'utente " + request.params.username + " ha richiesto l'Iscrizione a Magic Paddle. "
