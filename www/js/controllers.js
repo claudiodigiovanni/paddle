@@ -295,12 +295,23 @@ $scope.logOut = function(form) {
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope,$http,vcRecaptchaService) {
+.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope,$http,vcRecaptchaService,MyObjects) {
 
 //$scope.currentUser = Parse.User.current();
 var currentUser = {level:3}
 $scope.currentUser = currentUser;
 $scope.registered = false;
+
+MyObjects.getCircoli()
+.then(
+  function(obj){
+    $scope.circoli = obj
+    console.log(obj);
+
+}, function(error){
+  console.log(error);
+})
+
 
 var mymessage = {text:""}
 $scope.mymessage = mymessage;
@@ -340,21 +351,25 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   return
 }
 
-  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null){
+  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === null){
     console.log(currentUser.email);
-    mymessage.text = "Occorre inserire email, username e password..."
+    mymessage.text = "Occorre inserire email, username, password e circolo..."
     $ionicLoading.hide();
     return
   }
-  console.log('username:' + currentUser.email );
+
 
   var e = currentUser.email.toLowerCase()
   var u = currentUser.username.toLowerCase()
   var n = currentUser.nome
   var p = currentUser.password
   var l = currentUser.level
+  var c = currentUser.circolo
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
+
+  console.log(c);
+
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
     success: function(user) {
       //$scope.modal.hide();
       $ionicLoading.hide();
@@ -794,7 +809,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
          template: 'Nessun campo disponibile nelle fascie orarie selezionate...'
        });
        alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone');
+         console.log('Thank you for not eating my delicious ice cream cone!');
          selectedRanges = [];
        });
 

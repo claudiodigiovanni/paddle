@@ -12,25 +12,31 @@ angular.module('starter.services', [])
 
       },
 
+      getCircoli: function(){
+
+        var Circolo = Parse.Object.extend("Circolo");
+        var query = new Parse.Query(Circolo);
+        return query.find()
+
+      },
+
       getUsersToEnable: function(){
+        var c = Parse.User.current().get('circolo');
         var query = new Parse.Query(Parse.User);
         query.equalTo('enabled',false)
+        query.equalTo('circolo',c)
         console.log('getUsersToEnable...');
         return query.find()
-        .then(
-          function(results){
-          console.log(results);
-            return results;
-        }, function(error){
-          console.log(error);
-        })
+
 
       },
 
       getDashboardText : function(){
         var text = []
+        var c = Parse.User.current().get('circolo');
         var Dashboard = Parse.Object.extend("Dashboard");
         var query = new Parse.Query(Dashboard);
+        query.equalTo('circolo',c)
         return query.find()
         .then(
           function(results){
@@ -51,6 +57,8 @@ angular.module('starter.services', [])
 
         var Dashboard = Parse.Object.extend("Dashboard");
         var query = new Parse.Query(Dashboard);
+        var c = Parse.User.current().get('circolo');
+        query.equalTo('circolo',c)
         return query.find()
         .then(
           function(results){
@@ -80,6 +88,9 @@ angular.module('starter.services', [])
         var queryT2 = new Parse.Query(Booking);
         queryT2.equalTo("date", date);
         queryT2.equalTo("gameType", "Tx2");
+        var c = Parse.User.current().get('circolo');
+        queryT2.equalTo("circolo", c);
+
         var ret = {}
         return queryT2.count()
 
@@ -89,6 +100,7 @@ angular.module('starter.services', [])
             var queryT4 = new Parse.Query(Booking);
             queryT4.equalTo("date", date);
             queryT4.equalTo("gameType", "Tx4");
+            queryT4.equalTo("circolo", c);
             return queryT4.count()
 
         }, function(error){
@@ -100,6 +112,7 @@ angular.module('starter.services', [])
             var queryP = new Parse.Query(Booking);
             queryP.equalTo("date", date);
             queryP.equalTo("gameType", "P");
+            queryP.equalTo("circolo", c);
             return queryP.count()
         }, function(error){
             Utility.handleParseError(error);
@@ -234,10 +247,7 @@ angular.module('starter.services', [])
         $ionicLoading.show({
           template: 'Loading...'
         });
-        console.log('checkBeforeCreateBooking');
-        console.log(date);
-        console.log(ranges);
-        console.log(gameT);
+
         var defer = $q.defer()
         var courtsAvalaivable = []
         var courtsNumber = 0;
@@ -421,26 +431,10 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", startDate);
         query.lessThanOrEqualTo("date", endDate);
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
         var ret = [];
         return query.find()
-          .then(
-              function(results){
-
-                _.each(results, function (obj){
-                  var tmp = obj.toJSON();
-                  tmp.date = new Date(obj.get('date')).getDate();
-                  ret.push(tmp);
-                })
-                $ionicLoading.hide();
-                return ret;
-                //return ret;
-              },
-              function(error){
-                $ionicLoading.hide();
-                Utility.handleParseError(error);
-
-              }
-          )
       },
       findBookingsInDate: function(date,gameT){
 
@@ -448,6 +442,8 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.equalTo("date", date);
         query.equalTo("gameType",gameT);
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
 
         query.include('user')
 
@@ -459,6 +455,8 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.lessThan("date", date);
         query.equalTo("payed", false);
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
         query.include('user')
 
         return query.find()
@@ -485,6 +483,10 @@ angular.module('starter.services', [])
         else query.equalTo("user", user );
         query.ascending("date");
         var ret = [];
+
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
+
         return query.find()
           .then(
               function(results){
