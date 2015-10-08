@@ -10,21 +10,42 @@
     &nbsp;&nbsp;
     <b><i class="icon ion-calendar"></i></b> {{booking.get('date') | date:'dd/MM/yyyy'}}&nbsp;
     <b><i class="icon ion-clock"></b></i> {{booking.get('ranges') | range}}&nbsp;&nbsp;
-    <i class="icon ion-person-stalker" ></i>&nbsp;{{booking.get('user').get('nome')}}
+
 
     &nbsp;&nbsp;
     <b><i class="icon ion-android-pin"></i></b> {{booking.get("court") | courtName}} &nbsp;
 
-      <div class="item-icon-right" ng-show="booking.get('payed') == true">
-        <i class="icon ion-happy-outline balanced"></i>
-      </div>
 
-      <div class="item-icon-right" ng-show="booking.get('payed') == false" ng-click="pay({b:booking})">
-        <i class="icon ion-sad-outline assertive"></i>
-      </div>
+<div ng-show="booking.get('callToAction') == true">
+  <i class="icon ion-person-stalker" ></i>&nbsp;
+  <ion-list >
+    <ion-item ng-repeat="player in booking.get('players')">
+        {{player.get('nome')}} - Livello: {{player.get('level')}}
+    </ion-item>
+  </ion-list>
+</div>
+      &nbsp;&nbsp;
+
+
+
+
+<div ng-show="showpay == 'true'">
+  <div class="item-icon-right" ng-show="booking.get('payed') == true">
+    <i class="icon ion-happy-outline balanced"></i>
+  </div>
+
+
+  <div class="item-icon-right" ng-show="booking.get('payed') == false" ng-click="pay({b:booking})">
+    <i class="icon ion-sad-outline assertive"></i>
+  </div>
+
+</div>
+
+      <i class="icon ion-person-stalker" ng-show="userRole == 'segreteria' || userRole == 'admin'"></i>&nbsp;
+      <span ng-show="userRole == 'segreteria' || userRole == 'admin'">{{booking.note}}</span>
 
     <ion-option-button class="button-assertive"
-                     ng-click="delete(booking)">
+                     ng-click="delete({b:booking})">
     Cancella
   </ion-option-button>
   </ion-item>

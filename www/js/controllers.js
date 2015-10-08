@@ -595,14 +595,29 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
   $scope.setRangeStatus = function(pos){
+    $scope.avalaivableCourts=null;
     //alert('getRangeStatus' + pos);
+    console.log(avalaibleRanges);
+
+    if (avalaibleRanges.indexOf(pos) == -1){
+      return
+    }
+
     if (selectedRanges.indexOf(pos) != -1){
       selectedRanges.splice(selectedRanges.indexOf(pos),1);
 
+
     }
-    else if (avalaibleRanges.indexOf(pos) != -1){
-      selectedRanges.push(pos);
+    else {
+        selectedRanges.push(pos);
     }
+
+    if (selectedRanges.length == 0){
+      $scope.avalaivableCourts = null
+      return
+    }
+
+
 
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
@@ -616,7 +631,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
         console.log(obj);
     }, function(error){
       console.log(error);
-      $scope.avalaivableCourts=null;
+
       var alertPopup = $ionicPopup.alert({
          title: 'Opsss!',
          template: 'Nessun campo disponibile nelle fascie orarie selezionate...'
@@ -651,6 +666,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     booking.date = date;
     booking.ranges = selectedRanges;
 
+    console.log(booking);
+
     MyObjects.createBooking(booking)
     .then(
       function(result){
@@ -684,7 +701,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       backdropClickToClose:false
     }).then(function(modal) {
       $scope.setLevelModal = modal;
-      console.log($scope.setLevel);
+
     })
 
     $ionicModal.fromTemplateUrl('reset-pwd.html', {
@@ -746,31 +763,29 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   .then(
     function(results){
       $scope.bookings = results
+      $scope.$apply()
 
   }, function(error){
     console.log(error);
   })
 
-  MyObjects.findCallToActionWithUserAsPlayer()
-  .then(
-    function(results){
-      console.log(results);
-      $scope.callToActions = results
 
-  }, function(error){
-    console.log(error);
-  })
 
   $scope.delete = function(item){
+
+    console.log('delete');
 
     MyObjects.deleteBooking(item)
     MyObjects.findMyBookings()
     .then(
       function(results){
         $scope.bookings = results
+        $scope.$apply()
     }, function(error){
       console.log(error);
     })
+
+
 
 
   }
@@ -814,36 +829,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.selectedDay = null;
 
   });
-
-
-
-
-  $scope.getDayStatus = function(day){
-
-    var today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setSeconds(0);
-    today.setMilliseconds(0);
-
-    var m = parseInt($scope.currentMonth) + 1
-    var tmpDate = new Date( $scope.currentYear + "/" + m + "/" + day);
-
-
-    if (tmpDate < today )
-      return "disabled";
-
-    if (tmpDate.getTime()=== today.getTime())
-      return "today"
-
-    if ($scope.selectedDay == day){
-      return "selected";
-    }
-    else {
-      return 'na'
-    }
-  };
-
 
   $scope.pay = function(booking){
 
@@ -900,6 +885,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   .then(
     function(results){
       $scope.callToActionOpen = results
+      $scope.$apply()
   }, function(error){
     console.log(error);
   })
@@ -911,18 +897,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     MyObjects.addCallToActionPlayer(cta)
     .then(
       function(obj){
-
-        $scope.modal.show();
         MyObjects.findCallToAction()
         .then(
           function(results){
-
             $scope.callToActionOpen = results
+            $scope.$apply()
         }, function(error){
           console.log(error);
         })
-
-      //  $scope.$apply();
 
     }, function(error){
       console.log(error);

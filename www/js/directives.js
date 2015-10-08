@@ -45,6 +45,7 @@ angular.module('starter.directives', [])
 
       $scope.getDayStatus = function(day){
 
+
         var today = new Date();
         today.setHours(0);
         today.setMinutes(0);
@@ -62,6 +63,9 @@ angular.module('starter.directives', [])
         if ($scope.selectedDay == day){
           return "selected";
         }
+        if (selectedDate.getTime()=== today.getTime())
+          return "today"
+
         if ( e ){
           return 'avalaible';
         }
@@ -127,7 +131,8 @@ angular.module('starter.directives', [])
           pay: '&',
           delete: '&',
           date: '=',
-          text: '@'
+          text: '@',
+          showpay: '@'
         },
         templateUrl: 'templates/ng-show-bookings-template.html',
         controller: ['$scope', '$http', 'Utility', '$rootScope', function($scope, $http, Utility, $rootScope) {
