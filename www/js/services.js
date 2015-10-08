@@ -81,172 +81,9 @@ angular.module('starter.services', [])
 
       },
 
-      findStatistics : function(date){
-
-
-        var Booking = Parse.Object.extend("Booking");
-        var queryT2 = new Parse.Query(Booking);
-        queryT2.equalTo("date", date);
-        queryT2.equalTo("gameType", "Tx2");
-        var c = Parse.User.current().get('circolo');
-        queryT2.equalTo("circolo", c);
-
-        var ret = {}
-        return queryT2.count()
-
-        .then(
-          function(obj){
-            ret.Tx2 = obj
-            var queryT4 = new Parse.Query(Booking);
-            queryT4.equalTo("date", date);
-            queryT4.equalTo("gameType", "Tx4");
-            queryT4.equalTo("circolo", c);
-            return queryT4.count()
-
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-        .then(
-          function(obj){
-            ret.Tx4 = obj
-            var queryP = new Parse.Query(Booking);
-            queryP.equalTo("date", date);
-            queryP.equalTo("gameType", "P");
-            queryP.equalTo("circolo", c);
-            return queryP.count()
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-        .then(
-          function(obj){
-            ret.P = obj
-            return ret;
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-
-      },
-
-      addCallToActionPlayer: function(cta){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var user = Parse.User.current();
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        return query.get(cta.objectId)
-        .then(
-          function(cta){
-            $ionicLoading.hide();
-            var players = cta.get('players')
-            var x = _.find(players,{id:user.id})
-            if (!x){
-              cta.add('players',user);
-              return cta.save();
-            }
-
-
-        }, function(error){
-          $ionicLoading.hide();
-          Utility.handleParseError(error);
-
-        })
-      },
-      findCallToAction:function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        query.greaterThanOrEqualTo("date", new Date());
-        query.equalTo("callToAction", true)
-        query.include('user')
-        query.include('players')
-        query.limit(30);
-        query.ascending("date");
-        var ret = []
-        return query.find()
-        .then(
-          function(results){
-              _.each(results, function (obj){
-              var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
-
-              if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
-                return
-
-              var tmp = obj.toJSON();
-              var dx1 = obj.get('date');
-              var m = parseInt(dx1.getMonth()) + 1
-              tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
-
-              tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
-              tmp.playersName = []
-              tmp.user = obj.get('user').get('username')
-              tmp.level = obj.get('user').get('level')
-
-              _.each(obj.get('players'), function (p){
-                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
-              })
-              ret.push(tmp);
-            })
-
-
-            $ionicLoading.hide();
-            return ret;
-
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-
-      },
-      findCallToActionWithUserAsPlayer:function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        query.greaterThanOrEqualTo("date", new Date());
-        query.equalTo("callToAction", true)
-        query.equalTo("players", Parse.User.current());
-        query.include('user')
-        query.include('players')
-        query.limit(30);
-        query.ascending("date");
-        var ret = []
-        return query.find()
-        .then(
-          function(results){
-              _.each(results, function (obj){
-              var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
-              var tmp = obj.toJSON();
-              if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
-                tmp.complete = true
-              else {
-                tmp.complete = false
-              }
-              var dx1 = obj.get('date');
-              var m = parseInt(dx1.getMonth()) + 1
-              tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
-
-              tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
-              tmp.playersName = []
-              tmp.user = obj.get('user').get('username')
-              _.each(obj.get('players'), function (p){
-                tmp.playersName.push({giocatore:p.get("username"),livello:p.get("level")})
-              })
-              ret.push(tmp);
-            })
-            $ionicLoading.hide();
-            return ret;
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-      },
 
       checkBeforeCreateBooking: function(date,ranges,gameT){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
 
         var defer = $q.defer()
         var courtsAvalaivable = []
@@ -291,20 +128,18 @@ angular.module('starter.services', [])
             else {
               defer.reject("Campo non disponibile nella fascia oraria selezionata!")
             }
-            $ionicLoading.hide();
+
             return defer.promise;
 
         }, function(error){
-          $ionicLoading.hide();
+
           console.log(error);
           defer.reject(error)
           return defer.promise;
         })
       },
       createBooking:function(obj){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
 
         return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
         .then(
@@ -312,6 +147,7 @@ angular.module('starter.services', [])
             var Booking = Parse.Object.extend("Booking");
             var book = new Booking();
             book.set("user", Parse.User.current());
+            book.set("circolo", Parse.User.current().get('circolo'));
             book.set("date", obj.date);
             book.set("ranges", obj.ranges);
             if (obj.court != null){
@@ -327,31 +163,20 @@ angular.module('starter.services', [])
             book.set("note",obj.note);
             book.set("payed",false);
 
-            var Maestro = Parse.Object.extend("Maestro");
-            var query = new Parse.Query(Maestro);
             var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
 
             if (maestroId != -1){
-              return query.get(maestroId)
-              .then(
-                function(maestro){
-                    book.set("maestro",maestro)
-                    $ionicLoading.hide();
+              var Maestro = Parse.Object.extend("Maestro");
+              var maestro = new Maestro()
+              maestro.id = maestroId
+              book.set('maestro',maestro)
+            }
 
-                    return book.save(null)
-              }, function(error){
-                  console.log(error);
-                  Utility.handleParseError(error);
-                  $ionicLoading.hide();
-              })
-            }
-            else {
-              $ionicLoading.hide();
-              return book.save(null)
-            }
+            return book.save(null)
+
 
         }, function(error){
-          $ionicLoading.hide();
+
           console.log(error);
         })
       },
@@ -420,9 +245,7 @@ angular.module('starter.services', [])
 
       },
       findBookings: function(month,year){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var daysInMonth = Utility.getDaysInMonth(month,year);
         var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
         var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
@@ -483,9 +306,6 @@ angular.module('starter.services', [])
         else query.equalTo("user", user );
         query.ascending("date");
         var ret = [];
-
-        var c = Parse.User.current().get('circolo')
-        query.equalTo('circolo',c)
 
         return query.find()
           .then(
@@ -551,7 +371,8 @@ angular.module('starter.services', [])
                     num = config.PaddleCourtsNumber
                   }
                   if (px.length < num){
-                    avalability.avalaibleRanges.push(r);
+
+                      avalability.avalaibleRanges.push(r);
                   }
                 })
                 avalabilities.push(avalability);
@@ -561,139 +382,120 @@ angular.module('starter.services', [])
             Utility.handleParseError(error);
         })
       },
+      findaAvalaibleRangesInDate: function(date,gameT){
+        var avalaibleRanges = [];
+        return this.findBookingsInDate (date,gameT)
+        .then(
+          function(bookings){
+
+            var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
+
+            _.each(myranges, function(r){
+              var px =  _.filter(bookings,function(item){
+
+                  if (item.get('ranges').indexOf(r) != -1 )
+                      return item;
+              });
+              var num = 0;
+              if (gameT == 'Tx2')
+                num = config.ClayTennisCourtsNumber
+              else if (gameT == 'Tx4'){
+                num = config.HardTennisCourtsNumber
+              }
+              else{
+                num = config.PaddleCourtsNumber
+              }
+              if (px.length < num){
+
+                  avalaibleRanges.push(r);
+              }
+            })
+            return avalaibleRanges;
+        }, function(error){
+            console.log(error);
+            Utility.handleParseError(error);
+        })
+      },
       getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
-            var prenotazioni = []
+            var courtsAvalabilities = []
             var avalabilities = []
             var myContext = this;
+            //[{day:d, avalaibleRanges: []}]
 
-            return this.findBookings(month,year)
+            console.log('maestroId:' + maestroId);
+            return this.findAvalabilities(month,year,typeG)
             .then(
-                function(prenotazioniRet){
-                  prenotazioni = prenotazioniRet
-                  //console.log(prenotazioni);
+                function(results){
+
+                  courtsAvalabilities = results
+
 
                 }, function(error){
+                  console.log(error);
                   Utility.handleParseError(error);
                 })
             .then(
               function(obj){
                 return myContext.getDisponibilitaCoach(month,year,maestroId)
             }, function(error){
+              console.log(error);
                 Utility.handleParseError(error);
             })
             .then(
               function(disponibilitaCoach){
 
+                console.log(disponibilitaCoach);
+                console.log(courtsAvalabilities);
+
                 _.each(disponibilitaCoach,function (d){
-                  _.each(d.ranges, function(r){
-                      var py =  _.filter(prenotazioni,function(item){
+                  _.each(d.get('ranges'),function(r){
+                      var x = _.filter(courtsAvalabilities, function(item){
 
-                        if (item.date == d.date &&
-                            item.ranges.indexOf(r) != -1 && item.maestro != null && item.maestro.objectId == maestroId)
-                            return item;
-                      });
-
-                      //console.log(py);
-
-                      if (py.length > 0)
-                        return
-
-                      var px = _.where(prenotazioni,{date:d.date,ranges:[r], gameType: typeG });
-                      //console.log('param');
-                      //console.log({date:d.date,ranges:[r], gameType: typeG });
-                      var num = 0;
-                      if (typeG == 'Tx2')
-                        num = config.ClayTennisCourtsNumber
-                      else if (typeG == 'Tx4'){
-                        num = config.HardTennisCourtsNumber
+                      if (item.day == d.get('date').getDate() &&
+                          item.avalaibleRanges.indexOf(r) != -1){
+                        return item
                       }
-                      else{
-                        num = config.PaddleCourtsNumber
-                      }
-
-                      if (px.length < num)
-                        avalabilities.push({date:d.date,range:r});
+                    })
+                    if (x.length > 0)
+                      avalabilities.push({day:d.get('date').getDate(),range:r});
                   })
                 })
-
+                console.log(avalabilities);
                 return avalabilities;
 
             }, function(error){
+                console.log(error);
                 Utility.handleParseError(error);
             })
                 //************
       },
       getDisponibilitaCoach:function(month,year,maestroId){
 
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
         var maestro = null;
         var Maestro = Parse.Object.extend("Maestro");
-        var query = new Parse.Query(Maestro);
-        return query.get(maestroId)
-        .then(
-            function(obj){
-              maestro = obj
 
-            },
-            function (error){
-              Utility.handleParseError(error);
-            }
-          )
-        .then(
-          function(obj){
-            var daysInMonth = Utility.getDaysInMonth(month,year);
-            var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
-            var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
+        console.log(maestroId);
+        var maestro = new Maestro()
+        maestro.id = maestroId
+        var daysInMonth = Utility.getDaysInMonth(month,year);
+        var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
+        var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
 
-            var CoachAvalability = Parse.Object.extend("CoachAvalability");
-            var query = new Parse.Query(CoachAvalability);
-            query.greaterThanOrEqualTo("date", startDate);
-            query.lessThanOrEqualTo("date", endDate);
-            query.equalTo("maestro",maestro);
-            return query.find()
-
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-        .then(
-          function(results){
-            var ret = [];
-
-            _.each(results, function (obj){
-              var tmp = obj.toJSON();
-              tmp.date = new Date(obj.get('date')).getDate();
-
-              ret.push(tmp);
-            })
-            $ionicLoading.hide();
-
-            return ret;
-        }, function(error){
-              Utility.handleParseError(error);
-        })
+        var CoachAvalability = Parse.Object.extend("CoachAvalability");
+        var query = new Parse.Query(CoachAvalability);
+        query.greaterThanOrEqualTo("date", startDate);
+        query.lessThanOrEqualTo("date", endDate);
+        query.equalTo("maestro",maestro);
+        return query.find()
 
       },
       getCoaches: function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var Maestro = Parse.Object.extend("Maestro");
         var query = new Parse.Query(Maestro);
-        return query.find().then(
-          function(results){
-            $ionicLoading.hide();
-            var ret = [];
-            _.each(results, function (obj){
-              var tmp = obj.toJSON();
-              ret.push(tmp);
-            })
-            return ret;
-        }, function (error){
-            $ionicLoading.hide();
-            Utility.handleParseError(error);
-        })
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
+        return query.find()
       },
 
       getCoach: function(objectId){
@@ -740,7 +542,169 @@ angular.module('starter.services', [])
         c.id = obj.objectId
         c.destroy()
 
-      }
+      },  findStatistics : function(date){
+
+
+          var Booking = Parse.Object.extend("Booking");
+          var queryT2 = new Parse.Query(Booking);
+          queryT2.equalTo("date", date);
+          queryT2.equalTo("gameType", "Tx2");
+          var c = Parse.User.current().get('circolo');
+          queryT2.equalTo("circolo", c);
+
+          var ret = {}
+          return queryT2.count()
+
+          .then(
+            function(obj){
+              ret.Tx2 = obj
+              var queryT4 = new Parse.Query(Booking);
+              queryT4.equalTo("date", date);
+              queryT4.equalTo("gameType", "Tx4");
+              queryT4.equalTo("circolo", c);
+              return queryT4.count()
+
+          }, function(error){
+              Utility.handleParseError(error);
+          })
+          .then(
+            function(obj){
+              ret.Tx4 = obj
+              var queryP = new Parse.Query(Booking);
+              queryP.equalTo("date", date);
+              queryP.equalTo("gameType", "P");
+              queryP.equalTo("circolo", c);
+              return queryP.count()
+          }, function(error){
+              Utility.handleParseError(error);
+          })
+          .then(
+            function(obj){
+              ret.P = obj
+              return ret;
+          }, function(error){
+              Utility.handleParseError(error);
+          })
+
+        },
+
+        addCallToActionPlayer: function(cta){
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
+          var user = Parse.User.current();
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+          return query.get(cta.objectId)
+          .then(
+            function(cta){
+              $ionicLoading.hide();
+              var players = cta.get('players')
+              var x = _.find(players,{id:user.id})
+              if (!x){
+                cta.add('players',user);
+                return cta.save();
+              }
+
+
+          }, function(error){
+            $ionicLoading.hide();
+            Utility.handleParseError(error);
+
+          })
+        },
+        findCallToAction:function(){
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+          query.greaterThanOrEqualTo("date", new Date());
+          query.equalTo("callToAction", true)
+          var c = Parse.User.current().get('circolo')
+          query.equalTo('circolo',c)
+          query.include('user')
+          query.include('players')
+          query.limit(30);
+          query.ascending("date");
+          var ret = []
+          return query.find()
+          .then(
+            function(results){
+                _.each(results, function (obj){
+                var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
+
+                if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
+                  return
+
+                var tmp = obj.toJSON();
+                var dx1 = obj.get('date');
+                var m = parseInt(dx1.getMonth()) + 1
+                tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
+
+                tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
+                tmp.playersName = []
+                tmp.user = obj.get('user').get('username')
+                tmp.level = obj.get('user').get('level')
+
+                _.each(obj.get('players'), function (p){
+                  tmp.playersName.push({username:p.get("username"),level:p.get("level")})
+                })
+                ret.push(tmp);
+              })
+
+
+              $ionicLoading.hide();
+              return ret;
+
+          }, function(error){
+              Utility.handleParseError(error);
+          })
+
+        },
+        findCallToActionWithUserAsPlayer:function(){
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+          query.greaterThanOrEqualTo("date", new Date());
+          query.equalTo("callToAction", true)
+          query.equalTo("players", Parse.User.current());
+          query.include('user')
+          query.include('players')
+          query.limit(30);
+          query.ascending("date");
+          var ret = []
+          return query.find()
+          .then(
+            function(results){
+                _.each(results, function (obj){
+                var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
+                var tmp = obj.toJSON();
+                if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
+                  tmp.complete = true
+                else {
+                  tmp.complete = false
+                }
+                var dx1 = obj.get('date');
+                var m = parseInt(dx1.getMonth()) + 1
+                tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
+
+                tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
+                tmp.playersName = []
+                tmp.user = obj.get('user').get('username')
+                _.each(obj.get('players'), function (p){
+                  tmp.playersName.push({giocatore:p.get("username"),livello:p.get("level")})
+                })
+                ret.push(tmp);
+              })
+              $ionicLoading.hide();
+              return ret;
+          }, function(error){
+              Utility.handleParseError(error);
+          })
+        }
 
     };
   })

@@ -60,7 +60,10 @@ Parse.Cloud.define("signUp", function(request, response){
   user.set("level", request.params.level)
   user.set("enabled",false)
   user.set("nome",request.params.nome )
-  user.set("circolo",request.params.circolo )
+  var Circolo = Parse.Object.extend("Circolo");
+  var c = new Circolo();
+  c.id = request.params.circolo
+  user.set("circolo", c)
 
   console.log('CaptchaCode:');
   console.log(request.params.captchaResponse);

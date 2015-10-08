@@ -351,7 +351,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   return
 }
 
-  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === null){
+  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === undefined){
     console.log(currentUser.email);
     mymessage.text = "Occorre inserire email, username, password e circolo..."
     $ionicLoading.hide();
@@ -367,7 +367,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   var c = currentUser.circolo
 
 
-  console.log(c);
+  console.log(currentUser);
 
   Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
     success: function(user) {
@@ -388,243 +388,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-/*
-{user1,data,[1,2,3,6,8], campo1, maestro1}
-1) Seleziona dispo maestro
-2) Seleziona Prenotazoni
 
-*/
-.controller('BookCoach', function($scope, $stateParams, config,MyObjects) {
-
-  MyObjects.getCoaches().then(function(results){
-    $scope.coaches = results
-  },function(error){
-    console.log(error);
-  })
-
-})
-
-
-.controller('CoachAvalabilities', function($scope, $stateParams, config,MyObjects,Utility,$ionicModal, $state, $rootScope) {
-
-  $ionicModal.fromTemplateUrl('ok-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up',
-    backdropClickToClose:false
-  }).then(function(modal) {
-    $scope.modalok = modal;
-  })
-
-  $scope.closeModalok = function() {
-    $scope.modalok.hide();
-    $state.go('tab.account');
-  };
-
-  $scope.$on('$destroy', function() {
-    $scope.modalok.remove();
-  });
-
-
-  console.log("coachId:" + $stateParams.coachId);
-  MyObjects.getCoach($stateParams.coachId)
-  .then(
-    function(maestro){
-        $scope.nomeMaestro = maestro.nome;
-
-        $scope.maestro = maestro;
-        console.log($scope.maestro);
-  }, function(error){
-        console.log(error);
-  })
-
-
-  var currentDate = new Date();
-  var currentMonth = parseInt(currentDate.getMonth())
-  $scope.currentMonth =  currentMonth
-  $scope.currentYear = currentDate.getFullYear();
-
-  var avalabilities = []
-  var avalaibleRanges = [];
-  var selectedRanges = [];
-
-  $scope.showAddButton = false;
-
-  var booking = {};
-  booking.gameType = "P";
-  booking.callToAction = false;
-
-  $scope.booking = booking;
-  $scope.$on('currentDateChanged', function(event, x) {
-
-      var m = x.split(":")[0]
-      var y = x.split(":")[1]
-      $scope.currentMonth = m
-      $scope.currentYear = y
-
-      MyObjects.getCoachAvalabilitiesFilteredByBookings(m,y, $stateParams.coachId, booking.gameType )
-      .then(
-        function(results){
-          avalabilities = results
-      }, function(error){
-        console.log(error);
-      })
-  });
-
-  $scope.$watch('booking.gameType',function(obj){
-    MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear, $stateParams.coachId, booking.gameType )
-    .then(
-      function(results){
-        avalabilities = results
-
-
-    }, function(error){
-      console.log(error);
-    })
-
-
-  })
-
-  $ionicModal.fromTemplateUrl('ranges-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.modal = modal
-  })
-
-
-  $scope.openModal = function() {
-    selectedRanges = [];
-    $scope.modal.show()
-  }
-
-  $scope.closeModal = function() {
-    $scope.modal.hide();
-    selectedRanges = [];
-
-    $scope.selectedHours = ""
-  };
-
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
-
-  $scope.getDayStatus = function(day){
-
-    var today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setSeconds(0);
-    today.setMilliseconds(0);
-    var m = parseInt($scope.currentMonth) + 1
-    var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
-
-    if (selectedDate < today )
-      return "disabled";
-
-    var e = _.find(avalabilities,function(obj){
-        return (obj.date == day);
-    });
-    if (e && $scope.selectedDay == day){
-      return "selected";
-    }
-    if ( e ){
-      return 'avalaible';
-    }
-    else {
-      return 'na'
-    }
-  };
-
-  $scope.dayClicked = function(day){
-
-    $scope.showAddButton = false;
-    $scope.resolved = null;
-
-    if (day == "-")
-      return;
-    var ranges = _.pluck(_.filter(avalabilities,function(obj){
-        return (obj.date == day);
-    }),'range');
-
-    if ( ranges.length === 0 ){
-      return;
-    }
-    else{
-      $scope.selectedDay =  day;
-      avalaibleRanges = ranges;
-      selectedRanges = [];
-      console.log('dayClicked');
-      $scope.showAddButton = true;
-    }
-
-    $scope.modal.show();
-
-  }
-
-
-  $scope.getRangeStatus = function(pos){
-
-    if (selectedRanges.indexOf(pos) != -1){
-      return "energized"
-    }
-
-    if (avalaibleRanges.indexOf(pos) != -1){
-      return "positive"
-    }
-    return "light"
-
-  }
-
-  $scope.setRangeStatus = function(pos){
-    //alert('getRangeStatus' + pos);
-    if (selectedRanges.indexOf(pos) != -1){
-      selectedRanges.splice(selectedRanges.indexOf(pos),1);
-      return
-    }
-
-    if (avalaibleRanges.indexOf(pos) != -1){
-      selectedRanges.push(pos);
-    }
-    else {
-
-    }
-    $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
-  }
-
-  $scope.book = function(){
-
-    if ($scope.selectedDay === null || selectedRanges === null || selectedRanges.length === 0) {
-      $scope.resolved = "Selezionare giorno e fascia oraria."
-      return;
-    }
-
-
-    if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
-      $scope.resolved = "Inserire il nome del giocatore."
-      return;
-    }
-
-    var m = parseInt($scope.currentMonth) + 1;
-    var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
-    var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
-    booking.date = date;
-    booking.ranges = selectedRanges;
-    booking.maestro = $scope.maestro
-
-    MyObjects.createBooking(booking).then(function(result){
-
-      $scope.modal.hide();
-      $scope.resolved = "Prenotazione Effettuata!" ;
-      $scope.modalok.show();
-
-    }, function(error){
-        console.log(error);
-    })
-    selectedRanges = [];
-  }
-})
 
 .controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup) {
+
+  var toggleCoach = {value:false}
+  $scope.toggleCoach = toggleCoach
+
 
   var currentDate = new Date();
   var currentMonth = parseInt(currentDate.getMonth())  ;
@@ -632,16 +402,27 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.currentMonth = currentMonth;
   $scope.currentYear = currentYear;
 
+  $scope.coachAvalabilities = []
+
   var avalaibleRanges = [];
   var selectedRanges = [];
 
-  var avalabilities = []
+  $scope.showAddButton = false;
 
 
   var booking = {};
   booking.gameType = "P";
   booking.callToAction = false;
   $scope.booking = booking;
+
+  //*************************SEZIONE MODAL*******************************************************
+  $ionicModal.fromTemplateUrl('coaches-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.coachesModal = modal;
+  })
 
   $ionicModal.fromTemplateUrl('ok-modal.html', {
     scope: $scope,
@@ -666,6 +447,23 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     animation: 'slide-in-up'
   }).then(function(modal) {
     $scope.modal = modal
+  })
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
+  $scope.$on('currentDateChanged', function(event, x) {
+      console.log('currentDateChanged');
+      var m = x.split(":")[0]
+      var y = x.split(":")[1]
+      $scope.currentMonth = m
+      $scope.currentYear = y
+
+  });
+
+  $scope.$watch('booking.gameType',function(obj){
+
   })
 
 
@@ -682,92 +480,107 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.selectedHours = ""
     //$scope.$apply();
   };
+  //***************************FINE SEZIONE MODAL*****************************************************
 
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
+  $scope.toggleChange = function(){
 
-  $scope.$on('currentDateChanged', function(event, x) {
-      var m = x.split(":")[0]
-      var y = x.split(":")[1]
-      $scope.currentMonth = m
-      $scope.currentYear = y
 
-      MyObjects.findAvalabilities(m,y, booking.gameType)
-      .then(
-        function(results){
-          avalabilities = results;
-      }, function(error){
+
+    if ($scope.toggleCoach.value == true){
+
+      MyObjects.getCoaches().then(function(results){
+        $scope.coaches = results
+        $scope.coachesModal.show();
+      },function(error){
         console.log(error);
       })
-  });
 
-  $scope.$watch('booking.gameType',function(obj){
-      MyObjects.findAvalabilities($scope.currentMonth, $scope.currentYear, booking.gameType)
-      .then(
-        function(results){
-          avalabilities = results;
-      }, function(error){
-        console.log(error);
-      })
-  })
-
-  $scope.showAddButton = false;
-
-  $scope.getDayStatus = function(day){
-
-    var today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setSeconds(0);
-    today.setMilliseconds(0);
-
-    var m = parseInt($scope.currentMonth) + 1
-    var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
-    if (selectedDate < today )
-      return "disabled";
-
-    var e = _.find(avalabilities,function(obj){
-        return (obj.day == day && obj.avalaibleRanges.length >  0);
-    });
-    if (e && $scope.selectedDay == day){
-      return "selected";
     }
-    if ( e ){
-      return 'avalaible';
-    }
+
     else {
-      return 'na'
+      //console.log(false);
+
+      booking.maestro = null
+      $scope.coachAvalabilities = []
+      avalaibleRanges = []
     }
-  };
+  }
+
+
+  $scope.selectCoach = function(coach){
+
+
+
+    console.log(coach);
+    booking.maestro = coach
+    $scope.coachesModal.hide();
+    console.log('selectCoach 2222');
+    // coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
+    MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear,coach.id, booking.gameType )
+    .then(
+      function(results){
+        $scope.coachAvalabilities = results
+        console.log(results);
+        $scope.$apply()
+    }, function(error){
+      console.log(error);
+    })
+
+
+  }
+
+  $scope.closeCoachesModal = function(){
+
+    $scope.toggleCoach.value = false
+    booking.maestro = null
+    $scope.coachAvalabilities = []
+    $scope.coachesModal.hide();
+    avalaibleRanges = []
+
+  }
+
 
   $scope.dayClicked = function(day){
+
+    if (day == "-")
+      return;
 
     console.log('dayClicked' + day);
     selectedRanges = [];
     $scope.resolved = null;
-
     $scope.avalaivableCourts = null
-
     $scope.showAddButton = false;
+    $scope.selectedDay =  day;
 
-    if (day == "-")
-      return;
-    var ranges = _.find(avalabilities,function(obj){
-        return (obj.day == day);
-    }).avalaibleRanges;
+    var m = parseInt($scope.currentMonth) +1 ;
+    var d = $scope.currentYear + "/" + m + "/" + day;
+    var date = new Date(d);
 
-    if ( ranges.length === 0 ){
-      return;
-    }
-    else{
-      $scope.selectedDay =  day;
-      avalaibleRanges = ranges;
-      selectedRanges = [];
+    if(booking.maestro != null){
+      //coachAvalabilities => [{day:d.get('date').getDate(),range:r}]
+      var x = _.filter($scope.coachAvalabilities, function(item){
+          if (item.day == day ){
+            return item
+          }
 
+      })
+      avalaibleRanges = _.pluck(x,'range')
       $scope.showAddButton = true;
       $scope.modal.show()
     }
+    else{
+      // [range]
+      MyObjects.findaAvalaibleRangesInDate(date,booking.gameType)
+      .then(
+        function(ranges){
+          avalaibleRanges = ranges;
+          $scope.showAddButton = true;
+          $scope.modal.show()
+      }, function(error){
+        console.log(error);
+      })
+    }
+
 
   }
 
@@ -1001,6 +814,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.selectedDay = null;
 
   });
+
+
+
 
   $scope.getDayStatus = function(day){
 

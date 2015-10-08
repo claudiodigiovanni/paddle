@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading) {
 
 
 
@@ -63,6 +63,30 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
     });
 
+    var loadingOpen = 0;
+
+    $rootScope.$on('loading:show', function() {
+      loadingOpen = parseInt(loadingOpen) +1
+      if (loadingOpen == 1){
+          //console.log('SHOW.........................');
+          $ionicLoading.show({template: 'uhauuu....'})
+      }
+
+      //console.log( "open" + loadingOpen);
+
+
+    })
+
+    $rootScope.$on('loading:hide', function() {
+      loadingOpen = parseInt(loadingOpen) - 1
+      if (loadingOpen == 0){
+        //console.log('HIDE.........................');
+        $ionicLoading.hide()
+      }
+      //console.log( "close" + loadingOpen);
+
+    })
+
 })
 
 .constant('config', {
@@ -74,38 +98,30 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   PaddleCourtsNames: ['Rosso','Blu','Verde']
 })
 
-/*.config(
-  function($httpProvider) {
-    $httpProvider.interceptors.push(function($q) {
-        return {
-            request: function(config){
-              //console.log(config);
-              return config;
-
-            },
-            requestError: function(rejection){
-              console.log(rejection);
-              return $q.reject(rejection);
-
-            },
-            response: function(response){
-              //console.log(response);
-              return response;
-
-            },
-            responseError: function(res){
-                console.log("Failed to open url: " + res.config.url, res);
-                //Angular returns "success" by default, but we will call "error" if data were not obtained.
-                if(res.data == null && res.status === 0 && res.statusText === ""){
-                    return $q.reject(res) //callback error()
-                }
-                return res //return default success()
-            }
-        };
-
+.config(function($httpProvider) {
+  $httpProvider.interceptors.push(function($rootScope) {
+    return {
+      request: function(config) {
+        //console.log('request');
+        $rootScope.$broadcast('loading:show')
+        return config
+      },
+      requestError: function(rejection) {
+        $rootScope.$broadcast('loading:hide')
+        return rejection
+      },
+      response: function(response) {
+        //console.log('response');
+        $rootScope.$broadcast('loading:hide')
+        return response
+      },
+      responseError: function(rejection) {
+        $rootScope.$broadcast('loading:hide')
+        return rejection
       }
-    );
-  })*/
+    }
+  })
+})
 
 .config(function($stateProvider, $urlRouterProvider) {
 
@@ -163,7 +179,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
       }
     })
 
-  .state('tab.bookCoach', {
+  /*.state('tab.bookCoach', {
       url: '/bookCoach',
       views: {
         'tab-bookCoach': {
@@ -182,7 +198,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
           controller: 'CoachAvalabilities'
         }
       }
-    })
+    })*/
 
   .state('tab.bookCourt', {
       url: '/bookCourt',
