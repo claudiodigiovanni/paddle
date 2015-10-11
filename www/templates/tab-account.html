@@ -9,10 +9,23 @@
         <!-- xxx -->
         <ion-list >
           <ion-item>email: {{currentUser.get('email')}}</ion-item>
-          <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; <button class="button  button-outline button-positive" ng-click="changeLevel()">
+          <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; <button class="button  button-small button-outline button-positive" ng-click="changeLevel()">
                 Modifica</button></ion-item>
           <ion-item>  <button class="button  button-outline button-positive" ng-click="resetPwd()">
                 Reset password</button>
+                      <button class="button  button-outline button-positive" ng-click="manageSubscriptions()">
+                       Circolo</button>
+          </ion-item>
+          <ion-item ng-show="userRole == 'admin' || userRole == 'segreteria'">
+
+                <button class="button button-outline button-assertive" ng-click="gotoStatistics()" >
+                    Gestione Pren.
+                </button>
+
+                <button class="button  button-outline button-assertive" ng-click="gotoUserToEnable()">
+                    Abilita Utenti
+                </button>
+
           </ion-item>
         </ion-list >
         <!-- xxx -->
@@ -28,19 +41,6 @@
 
     </div>
 
-<div class="row">
-  <div class="col">
-    <button class="button button-block button-positive" ng-click="gotoStatistics()" ng-show="userRole == 'admin' || userRole == 'segreteria'">
-        Gestione Pren.
-    </button>
-  </div>
-  <div class="col">
-    <button class="button button-block button-positive" ng-click="gotoUserToEnable()" ng-show="userRole == 'admin'">
-        Abilita Utenti
-    </button>
-  </div>
-</div>
-
 
   <script id="reset-pwd.html" type="text/ng-template">
     <div class="modal">
@@ -52,7 +52,7 @@
       <div class="item item-text-wrap">
           Invieremo una mail al tuo indirizzo per il reset pwd....
             <button class="button button-outline button-small button-positive" ng-click="confirmResetPwd()">
-                Conferma!
+                Conferma!!!
             </button>
       </div>
 

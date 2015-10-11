@@ -21,6 +21,7 @@ angular.module('starter.directives', [])
     scope: {
       avalabilities: '=',
       selectedDay: '=',
+      selectedays: '=',
       dayClicked:'&',
       currentMonth: "=",
       currentYear: "="
@@ -45,7 +46,7 @@ angular.module('starter.directives', [])
 
       $scope.getDayStatus = function(day){
 
-
+        
         var today = new Date();
         today.setHours(0);
         today.setMinutes(0);
@@ -54,6 +55,7 @@ angular.module('starter.directives', [])
 
         var m = parseInt($scope.currentMonth) + 1
         var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
+
         if (selectedDate < today )
           return "disabled";
 
@@ -63,12 +65,15 @@ angular.module('starter.directives', [])
         if ($scope.selectedDay == day){
           return "selected";
         }
-        if (selectedDate.getTime()=== today.getTime())
-          return "today"
-
         if ( e ){
           return 'avalaible';
         }
+        if ($scope.selectedays && $scope.selectedays.indexOf(day) != -1){
+          return 'multiple-select';
+        }
+        if (selectedDate.getTime()=== today.getTime())
+          return "today"
+
         else {
           return 'na'
         }

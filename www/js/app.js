@@ -13,9 +13,12 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   $ionicPlatform.ready(function() {
 
-    $timeout(function() {
-          $cordovaSplashscreen.hide()
-      }, 100)
+    if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
+      $timeout(function() {
+            $cordovaSplashscreen.hide()
+        }, 100)
+    }
+
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -28,6 +31,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
+
 
 
   });
@@ -52,6 +56,11 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $rootScope.currentUser = currentUser;
             $rootScope.userRole = currentUser.get('role')
 
+            if ($rootScope.gameTypes == null){
+              $rootScope.gameTypes = JSON.parse(window.localStorage['gameTypes'])
+
+            }
+
         } else {
             // show the signup or login page
             console.log('currentUser is null.!!');
@@ -63,46 +72,39 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
     });
 
-    var loadingOpen = 0;
+    /*var loadingOpen = 0;
 
     $rootScope.$on('loading:show', function() {
       loadingOpen = parseInt(loadingOpen) +1
       if (loadingOpen == 1){
-          //console.log('SHOW.........................');
           $ionicLoading.show({template: 'uhauuu....'})
       }
-
-      //console.log( "open" + loadingOpen);
-
-
     })
-
     $rootScope.$on('loading:hide', function() {
       loadingOpen = parseInt(loadingOpen) - 1
       if (loadingOpen == 0){
-        //console.log('HIDE.........................');
         $ionicLoading.hide()
       }
-      //console.log( "close" + loadingOpen);
-
-    })
+    })*/
 
 })
 
 .constant('config', {
-  ClayTennisCourtsNumber: 2,
-  HardTennisCourtsNumber: 2,
-  PaddleCourtsNumber: 3,
+  //ClayTennisCourtsNumber: 2,
+  //HardTennisCourtsNumber: 2,
+  //PaddleCourtsNumber: 3,
   slotsNumber: 48,
   playersLevels:6,
-  PaddleCourtsNames: ['Rosso','Blu','Verde']
+  //PaddleCourtsNames: ['Rosso','Blu','Verde']
 })
 
-.config(function($httpProvider) {
+
+/*.config(function($httpProvider) {
   $httpProvider.interceptors.push(function($rootScope) {
     return {
       request: function(config) {
-        //console.log('request');
+        console.log('request');
+        console.log(config);
         $rootScope.$broadcast('loading:show')
         return config
       },
@@ -121,7 +123,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
       }
     }
   })
-})
+})*/
 
 .config(function($stateProvider, $urlRouterProvider) {
 
@@ -251,6 +253,17 @@ views: {
   'tab-account': {
     templateUrl: 'templates/userToEnable.html',
     controller: 'UserToEnable'
+  }
+}
+})
+
+.state('tab.manageSubscriptions', {
+url: '/manageSubscriptions',
+cache: false,
+views: {
+  'tab-account': {
+    templateUrl: 'templates/manageSubscriptions.html',
+    controller: 'manageSubscribtions'
   }
 }
 })

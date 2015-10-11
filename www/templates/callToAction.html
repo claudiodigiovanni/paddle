@@ -1,22 +1,20 @@
-<ion-view view-title="Call To Action Aperte">
+<ion-view view-title="Open Games">
 
 
 
 <ion-content>
 
+  
   <div class="list">
 
     <a class="item" ng-repeat="cta in callToActionOpen" >
       <div class="row">
       <div class="col-25">
-        <i class="icon ion-ios-tennisball-outline" ng-show="cta.get('gameType') == 'Tx2'"></i>
-        <i class="icon ion-social-pinterest-outline" ng-show="cta.get('gameType') == 'P'"></i>
-        <i class="icon ion-ios-tennisball-outline" ng-show="cta.get('gameType') == 'Tx4'"></i>
-        <i class="icon ion-ios-tennisball-outline" ng-show="cta.get('gameType') == 'Tx4'"></i>
+        <i class="icon ion-ios-tennisball-outline"></i>
       </div>
       <div class="col"><h2><i class="icon ion-calendar"></i> {{cta.get('date') | date:'dd/MM/yyyy'}} &nbsp;<i class="icon ion-clock"></i>{{cta.get('ranges') | range}}</h2>
       <p>Organizzatore:{{cta.get('user').get('nome')}}</p>
-      <i class="icon ion-android-pin"></i> {{cta.get('court') | courtName}} &nbsp;</div></div>
+      <i class="icon ion-android-pin"></i> {{cta.get('court') | courtName:cta.get('gameType')}} &nbsp;</div></div>
 
 
       <div class="list list-inset">

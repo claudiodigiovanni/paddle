@@ -1,34 +1,123 @@
 
-// Use Parse.Cloud.define to define as many cloud functions as you want.
-// For example:
+var _ = require("underscore");
+
+var Mailgun = require('mailgun');
+
+var sendEmail = function(toAddress,subjectx,textx){
+  Mailgun.initialize('sandboxb318624be69540219e6c0e4769735e6b.mailgun.org', 'key-c88b7957c124942a3a24311f0970f929');
+
+  Mailgun.sendEmail({
+
+    to: toAddress,
+    from: "Mailgun@CloudCode.com",
+    subject: subjectx,
+    text: textx
+  }, {
+    success: function(httpResponse) {
+      console.log('sendMail ok');
+      //response.success("Email sent!");
+      //response.success(user);
+    },
+    error: function(httpResponse) {
+      console.error(httpResponse);
+      //response.error("Uh oh, something went wrong sending email");
+    }
+  });
+
+}
+
 Parse.Cloud.define("hello", function(request, response) {
   response.success("Hello world from your Parse Server....!");
   console.log('log server...');
 });
 
-Parse.Cloud.define("modifyUser", function(request, response){
+Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response) {
+
+
+  var gameTypes = []
+  var id = request.object.id
+
+  var Booking = Parse.Object.extend("Booking")
+  var query = new Parse.Query(Booking);
+  query.include('players')
+  query.include('circolo')
+  query.get(id)
+  .then(
+    function(b){
+      //************************
+      var circolo = b.get('circolo')
+      gameTypes.push(circolo.get("gameType1"))
+      gameTypes.push(circolo.get("gameType2"))
+      gameTypes.push(circolo.get("gameType3"))
+      var actualGame = gameTypes[b.get('gameType')]
+      var numPlayers = parseInt(actualGame.numberPlayers)
+      if (b.get('callToAction') == true && b.get("players").length == numPlayers ){
+        //sendEmail
+        console.log('sendEmail.........');
+        var players = b.get("players")
+        _.each(players,function(item){
+            //console.log(item);
+            var toAddress = item.get('email')
+            sendEmail(toAddress,"La Partita si farà!" ,"La Partita si farà! ")
+        })
+
+      }
+      //***********************
+
+  }, function(error){
+    console.log(error);
+  })
+
+
+});
+
+Parse.Cloud.define("enableUser", function(request, response){
   Parse.Cloud.useMasterKey();
+  //circoloId è il circolo dell'amministratore che concede l'abilitazione....
+  var circoloId = request.params.circoloId
   var query = new Parse.Query(Parse.User);
-  query.get(request.params.objectId, {
-        success: function(user) {
-          // The object was retrieved successfully.
-          user.set('enabled',true)
+  query.get(request.params.userId)
+  .then(
+    function(user){
+
+      //L'utente, già iscritto, ha chiesto l'abilitazione ad un altro circolo
+      if (user.get("subscriptions").indexOf(circoloId) == -1){
+          user.add('subscriptions',circoloId)
           user.save()
+          var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
+          var query = new Parse.Query(SubscriptionRequest)
+          query.equalTo("user",user.id)
+          query.equalTo("circolo",circoloId)
+          query.first()
           .then(
-            function(u){
-              response.success(user)
+            function(sr){
+              sr.destroy()
+              sendEmail(user.get('email'),"Iscrizione","La tua richiesta di iscrizione a Magic Padel è stata accettata. Complimenti!")
+              response.success('Abilitazione ok!!!')
+
           }, function(error){
-              response.error(error);
+            console.log(error);
+            response.error(error);
           })
+      }
+      //L'utente ha chiesto l'iscrizione per la prima volta
+      else {
+        user.set('enabled',true)
+        user.save()
+        sendEmail(user.get('email'),"Iscrizione","La tua richiesta di iscrizione a Magic Padel è stata accettata. Complimenti!")
+        response.success('Abilitazione ok!!!')
 
 
-        },
-        error: function(object, error) {
-          // The object was not retrieved successfully.
-          // error is a Parse.Error with an error code and message.
-          response.error(error);
-        }
-  });
+      }
+
+
+
+  }, function(error){
+    console.log(error);
+    response.error(error);
+  })
+
+
 });
 
 
@@ -64,13 +153,14 @@ Parse.Cloud.define("signUp", function(request, response){
   var c = new Circolo();
   c.id = request.params.circolo
   user.set("circolo", c)
+  user.add("subscriptions",c.id)
 
   console.log('CaptchaCode:');
   console.log(request.params.captchaResponse);
 
   var platform = request.params.platform;
 
-  if (platform != 'ios' && platform != 'android'){
+  /*if (platform != 'ios' && platform != 'android'){
       var googleParams = "secret=6Le_Kg0TAAAAACpZHdJjXwy_eXA6aLasfrfOavNr&response=" +  request.params.captchaResponse
 
       Parse.Cloud.httpRequest({
@@ -78,7 +168,7 @@ Parse.Cloud.define("signUp", function(request, response){
         })
         .then(
           function(httpResponse){
-            console.log('Verifica Captcha ok!!!!');
+            console.log('Verifica Captcha ok!!!!......................');
             console.log(httpResponse.text);
             if ( httpResponse.text.success == 'false'){
               response.error("Verifica Captcha non superata....");
@@ -89,35 +179,120 @@ Parse.Cloud.define("signUp", function(request, response){
             console.log(httpResponse);
             response.error("Uh oh, something went wrong verifyng Captcha...");
         })
-  }
+  }*/
 
 
   user.signUp(null, {
     success: function(user) {
-      response.success(user);
-      var Mailgun = require('mailgun');
-      Mailgun.initialize('sandboxb318624be69540219e6c0e4769735e6b.mailgun.org', 'key-c88b7957c124942a3a24311f0970f929');
-      Mailgun.sendEmail({
+      console.log('Going to Admin Address...');
 
-              //TODO Inserire mail amministratore....
-              to: "corrado.graziotti@hotmail.it",
-              from: "Mailgun@CloudCode.com",
-              subject: "Iscrizione Utente",
-              text: "L'utente " + request.params.username + " ha richiesto l'Iscrizione a Magic Paddle. "
-            }, {
-              success: function(httpResponse) {
-                console.log(httpResponse);
-                //response.success("Email sent!");
-              },
-              error: function(httpResponse) {
-                console.error(httpResponse);
-                response.error("Uh oh, something went wrong sending email");
-              }
-            });
+
+
+      var toAddress
+      var query = new Parse.Query(Parse.User);
+      query.equalTo('circolo',user.get('circolo'))
+      query.equalTo('role','admin')
+
+      query.first()
+      .then(
+        function(admin){
+          toAddress = admin.get('email')
+      }, function(error){
+        console.log(error);
+        response.error(error);
+      })
+      .then(
+        function(obj){
+          console.log('Admin Address...');
+          console.log(toAddress);
+          sendEmail(toAddress,"Iscrizione Utente","L'utente " + request.params.username + " ha richiesto l'Iscrizione a Magic Paddle. ")
+          response.success('Richiesta inviata con successo');
+
+
+      }, function(error){
+        console.log(error);
+        response.error(error);
+      })
+
+
 
     },
     error: function(user, error) {
       response.error(error);
     }
   });
+});
+
+var followUpWithRequestForSubscription = function(circoloId,userId,userName,response){
+
+  var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
+  var sr = new SubscriptionRequest();
+  sr.set("circolo",circoloId)
+  sr.set("user",userId)
+  return sr.save()
+  .then(
+    function(sr){
+      var Circolo = Parse.Object.extend("Circolo")
+      var query =  new Parse.Query(Circolo);
+      console.log(circoloId);
+      return query.get(circoloId)
+  }, function(error){
+    console.log(error);
+    response.error(error);
+  })
+  .then(
+    function(circolo){
+      var query = new Parse.Query(Parse.User);
+      query.equalTo('circolo',circolo)
+      query.equalTo('role','admin')
+      return query.first()
+
+  }, function(error){
+    console.log(error);
+    response.error(error);
+  })
+  .then(
+    function(admin){
+      var toAddress = admin.get('email')
+      sendEmail(toAddress,"Iscrizione Utente","L'utente " + userName + " ha richiesto l'Iscrizione a Magic Paddle per il tuo circolo... ")
+      response.success('Richiesta inviata con successo');
+
+  }, function(error){
+    console.log(error);
+    response.error(error);
+  })
+
+
+}
+
+Parse.Cloud.define("requestForSubscription", function(request, response){
+  var circoloId = request.params.circoloId
+  var userId = request.params.userId
+  var userName = request.params.userName
+
+  var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
+  var query = new Parse.Query(SubscriptionRequest)
+  query.equalTo("user",userId)
+  query.equalTo("circolo",circoloId)
+
+  query.find({
+    success:function(results){
+        if (results.length > 0)
+          response.error("Richiesta già inviata");
+        else {
+          followUpWithRequestForSubscription(circoloId,userId,userName,response)
+        }
+    },
+    error: function(error){
+        response.error(error);
+    }
+  })
+
+
+
+
+
+
+
+
 });

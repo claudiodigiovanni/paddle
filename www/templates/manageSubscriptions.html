@@ -1,0 +1,22 @@
+<ion-view view-title="Gestione Circoli">
+
+<ion-content>
+
+  <ion-item> <b>Circolo Predefinito: </b>{{circolo.get('nome')}}</ion-item>
+  <ion-list>
+    <ion-item ng-repeat="c in subscriptions" class="item-button-right">
+        {{c.get('nome')}}
+         <div class="buttons">
+
+            <button class="button  button-outline button-positive" ng-click="setAsDefault(c)"  ng-show="circolo.id != c.id && c.manage == 'unsubscribe'">
+                     Predefinito</button>
+
+           <button class="button  button-outline button-positive" ng-click="subscribe(c)" ng-show="c.manage == 'subscribe'">
+               subscribe</button>
+          </div>
+    </ion-item>
+  </ion-list>
+
+
+</ion-content>
+</ion-view>
