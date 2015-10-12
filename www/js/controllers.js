@@ -44,6 +44,7 @@ angular.module('starter.controllers', [])
   $scope.edit = edit
 
 
+
   $ionicModal.fromTemplateUrl('edit.html', {
     scope: $scope,
     animation: 'slide-in-up',
@@ -243,6 +244,7 @@ $scope.login = function(){
                 gameTypes.push(obj.get('gameType2'))
                 gameTypes.push(obj.get('gameType3'))
                 window.localStorage['gameTypes'] = JSON.stringify(gameTypes)
+                window.localStorage['circolo'] = obj.get('nome')
 
 
           }, function(error){
@@ -529,7 +531,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     .then(
       function(results){
         $scope.coachAvalabilities = results
-        console.log(results);
+        //console.log(results);
         $scope.$apply()
     }, function(error){
       console.log(error);
@@ -1172,6 +1174,7 @@ $scope.setAsDefault = function(circolo){
   .then(
     function(obj){
       $scope.circolo = circolo
+      window.localStorage['circolo'] = circolo.get('nome')
       $scope.$apply()
       var alertPopup = $ionicPopup.alert({
          title: 'ok',
@@ -1198,7 +1201,7 @@ $scope.subscribe = function(circolo){
 
   }, function(error){
     console.log(error);
-    
+
     var alertPopup = $ionicPopup.alert({
        title: 'ok',
        template: 'Richiesta di iscrizione già inviata in passato...!'

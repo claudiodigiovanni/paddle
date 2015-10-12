@@ -27,7 +27,7 @@
     <month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
   </div>
 
-  <calendar avalabilities='coachAvalabilities' selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+  <calendar coach-avalabilities='coachAvalabilities' coach="toggleCoach.value" selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
 
 <br>
 <div class="list" ng-show="true">
@@ -57,26 +57,6 @@
       <span class="input-label">Utente</span>
       <input type="text" placeholder="Utente" ng-model="booking.note">
     </label>
-    <ion-toggle  ng-model="booking.callToAction">
-        Call To Action!
-    </ion-toggle>
-    <div class="card" style="text-align:center" ng-if="resolved">
-      <div class="item item-text-wrap">
-        <i class="icon ion-checkmark-circled energized"></i>
-        {{resolved}}
-      </div>
-    </div>
-    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
-    <div class="list" ng-show="avalaivableCourts != null">
-      <label class="item item-divider">
-        Scegli il campo che preferisci
-      </label>
-
-      <ion-radio-fix ng-model="booking.court" ng-value="{{$index + 1}}" ng-repeat="court in avalaivableCourts">
-        Campo {{court | courtName:booking.gameType}}
-      </ion-radio-fix>
-
-      </div>
     <div class="row">
       <div class="col">
       <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
@@ -87,8 +67,32 @@
       <button class="button button-block button-assertive" ng-click="closeModal()" ng-show="showAddButton">
         Annulla
       </button>
-
       </div>
+    </div>
+    <ion-toggle  ng-model="booking.callToAction">
+        Call To Action!
+    </ion-toggle>
+
+    <div class="card" style="text-align:center" ng-if="resolved">
+      <div class="item item-text-wrap">
+        <i class="icon ion-checkmark-circled energized"></i>
+        {{resolved}}
+      </div>
+    </div>
+
+
+
+    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+
+    <div class="list" ng-show="avalaivableCourts != null">
+      <label class="item item-divider">
+        Scegli il campo che preferisci
+      </label>
+
+      <ion-radio-fix ng-model="booking.court" ng-value="{{$index + 1}}" ng-repeat="court in avalaivableCourts">
+        Campo {{court | courtName:booking.gameType}}
+      </ion-radio-fix>
+
     </div>
 
 

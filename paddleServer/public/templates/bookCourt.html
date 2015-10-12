@@ -1,38 +1,6 @@
 <ion-view view-title="Disponibilità Campi">
 <ion-content class="padding">
 
-<div class="list" ng-show="false">
-
-    <label class="item item-radio">
-      <input type="radio" name="group" ng-model="booking.gameType" value="P">
-      <div class="item-content">
-        Paddle
-      </div>
-      <i class="radio-icon ion-checkmark"></i>
-    </label>
-
-    <label class="item item-radio">
-      <input type="radio" name="group" ng-model="booking.gameType" value="Tx2">
-      <div class="item-content">
-        Tennis - Terra Rossa
-      </div>
-      <i class="radio-icon ion-checkmark"></i>
-    </label>
-
-    <label class="item item-radio">
-      <input type="radio" name="group" ng-model="booking.gameType" value="Tx4">
-      <div class="item-content">
-        Tennis - Sintetico
-      </div>
-      <i class="radio-icon ion-checkmark"></i>
-    </label>
-
-  </div>
-
-
-
-
-
 
   <div class="card" style="text-align:center" ng-if="selectedHours">
     <div class="item item-text-wrap">
@@ -49,11 +17,30 @@
     </div>
   </div>
 
+  <ion-toggle  ng-model="toggleCoach.value" ng-change="toggleChange()">
+      Lezione con Maestro
+  </ion-toggle>
+
+  <br>
+
   <div>
     <month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
   </div>
 
-  <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+  <calendar coach-avalabilities='coachAvalabilities' coach="toggleCoach.value" selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+
+<br>
+<div class="list" ng-show="true">
+
+    <label class="item item-radio" ng-repeat="g in gameTypes">
+      <input type="radio" name="group" ng-model="booking.gameType" value="{{$index}}">
+      <div class="item-content">
+        {{g.name}}
+      </div>
+      <i class="radio-icon ion-checkmark"></i>
+    </label>
+
+  </div>
 
 
 
@@ -62,7 +49,7 @@
 <script id="ranges-modal.html" type="text/ng-template">
   <div class="modal">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Scegli Orario</h1>
+      <h1 class="title">Giorno {{selectedDay}} - Scegli Orario</h1>
       <button class="button button-light" ng-click="closeModal()">close</button>
     </ion-header-bar>
     <ion-content>
@@ -85,8 +72,8 @@
         Scegli il campo che preferisci
       </label>
 
-      <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
-        Campo {{court | courtName}}
+      <ion-radio-fix ng-model="booking.court" ng-value="{{$index + 1}}" ng-repeat="court in avalaivableCourts">
+        Campo {{court | courtName:booking.gameType}}
       </ion-radio-fix>
 
       </div>
@@ -116,10 +103,42 @@
 
     </ion-header-bar>
     <ion-content>
+<span class="item item-text-wrap">Prenotazione Effettuata! <b>Data:</b> {{booking.get("date") | date:'dd/MM/yyyy'}} <b>Campo:</b> {{booking.get("court") | courtName:booking.get("gameType")}}</span>
 
-    <button class="button button-block button-positive" ng-click="closeModalok()" >
-      Prenotazione Effettuata! <b>Data:</b> {{booking.get("date") | date:'dd/MM/yyyy'}} <b>Campo:</b> {{booking.get("court") | courtName}}
+    <button class="button  button-block button-positive" ng-click="closeModalok()" > ok
     </button>
+
+    </ion-content>
+  </div>
+</script>
+
+<script id="coaches-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Seleziona il maestro</h1>
+      <button class="button button-light" ng-click="closeCoachesModal()">close</button>
+
+    </ion-header-bar>
+    <ion-content>
+
+      <div class="list card">
+
+        <span ng-show="coaches.length == 0">
+          Opssss...nessun maestro disponibile. Ma che circolo frequenti???
+        </span>
+
+        <span class="item item-icon-right item-text-wrap item-avatar " ng-repeat="coach in coaches" ng-click="selectCoach(coach)">
+          <img src="{{coach.get('img').url()}}">
+          <h2>{{coach.get('nome')}}</h2>
+
+          <p>
+            {{coach.get('descrizione')}}
+          </p>
+
+
+        </span>
+
+      </div>
 
     </ion-content>
   </div>

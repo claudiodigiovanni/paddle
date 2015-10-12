@@ -1,34 +1,32 @@
-<ion-view view-title="Call To Action Aperte">
+<ion-view view-title="Open Games">
 
 
 
 <ion-content>
 
+  
   <div class="list">
 
     <a class="item" ng-repeat="cta in callToActionOpen" >
       <div class="row">
       <div class="col-25">
-        <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx2'"></i>
-        <i class="icon ion-social-pinterest-outline" ng-show="cta.gameType == 'P'"></i>
-        <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
-        <i class="icon ion-ios-tennisball-outline" ng-show="cta.gameType == 'Tx4'"></i>
+        <i class="icon ion-ios-tennisball-outline"></i>
       </div>
-      <div class="col"><h2><i class="icon ion-calendar"></i> {{cta.date}} &nbsp;<i class="icon ion-clock"></i>{{cta.ranges}}</h2>
-      <p>Organizzatore:{{cta.user}}</p>
-      <i class="icon ion-android-pin"></i> {{cta.court | courtName}} &nbsp;</div></div>
+      <div class="col"><h2><i class="icon ion-calendar"></i> {{cta.get('date') | date:'dd/MM/yyyy'}} &nbsp;<i class="icon ion-clock"></i>{{cta.get('ranges') | range}}</h2>
+      <p>Organizzatore:{{cta.get('user').get('nome')}}</p>
+      <i class="icon ion-android-pin"></i> {{cta.get('court') | courtName:cta.get('gameType')}} &nbsp;</div></div>
 
 
       <div class="list list-inset">
         <div class="item">
           <b>Partecipanti </b>
         </div>
-        <div class="item" ng-show="cta.playersName.length == 0">
+        <div class="item" ng-show="cta.get('players').length == 0">
           Ehiii! Ancora nessun iscritto!
         </div>
-        <div class="item" ng-repeat="player in cta.playersName">
+        <div class="item" ng-repeat="player in cta.get('players')">
 
-          <b>Username:</b> {{player.username}} - <b>Livello:</b> {{player.level}}
+          <b>Username:</b> {{player.get('username')}} - <b>Livello:</b> {{player.get('level')}}
         </div>
       </div>
 

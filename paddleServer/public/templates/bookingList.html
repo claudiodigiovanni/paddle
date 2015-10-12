@@ -4,7 +4,9 @@
 
   <month-changer current-month="currentMonth" current-year="currentYear">xxx</month-changer>
 
-  <calendar get-day-status='getDayStatus(pos)' day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+
+  <calendar avalabilities='coachAvalabilities' selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
+
 
 <div class="card" style="text-align:center" ng-show="mymessage">
   <div class="item item-text-wrap">
@@ -15,29 +17,18 @@
 
 <div class="item item-text-wrap">
   <!-- xxx -->
-  <show-bookings bookings="results.bookingsToPayBeforeToday" text="Prenotazioni precedenti da saldare" pay="pay(b)" delete="delete"></show-bookings>
+  <show-bookings bookings="results.bookingsToPayBeforeToday" text="Prenotazioni precedenti da saldare" pay="pay(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
 
 </div>
 
 <div class="item item-text-wrap">
   <!-- xxx -->
-  <show-bookings bookings="results.resultsTennisClay" date="date" text="Prenotazioni Tennis - Terra rossa" pay="pay(b)" delete="delete"></show-bookings>
-  <!-- xxx -->
-</div>
-
-<div class="item item-text-wrap">
-  <!-- xxx -->
-  <show-bookings bookings="results.resultsTennisHard" date="date" text="Prenotazioni Tennis - Sintetico" pay="pay(b)" delete="delete"></show-bookings>
+  <show-bookings bookings="results.bookingsInDate" date="date" text="Prenotazioni" pay="pay(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
 </div>
 
 
-<div class="item item-text-wrap">
-  <!-- xxx -->
-  <show-bookings bookings="results.resultsPaddle" date="date" text="Prenotazioni Paddle" pay="pay(b)" delete="delete"></show-bookings>
-  <!-- xxx -->
-</div>
 
 </ion-content>
 

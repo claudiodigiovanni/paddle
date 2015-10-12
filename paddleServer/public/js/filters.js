@@ -4,8 +4,21 @@ angular.module('starter.filters', [])
     return Utility.getHoursFromRanges(input)
   };
 })
-.filter('courtName', function(config) {
-  return function(input) {
-    return config.PaddleCourtsNames[input-1]
+.filter('courtName', function($rootScope) {
+  return function(court,gameType) {
+    if (gameType == null || $rootScope.gameTypes == null)
+      return court
+    var game = $rootScope.gameTypes[parseInt(gameType)]
+    //console.log(gameType);
+    return game.courtsNames[parseInt(court)-1]
+  };
+})
+.filter('gameName', function($rootScope) {
+  return function(gameType) {
+    if (gameType == null || $rootScope.gameTypes == null)
+      return court
+    var game = $rootScope.gameTypes[parseInt(gameType)]
+    //console.log(gameType);
+    return game.name
   };
 });

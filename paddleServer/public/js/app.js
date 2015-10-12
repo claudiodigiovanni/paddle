@@ -7,8 +7,19 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading) {
+
+
+
   $ionicPlatform.ready(function() {
+
+    if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
+      $timeout(function() {
+            $cordovaSplashscreen.hide()
+        }, 100)
+    }
+
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -22,9 +33,10 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     }
 
 
+
   });
 
-    Parse.initialize("BzP3o0EJmy74BMbHQM8htQ7VuNOOeuBezVYlTeMf","e88MtHw7qQ5ol5YTXPsc2hFXCrPRlXDcn1vumVtv");
+    Parse.initialize("MteACDZVcFz7FCTlvjp1x5DXIaLlmEQxqtIayE7o","kCH6rpFSzc4PUR3g6NvWnHKLHcmcpzrJbTdnteVc");
 
 
 
@@ -44,6 +56,11 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $rootScope.currentUser = currentUser;
             $rootScope.userRole = currentUser.get('role')
 
+            if ($rootScope.gameTypes == null){
+              $rootScope.gameTypes = JSON.parse(window.localStorage['gameTypes'])
+
+            }
+
         } else {
             // show the signup or login page
             console.log('currentUser is null.!!');
@@ -55,49 +72,58 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
     });
 
+    /*var loadingOpen = 0;
+
+    $rootScope.$on('loading:show', function() {
+      loadingOpen = parseInt(loadingOpen) +1
+      if (loadingOpen == 1){
+          $ionicLoading.show({template: 'uhauuu....'})
+      }
+    })
+    $rootScope.$on('loading:hide', function() {
+      loadingOpen = parseInt(loadingOpen) - 1
+      if (loadingOpen == 0){
+        $ionicLoading.hide()
+      }
+    })*/
+
 })
 
 .constant('config', {
-  ClayTennisCourtsNumber: 2,
-  HardTennisCourtsNumber: 2,
-  PaddleCourtsNumber: 3,
+  //ClayTennisCourtsNumber: 2,
+  //HardTennisCourtsNumber: 2,
+  //PaddleCourtsNumber: 3,
   slotsNumber: 48,
   playersLevels:6,
-  PaddleCourtsNames: ['Rosso','Blu','Verde']
+  //PaddleCourtsNames: ['Rosso','Blu','Verde']
 })
 
-/*.config(
-  function($httpProvider) {
-    $httpProvider.interceptors.push(function($q) {
-        return {
-            request: function(config){
-              //console.log(config);
-              return config;
 
-            },
-            requestError: function(rejection){
-              console.log(rejection);
-              return $q.reject(rejection);
-
-            },
-            response: function(response){
-              //console.log(response);
-              return response;
-
-            },
-            responseError: function(res){
-                console.log("Failed to open url: " + res.config.url, res);
-                //Angular returns "success" by default, but we will call "error" if data were not obtained.
-                if(res.data == null && res.status === 0 && res.statusText === ""){
-                    return $q.reject(res) //callback error()
-                }
-                return res //return default success()
-            }
-        };
-
+/*.config(function($httpProvider) {
+  $httpProvider.interceptors.push(function($rootScope) {
+    return {
+      request: function(config) {
+        console.log('request');
+        console.log(config);
+        $rootScope.$broadcast('loading:show')
+        return config
+      },
+      requestError: function(rejection) {
+        $rootScope.$broadcast('loading:hide')
+        return rejection
+      },
+      response: function(response) {
+        //console.log('response');
+        $rootScope.$broadcast('loading:hide')
+        return response
+      },
+      responseError: function(rejection) {
+        $rootScope.$broadcast('loading:hide')
+        return rejection
       }
-    );
-  })*/
+    }
+  })
+})*/
 
 .config(function($stateProvider, $urlRouterProvider) {
 
@@ -155,7 +181,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
       }
     })
 
-  .state('tab.bookCoach', {
+  /*.state('tab.bookCoach', {
       url: '/bookCoach',
       views: {
         'tab-bookCoach': {
@@ -174,7 +200,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
           controller: 'CoachAvalabilities'
         }
       }
-    })
+    })*/
 
   .state('tab.bookCourt', {
       url: '/bookCourt',
@@ -227,6 +253,17 @@ views: {
   'tab-account': {
     templateUrl: 'templates/userToEnable.html',
     controller: 'UserToEnable'
+  }
+}
+})
+
+.state('tab.manageSubscriptions', {
+url: '/manageSubscriptions',
+cache: false,
+views: {
+  'tab-account': {
+    templateUrl: 'templates/manageSubscriptions.html',
+    controller: 'manageSubscribtions'
   }
 }
 })

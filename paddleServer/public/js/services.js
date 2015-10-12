@@ -12,25 +12,154 @@ angular.module('starter.services', [])
 
       },
 
-      getUsersToEnable: function(){
-        var query = new Parse.Query(Parse.User);
-        query.equalTo('enabled',false)
-        console.log('getUsersToEnable...');
+      getCircoli: function(){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+
+        var Circolo = Parse.Object.extend("Circolo");
+        var query = new Parse.Query(Circolo);
         return query.find()
         .then(
           function(results){
-          console.log(results);
-            return results;
+            _.each(results,function(item){
+                if (Parse.User.current() && Parse.User.current().get('subscriptions') != null &&
+            Parse.User.current().get('subscriptions').indexOf(item.id) != -1){
+
+              item.manage = "unsubscribe"
+            }
+            else {
+              item.manage = "subscribe"
+            }
+            })
+            $ionicLoading.hide()
+            return results
+        }, function(error){
+          $ionicLoading.hide()
+          console.log(error);
+        })
+
+
+      },
+
+      requestForSubscription: function(circolo){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        var defer = $q.defer()
+        console.log(circolo.id);
+        console.log(Parse.User.current().id);
+        Parse.Cloud.run('requestForSubscription', {circoloId:circolo.id,userName:Parse.User.current().get('nome'),userId:Parse.User.current().id})
+        .then(
+          function(response){
+            defer.resolve(response);
+            $ionicLoading.hide()
+
+
+        }, function(error){
+          defer.reject(error)
+          console.log(error);
+          $ionicLoading.hide()
+        })
+        return defer.promise
+
+      },
+
+      getUsersFromSubscribtionRequest:function(){
+
+
+        var getUser = function(item){
+          var query = new Parse.Query(Parse.User);
+          return query.get(item.get('user'))
+
+        }
+        var promises = [];
+        var ret = []
+        var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
+        var query = new Parse.Query(SubscriptionRequest);
+        query.equalTo('circolo',Parse.User.current().get('circolo').id)
+        return query.find()
+        .then(
+          function(results){
+            //console.log(results);
+            _.each(results,function(item){
+              var promise = getUser(item)
+              .then(
+                function(user){
+                  ret.push(user)
+
+              }, function(error){
+                console.log(error);
+              })
+              promises.push(promise);
+
+            })
+            //Quando tutte le promise sono state risolte....
+            return $q.all(promises)
+            .then(
+              function(obj){
+                //console.log(ret);
+                return ret
+            }, function(error){
+              console.log(error);
+            })
+
+
         }, function(error){
           console.log(error);
         })
 
       },
 
+      getUsersToEnable: function(){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        var ret = []
+        var myContext = this
+        var c = Parse.User.current().get('circolo');
+        var query = new Parse.Query(Parse.User);
+        query.equalTo('enabled',false)
+        query.equalTo('circolo',c)
+        console.log('getUsersToEnable...');
+        return query.find()
+        .then(
+          function(results){
+            ret = ret.concat(results)
+            return myContext.getUsersFromSubscribtionRequest()
+
+
+        }, function(error){
+          $ionicLoading.hide()
+          console.log(error);
+        })
+        .then(
+          function(results){
+            console.log(results);
+            ret = ret.concat(results)
+            $ionicLoading.hide()
+            return ret
+
+        }, function(error){
+          $ionicLoading.hide()
+          console.log(error);
+        })
+
+      },
+
+      enableUser: function(user){
+
+        ////circoloId è il circolo dell'amministratore che concede l'abilitazione....
+        return Parse.Cloud.run('enableUser', {userId:user.id,circoloId:Parse.User.current().get('circolo').id})
+
+      },
+
       getDashboardText : function(){
         var text = []
+        var c = Parse.User.current().get('circolo');
         var Dashboard = Parse.Object.extend("Dashboard");
         var query = new Parse.Query(Dashboard);
+        query.equalTo('circolo',c)
         return query.find()
         .then(
           function(results){
@@ -51,6 +180,8 @@ angular.module('starter.services', [])
 
         var Dashboard = Parse.Object.extend("Dashboard");
         var query = new Parse.Query(Dashboard);
+        var c = Parse.User.current().get('circolo');
+        query.equalTo('circolo',c)
         return query.find()
         .then(
           function(results){
@@ -73,182 +204,18 @@ angular.module('starter.services', [])
 
       },
 
-      findStatistics : function(date){
-
-
-        var Booking = Parse.Object.extend("Booking");
-        var queryT2 = new Parse.Query(Booking);
-        queryT2.equalTo("date", date);
-        queryT2.equalTo("gameType", "Tx2");
-        var ret = {}
-        return queryT2.count()
-
-        .then(
-          function(obj){
-            ret.Tx2 = obj
-            var queryT4 = new Parse.Query(Booking);
-            queryT4.equalTo("date", date);
-            queryT4.equalTo("gameType", "Tx4");
-            return queryT4.count()
-
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-        .then(
-          function(obj){
-            ret.Tx4 = obj
-            var queryP = new Parse.Query(Booking);
-            queryP.equalTo("date", date);
-            queryP.equalTo("gameType", "P");
-            return queryP.count()
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-        .then(
-          function(obj){
-            ret.P = obj
-            return ret;
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-
-      },
-
-      addCallToActionPlayer: function(cta){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var user = Parse.User.current();
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        return query.get(cta.objectId)
-        .then(
-          function(cta){
-            $ionicLoading.hide();
-            var players = cta.get('players')
-            var x = _.find(players,{id:user.id})
-            if (!x){
-              cta.add('players',user);
-              return cta.save();
-            }
-
-
-        }, function(error){
-          $ionicLoading.hide();
-          Utility.handleParseError(error);
-
-        })
-      },
-      findCallToAction:function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        query.greaterThanOrEqualTo("date", new Date());
-        query.equalTo("callToAction", true)
-        query.include('user')
-        query.include('players')
-        query.limit(30);
-        query.ascending("date");
-        var ret = []
-        return query.find()
-        .then(
-          function(results){
-              _.each(results, function (obj){
-              var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
-
-              if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
-                return
-
-              var tmp = obj.toJSON();
-              var dx1 = obj.get('date');
-              var m = parseInt(dx1.getMonth()) + 1
-              tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
-
-              tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
-              tmp.playersName = []
-              tmp.user = obj.get('user').get('username')
-              tmp.level = obj.get('user').get('level')
-
-              _.each(obj.get('players'), function (p){
-                tmp.playersName.push({username:p.get("username"),level:p.get("level")})
-              })
-              ret.push(tmp);
-            })
-
-
-            $ionicLoading.hide();
-            return ret;
-
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-
-      },
-      findCallToActionWithUserAsPlayer:function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        query.greaterThanOrEqualTo("date", new Date());
-        query.equalTo("callToAction", true)
-        query.equalTo("players", Parse.User.current());
-        query.include('user')
-        query.include('players')
-        query.limit(30);
-        query.ascending("date");
-        var ret = []
-        return query.find()
-        .then(
-          function(results){
-              _.each(results, function (obj){
-              var stdNumPlayers = obj.get('gameType') == 'P' ? 4 : 2
-              var tmp = obj.toJSON();
-              if (obj.get('players') && obj.get('players').length >= stdNumPlayers)
-                tmp.complete = true
-              else {
-                tmp.complete = false
-              }
-              var dx1 = obj.get('date');
-              var m = parseInt(dx1.getMonth()) + 1
-              tmp.date = dx1.getDate() + "/" + m + "/" + dx1.getFullYear()
-
-              tmp.ranges = Utility.getHoursFromRanges(tmp.ranges)
-              tmp.playersName = []
-              tmp.user = obj.get('user').get('username')
-              _.each(obj.get('players'), function (p){
-                tmp.playersName.push({giocatore:p.get("username"),livello:p.get("level")})
-              })
-              ret.push(tmp);
-            })
-            $ionicLoading.hide();
-            return ret;
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-      },
 
       checkBeforeCreateBooking: function(date,ranges,gameT){
+
         $ionicLoading.show({
           template: 'Loading...'
         });
-        console.log('checkBeforeCreateBooking');
-        console.log(date);
-        console.log(ranges);
-        console.log(gameT);
         var defer = $q.defer()
         var courtsAvalaivable = []
         var courtsNumber = 0;
-        if (gameT == 'Tx2')
-          courtsNumber = config.ClayTennisCourtsNumber
-        else if (gameT == 'Tx4'){
-          courtsNumber = config.HardTennisCourtsNumber
-        }
-        else{
-          courtsNumber = config.PaddleCourtsNumber
-        }
+
+        var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
+
         var courts = _.range(1,parseInt(courtsNumber) + 1)
         return this.findBookingsInDate(date,gameT)
         .then(
@@ -265,7 +232,7 @@ angular.module('starter.services', [])
                     return item
                   }
                 })
-                console.log(p);
+
                 if ( p != null && p.length > 0){
                   avalaible = false
                 }
@@ -281,20 +248,18 @@ angular.module('starter.services', [])
             else {
               defer.reject("Campo non disponibile nella fascia oraria selezionata!")
             }
-            $ionicLoading.hide();
+            $ionicLoading.hide()
             return defer.promise;
 
         }, function(error){
-          $ionicLoading.hide();
+
           console.log(error);
           defer.reject(error)
           return defer.promise;
         })
       },
       createBooking:function(obj){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
 
         return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
         .then(
@@ -302,6 +267,7 @@ angular.module('starter.services', [])
             var Booking = Parse.Object.extend("Booking");
             var book = new Booking();
             book.set("user", Parse.User.current());
+            book.set("circolo", Parse.User.current().get('circolo'));
             book.set("date", obj.date);
             book.set("ranges", obj.ranges);
             if (obj.court != null){
@@ -313,35 +279,31 @@ angular.module('starter.services', [])
             }
 
             book.set("callToAction",obj.callToAction);
+
+            if (obj.callToAction == true){
+                book.add('players',Parse.User.current())
+
+            }
             book.set("gameType",obj.gameType);
             book.set("note",obj.note);
             book.set("payed",false);
 
-            var Maestro = Parse.Object.extend("Maestro");
-            var query = new Parse.Query(Maestro);
-            var maestroId = obj.maestro != null ? obj.maestro.objectId : -1
+            var maestroId = obj.maestro != null ? obj.maestro.id : -1
 
+
+            console.log(maestroId);
             if (maestroId != -1){
-              return query.get(maestroId)
-              .then(
-                function(maestro){
-                    book.set("maestro",maestro)
-                    $ionicLoading.hide();
+              var Maestro = Parse.Object.extend("Maestro");
+              var maestro = new Maestro()
+              maestro.id = maestroId
+              book.set('maestro',maestro)
+            }
 
-                    return book.save(null)
-              }, function(error){
-                  console.log(error);
-                  Utility.handleParseError(error);
-                  $ionicLoading.hide();
-              })
-            }
-            else {
-              $ionicLoading.hide();
-              return book.save(null)
-            }
+            return book.save(null)
+
 
         }, function(error){
-          $ionicLoading.hide();
+
           console.log(error);
         })
       },
@@ -353,6 +315,10 @@ angular.module('starter.services', [])
 
       },
       findBookingsForSegreteria: function(date){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        var defer = $q.defer()
         var today = new Date();
         today.setHours(0);
         today.setMinutes(0);
@@ -360,59 +326,49 @@ angular.module('starter.services', [])
         today.setMilliseconds(0);
         var ret = {}
 
-        this.findBookingsToPayBeforeDate(today)
+        var myContext = this
+
+        myContext.findBookingsToPayBeforeDate(today)
         .then(
           function(obj){
-            console.log(obj);
+
             ret.bookingsToPayBeforeToday = obj;
             $ionicLoading.hide();
-
         }, function(error){
           console.log(error);
           $ionicLoading.hide();
         })
 
-        this.findBookingsInDate(date,"Tx2")
-        .then(
-          function(obj){
-            ret.resultsTennisClay = obj;
+        //*****************
+        var gameTypes = $rootScope.gameTypes
+
+        ret.bookingsInDate = []
+        _.each(gameTypes, function(item,index){
+
+          var i = index
+          myContext.findBookingsInDate(date,i.toString())
+          .then(
+            function(obj){
+
+              ret.bookingsInDate  = ret.bookingsInDate.concat (obj);
+              $ionicLoading.hide();
+          }, function(error){
+            console.log(error);
+            defer.reject(error)
             $ionicLoading.hide();
-        }, function(error){
-          console.log(error);
-          $ionicLoading.hide();
+          })
+
+          defer.resolve(ret)
         })
 
-        this.findBookingsInDate(date,"Tx4")
-        .then(
-          function(obj){
-            ret.resultsTennisHard = obj;
-            $ionicLoading.hide();
-        }, function(error){
-          console.log(error);
-          $ionicLoading.hide();
-        })
-
-        this.findBookingsInDate(date,"P")
-        .then(
-          function(obj){
-            console.log(obj);
-            ret.resultsPaddle = obj;
-            $ionicLoading.hide();
-            console.log(ret);
+        return defer.promise;
+        //*****************
 
 
-        }, function(error){
-          console.log(error);
-          $ionicLoading.hide();
-        })
-
-        return ret;
 
       },
       findBookings: function(month,year){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var daysInMonth = Utility.getDaysInMonth(month,year);
         var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
         var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
@@ -421,26 +377,10 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.greaterThanOrEqualTo("date", startDate);
         query.lessThanOrEqualTo("date", endDate);
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
         var ret = [];
         return query.find()
-          .then(
-              function(results){
-
-                _.each(results, function (obj){
-                  var tmp = obj.toJSON();
-                  tmp.date = new Date(obj.get('date')).getDate();
-                  ret.push(tmp);
-                })
-                $ionicLoading.hide();
-                return ret;
-                //return ret;
-              },
-              function(error){
-                $ionicLoading.hide();
-                Utility.handleParseError(error);
-
-              }
-          )
       },
       findBookingsInDate: function(date,gameT){
 
@@ -448,7 +388,10 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.equalTo("date", date);
         query.equalTo("gameType",gameT);
+        var c = Parse.User.current().get('circolo')
 
+        query.equalTo('circolo',c)
+        query.include('players')
         query.include('user')
 
         return query.find()
@@ -459,7 +402,10 @@ angular.module('starter.services', [])
         var query = new Parse.Query(Booking);
         query.lessThan("date", date);
         query.equalTo("payed", false);
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
         query.include('user')
+        query.include('players')
 
         return query.find()
       },
@@ -469,6 +415,9 @@ angular.module('starter.services', [])
         $ionicLoading.show({
           template: 'Loading...'
         });
+
+        var mycontext = this
+
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         var today = new Date();
@@ -476,7 +425,6 @@ angular.module('starter.services', [])
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-
         query.greaterThanOrEqualTo("date", today);
         var user = Parse.User.current()
         if (user.get('maestro') != null){
@@ -484,33 +432,15 @@ angular.module('starter.services', [])
         }
         else query.equalTo("user", user );
         query.ascending("date");
-        var ret = [];
+        query.include('players')
+        $ionicLoading.hide()
         return query.find()
-          .then(
-              function(results){
-
-                _.each(results, function (obj){
-                  var tmp = obj.toJSON();
-                  var m = parseInt(obj.get('date').getMonth()) + 1
-                  tmp.date = obj.get('date').getDate() + "/" + m + "/" +  obj.get('date').getFullYear()
-                  tmp.ranges = Utility.getHoursFromRanges(obj.get("ranges"));
-                  ret.push(tmp);
-                })
-                $ionicLoading.hide();
-                return ret;
-                //return ret;
-              },
-              function(error){
-                $ionicLoading.hide();
-                Utility.handleParseError(error);
-
-              }
-          )
       },
+
       deleteBooking: function(item){
         var Booking = Parse.Object.extend("Booking");
         var b = new Booking();
-        b.id = item.objectId
+        b.id = item.id
         console.log(b);
         return b.destroy();
 
@@ -538,18 +468,21 @@ angular.module('starter.services', [])
             _.each(days,function(d){
                 var avalability = {day:d, avalaibleRanges: []};
                 _.each(ranges, function(r){
-                  var px = _.where(bookings,{date:d, ranges:[r],gameType: gameT});
-                  var num = 0;
-                  if (gameT == 'Tx2')
-                    num = config.ClayTennisCourtsNumber
-                  else if (gameT == 'Tx4'){
-                    num = config.HardTennisCourtsNumber
-                  }
-                  else{
-                    num = config.PaddleCourtsNumber
-                  }
+                  //var px = _.where(bookings,{date:d, ranges:[r],gameType: gameT});
+
+                  var px = _.filter(bookings, function(item){
+
+                    if (item.get('date').getDate() == d &&
+                        item.get('ranges').indexOf(r) != -1 && item.get('gameType') == gameT){
+                      return item
+                    }
+                  })
+
+                  var num = $rootScope.gameTypes[gameT].courtsNumber
+
                   if (px.length < num){
-                    avalability.avalaibleRanges.push(r);
+
+                      avalability.avalaibleRanges.push(r);
                   }
                 })
                 avalabilities.push(avalability);
@@ -559,139 +492,162 @@ angular.module('starter.services', [])
             Utility.handleParseError(error);
         })
       },
+      findaAvalaibleRangesInDate: function(date,gameT){
+
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        var avalaibleRanges = [];
+        return this.findBookingsInDate (date,gameT)
+        .then(
+          function(bookings){
+
+            var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
+
+            _.each(myranges, function(r){
+              var px =  _.filter(bookings,function(item){
+
+                  if (item.get('ranges').indexOf(r) != -1 )
+                      return item;
+              });
+              var num = $rootScope.gameTypes[gameT].courtsNumber
+
+              if (px.length < num){
+
+                  avalaibleRanges.push(r);
+              }
+            })
+            $ionicLoading.hide()
+            return avalaibleRanges;
+        }, function(error){
+            $ionicLoading.hide()
+            console.log(error);
+            Utility.handleParseError(error);
+        })
+      },
       getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
-            var prenotazioni = []
+
+            var courtsAvalabilities = []
             var avalabilities = []
             var myContext = this;
+            $ionicLoading.show({
+              template: 'Loading...'
+            });
 
-            return this.findBookings(month,year)
+            console.log('maestroId:' + maestroId);
+            return this.findAvalabilities(month,year,typeG)
             .then(
-                function(prenotazioniRet){
-                  prenotazioni = prenotazioniRet
-                  //console.log(prenotazioni);
+                function(results){
+
+                  //[{day:d, avalaibleRanges: []}]
+                  courtsAvalabilities = results
+                  console.log(results);
+
 
                 }, function(error){
+                  console.log(error);
                   Utility.handleParseError(error);
                 })
             .then(
               function(obj){
                 return myContext.getDisponibilitaCoach(month,year,maestroId)
             }, function(error){
+              console.log(error);
                 Utility.handleParseError(error);
             })
             .then(
               function(disponibilitaCoach){
 
+                console.log(disponibilitaCoach);
+                console.log(courtsAvalabilities);
+
                 _.each(disponibilitaCoach,function (d){
-                  _.each(d.ranges, function(r){
-                      var py =  _.filter(prenotazioni,function(item){
+                  _.each(d.get('ranges'),function(r){
+                      var x = _.filter(courtsAvalabilities, function(item){
 
-                        if (item.date == d.date &&
-                            item.ranges.indexOf(r) != -1 && item.maestro != null && item.maestro.objectId == maestroId)
-                            return item;
-                      });
-
-                      //console.log(py);
-
-                      if (py.length > 0)
-                        return
-
-                      var px = _.where(prenotazioni,{date:d.date,ranges:[r], gameType: typeG });
-                      //console.log('param');
-                      //console.log({date:d.date,ranges:[r], gameType: typeG });
-                      var num = 0;
-                      if (typeG == 'Tx2')
-                        num = config.ClayTennisCourtsNumber
-                      else if (typeG == 'Tx4'){
-                        num = config.HardTennisCourtsNumber
+                      if (item.day == d.get('date').getDate() &&
+                          item.avalaibleRanges.indexOf(r) != -1){
+                        return item
                       }
-                      else{
-                        num = config.PaddleCourtsNumber
-                      }
-
-                      if (px.length < num)
-                        avalabilities.push({date:d.date,range:r});
+                    })
+                    if (x.length > 0)
+                      avalabilities.push({day:d.get('date').getDate(),range:r});
                   })
                 })
-
+                //console.log(avalabilities);
+                $ionicLoading.hide()
                 return avalabilities;
 
             }, function(error){
+                $ionicLoading.hide()
+                console.log(error);
                 Utility.handleParseError(error);
             })
                 //************
       },
       getDisponibilitaCoach:function(month,year,maestroId){
 
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
         var maestro = null;
         var Maestro = Parse.Object.extend("Maestro");
-        var query = new Parse.Query(Maestro);
-        return query.get(maestroId)
+
+        console.log(maestroId);
+        var maestro = new Maestro()
+        maestro.id = maestroId
+        var daysInMonth = Utility.getDaysInMonth(month,year);
+        var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
+        var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
+
+        var CoachAvalability = Parse.Object.extend("CoachAvalability");
+        var query = new Parse.Query(CoachAvalability);
+        query.greaterThanOrEqualTo("date", startDate);
+        query.lessThanOrEqualTo("date", endDate);
+        query.equalTo("maestro",maestro);
+        return query.find()
+
+      },
+      getDisponibilitaCoachForCalendar:function(month,year,maestroId){
+        var avalabilities = []
+        var maestro = null;
+        var Maestro = Parse.Object.extend("Maestro");
+
+        //console.log(maestroId);
+        var maestro = new Maestro()
+        maestro.id = maestroId
+        var daysInMonth = Utility.getDaysInMonth(month,year);
+        var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
+        var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
+
+        var CoachAvalability = Parse.Object.extend("CoachAvalability");
+        var query = new Parse.Query(CoachAvalability);
+        query.greaterThanOrEqualTo("date", startDate);
+        query.lessThanOrEqualTo("date", endDate);
+        query.equalTo("maestro",maestro);
+        return query.find()
         .then(
-            function(obj){
-              maestro = obj
-
-            },
-            function (error){
-              Utility.handleParseError(error);
-            }
-          )
-        .then(
-          function(obj){
-            var daysInMonth = Utility.getDaysInMonth(month,year);
-            var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
-            var endDate =new Date( year + "/" + (parseInt(month) + 1) + "/" + daysInMonth);
-
-            var CoachAvalability = Parse.Object.extend("CoachAvalability");
-            var query = new Parse.Query(CoachAvalability);
-            query.greaterThanOrEqualTo("date", startDate);
-            query.lessThanOrEqualTo("date", endDate);
-            query.equalTo("maestro",maestro);
-            return query.find()
-
-        }, function(error){
-            Utility.handleParseError(error);
-        })
-        .then(
-          function(results){
-            var ret = [];
-
-            _.each(results, function (obj){
-              var tmp = obj.toJSON();
-              tmp.date = new Date(obj.get('date')).getDate();
-
-              ret.push(tmp);
+          function(disponibilitaCoach){
+            _.each(disponibilitaCoach,function (d){
+              var ranges = []
+              _.each(d.get('ranges'),function(r){
+                  ranges.push(r)
+              })
+              avalabilities.push({day:d.get('date').getDate(),range:ranges});
             })
-            $ionicLoading.hide();
+            //console.log(avalabilities);
+            return avalabilities;
 
-            return ret;
         }, function(error){
-              Utility.handleParseError(error);
+          console.log(error);
         })
+
 
       },
       getCoaches: function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+
         var Maestro = Parse.Object.extend("Maestro");
         var query = new Parse.Query(Maestro);
-        return query.find().then(
-          function(results){
-            $ionicLoading.hide();
-            var ret = [];
-            _.each(results, function (obj){
-              var tmp = obj.toJSON();
-              ret.push(tmp);
-            })
-            return ret;
-        }, function (error){
-            $ionicLoading.hide();
-            Utility.handleParseError(error);
-        })
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
+        return query.find()
       },
 
       getCoach: function(objectId){
@@ -729,16 +685,97 @@ angular.module('starter.services', [])
           $ionicLoading.hide();
             Utility.handleParseError(error);
         })
-
       },
-      deleteDisponibilitaCoach:function(obj){
+      deleteDisponibilitaCoach:function(date){
 
         var CoachAvalability = Parse.Object.extend("CoachAvalability");
-        var c = new CoachAvalability();
-        c.id = obj.objectId
+        var query = new Parse.Query(CoachAvalability);
+        query.equalTo("maestro", Parse.User.current().get('maestro'));
+        query.equalTo("date",date)
+        return query.first()
+        .then(
+          function(obj){
+            obj.destroy()
+
+        }, function(error){
+          console.log(error);
+        })
+
+
         c.destroy()
 
-      }
+      },
+
+      addCallToActionPlayer: function(cta){
+
+          var defer = $q.defer()
+          var user = Parse.User.current();
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+
+
+
+
+          return query.get(cta.id)
+          .then(
+            function(cta){
+
+              var actualGame = $rootScope.gameTypes[cta.get('gameType')]
+              var numPlayers = parseInt(actualGame.numberPlayers)
+              if (cta.get("players").length == numPlayers ){
+                defer.reject('Partita già al completo!')
+              }
+              else{
+                var players = cta.get('players')
+                var x = _.find(players,{id:user.id})
+                if (!x){
+                  cta.add('players',user);
+                  cta.save()
+                  .then(
+                    function(obj){
+                      defer.resolve(obj)
+                  }, function(error){
+                    defer.reject(error)
+                    console.log(error);
+                  })
+                }else
+                  defer.reject('Utente già inserito')
+
+              }
+
+              return defer.promise
+          }, function(error){
+
+            Utility.handleParseError(error);
+
+          })
+        },
+        findCallToAction:function(){
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+          query.greaterThanOrEqualTo("date", new Date());
+          query.equalTo("callToAction", true)
+          var c = Parse.User.current().get('circolo')
+          query.equalTo('circolo',c)
+          query.include('user')
+          query.include('players')
+          query.limit(30);
+          query.ascending("date");
+          return query.find()
+          .then(
+            function(results){
+              $ionicLoading.hide()
+              return results
+          }, function(error){
+            $ionicLoading.hide()
+            console.log(error);
+          })
+
+
+        }
 
     };
   })
@@ -812,7 +849,8 @@ angular.module('starter.services', [])
       return dd+'.'+mm+'.'+yy
     },
     handleParseError: function (err) {
-        $ionicLoading.hide();
+        console.log(err);
+
         switch (err.code) {
           case Parse.Error.INVALID_SESSION_TOKEN:
             Parse.User.logOut();

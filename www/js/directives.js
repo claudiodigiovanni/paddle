@@ -19,7 +19,8 @@ angular.module('starter.directives', [])
   return {
     restrict: 'E',
     scope: {
-      avalabilities: '=',
+      coach: "=",
+      coachAvalabilities: '=',
       selectedDay: '=',
       selectedays: '=',
       dayClicked:'&',
@@ -46,7 +47,7 @@ angular.module('starter.directives', [])
 
       $scope.getDayStatus = function(day){
 
-        
+
         var today = new Date();
         today.setHours(0);
         today.setMinutes(0);
@@ -56,10 +57,14 @@ angular.module('starter.directives', [])
         var m = parseInt($scope.currentMonth) + 1
         var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
 
-        if (selectedDate < today )
+        if (selectedDate < today || day == '-')
           return "disabled";
 
-        var e = _.find($scope.avalabilities,function(obj){
+        //Se non seleziono il maestro considero tutti i giorni disponibili
+        if (!$scope.coach)
+          return 'avalaible';
+
+        var e = _.find($scope.coachAvalabilities,function(obj){
             return (obj.day == day );
         });
         if ($scope.selectedDay == day){

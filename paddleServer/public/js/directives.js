@@ -19,7 +19,10 @@ angular.module('starter.directives', [])
   return {
     restrict: 'E',
     scope: {
-      getDayStatus: '&',
+      coach: "=",
+      coachAvalabilities: '=',
+      selectedDay: '=',
+      selectedays: '=',
       dayClicked:'&',
       currentMonth: "=",
       currentYear: "="
@@ -28,6 +31,8 @@ angular.module('starter.directives', [])
     replace:true,
     link: function(scope, elm, attrs) {
             console.log('Calendar link....');
+
+
           },
     controller: ['$scope', '$http', 'Utility','$rootScope', function($scope, $http, Utility, $rootScope) {
       var weekDays = ['L','Ma','Me','G','V','S','D']
@@ -39,6 +44,46 @@ angular.module('starter.directives', [])
         $scope.weeks = Utility.getCalendar($scope.currentMonth,$scope.currentYear);
         $rootScope.$broadcast('currentDateChanged', $scope.currentMonth + ":" + $scope.currentYear );
       })
+
+      $scope.getDayStatus = function(day){
+
+
+        var today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+
+        var m = parseInt($scope.currentMonth) + 1
+        var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
+
+        if (selectedDate < today || day == '-')
+          return "disabled";
+
+        //Se non seleziono il maestro considero tutti i giorni disponibili
+        if (!$scope.coach)
+          return 'avalaible';
+
+        var e = _.find($scope.coachAvalabilities,function(obj){
+            return (obj.day == day );
+        });
+        if ($scope.selectedDay == day){
+          return "selected";
+        }
+        if ( e ){
+          return 'avalaible';
+        }
+        if ($scope.selectedays && $scope.selectedays.indexOf(day) != -1){
+          return 'multiple-select';
+        }
+        if (selectedDate.getTime()=== today.getTime())
+          return "today"
+
+        else {
+          return 'na'
+        }
+
+      };
 
     }]
   }
@@ -83,10 +128,6 @@ angular.module('starter.directives', [])
       }
 
 
-
-
-
-
     }]
   }
 })
@@ -100,7 +141,8 @@ angular.module('starter.directives', [])
           pay: '&',
           delete: '&',
           date: '=',
-          text: '@'
+          text: '@',
+          showpay: '@'
         },
         templateUrl: 'templates/ng-show-bookings-template.html',
         controller: ['$scope', '$http', 'Utility', '$rootScope', function($scope, $http, Utility, $rootScope) {

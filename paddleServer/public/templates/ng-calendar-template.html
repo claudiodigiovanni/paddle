@@ -3,19 +3,19 @@
 
   <div class="item item-divider">
     <div class="row">
-      <div class="col" ng-repeat="weekDay in weekDays" ><span class="badge badge-dark">{{weekDay}}</span></div>
+      <div class="col" ng-repeat="weekDay in weekDays" ><span>{{weekDay}}</span></div>
     </div>
   </div>
   <div class="item">
 
     <div class="row" ng-repeat="week in weeks">
-      <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus({pos:day})" >
-        <span class="badge badge-royal" ng-switch-when="today" ng-click="dayClicked({pos:day})">{{day}}</span>
-        <span class="badge badge-positive" ng-switch-when="avalaible" ng-click="dayClicked({pos:day})">{{day}}</span>
-        <span class="badge badge-energized" ng-switch-when="selected" ng-click="dayClicked({pos:day})">{{day}}</span>
-        <span class="badge badge-balanced" ng-switch-when="multiple-select" ng-click="dayClicked({pos:day})">{{day}}</span>
-        <span class="badge badge-light" ng-switch-when="disabled"><strike>-{{day}}-</strike></span>
-        <span class="badge badge-light" ng-switch-default ng-click="dayClicked({pos:day})">{{day}}</span>
+      <div class="col" ng-repeat="day in week track by $index" ng-switch on="getDayStatus(day)" >
+        <span class="button button-small button-royal" ng-switch-when="today" ng-click="dayClicked({pos:day})">{{day}}</span>
+        <span class="button button-small button-positive" ng-switch-when="avalaible" ng-click="dayClicked({pos:day})">{{day}}</span>
+        <span class="button button-small button-energized" ng-switch-when="selected" ng-click="dayClicked({pos:day})">{{day}}</span>
+        <span class="button button-small button-balanced" ng-switch-when="multiple-select" ng-click="dayClicked({pos:day})">{{day}}</span>
+        <span class="button button-small button-light" ng-switch-when="disabled"><strike>-{{day}}-</strike></span>
+        <span class="button button-small button-light" ng-switch-default ng-click="dayClicked({pos:day})">{{day}}</span>
 
       </div>
     </div>
