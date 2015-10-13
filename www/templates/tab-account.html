@@ -41,6 +41,27 @@
 
     </div>
 
+    <div class="item item-text-wrap">
+      <ion-list >
+        <ion-item><b>Inviti Ricevuti</b></ion-item>
+        <ion-item ng-repeat="i in invitations">
+
+          {{i.get('booking').get('date')}}
+          <ion-option-button class="button-balanced"
+                           ng-click="accept(i)">
+          Accetta
+        </ion-option-button>
+          <ion-option-button class="button-balanced"
+                           ng-click="decline(i)">
+          Declina
+        </ion-option-button>
+
+        </ion-item>
+
+    </div>
+  </ion-content>
+
+
 
   <script id="reset-pwd.html" type="text/ng-template">
     <div class="modal">
@@ -117,5 +138,5 @@
   </script>
 
 
-  </ion-content>
+
 </ion-view>

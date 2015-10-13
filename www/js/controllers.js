@@ -476,7 +476,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   };
 
   $scope.gotoInvitation = function(){
-    $state.go('tab.invitation')
+    $state.go('tab.invitation',{'bookingId':$scope.booking.id})
   }
 
   //***************************FINE SEZIONE MODAL*****************************************************
@@ -775,6 +775,45 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }, function(error){
     console.log(error);
   })
+
+
+  MyObjects.findMyInvitations()
+  .then(
+    function(results){
+
+      $scope.invitations = results
+      $scope.$apply()
+
+  }, function(error){
+    console.log(error);
+  })
+
+
+
+  $scope.accept = function(invitation){
+
+    MyObjects.acceptInvitation(invitation)
+    .then(
+      function(obj){
+        console.log('ok');
+    }, function(error){
+      console.log(error);
+    })
+
+  }
+
+  $scope.decline = function(invitation){
+
+    MyObjects.declineInvitation(invitation)
+    .then(
+      function(obj){
+        console.log('ok');
+    }, function(error){
+      console.log(error);
+    })
+
+  }
+
 
 
 
@@ -1251,6 +1290,7 @@ $scope.ok = function(){
         function(results){
           console.log(results);
           $scope.players = results
+          $scope.$apply()
 
       }, function(error){
         console.log(error);
@@ -1264,9 +1304,22 @@ $scope.ok = function(){
     .then(
       function(obj){
         console.log('ok');
+        return MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
     }, function(error){
       console.log(error);
     })
+    .then(
+      function(obj){
+        console.log(obj);
+        $scope.invitations = obj
+        //$scope.$apply()
+    }, function(error){
+      console.log(error);
+    })
+
+
+
+
   }
 
 })

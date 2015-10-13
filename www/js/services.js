@@ -783,21 +783,70 @@ angular.module('starter.services', [])
           return query.find()
 
         },
+
         invite:function(userIdToInvite,bookingIdCalled){
+          console.log('invite service');
+          var defer = $q.defer()
 
           Parse.Cloud.run('invite', {user:userIdToInvite,booking: bookingIdCalled})
           .then(
             function(response){
-              return ok
+              defer.resolve('ok')
+              return "ok"
               //$ionicLoading.hide()
 
 
           }, function(error){
-            return error
+            defer.reject(error)
             console.log(error);
             //$ionicLoading.hide()
           })
+          return defer.promise
 
+        },
+        findInvitationAlredySentForBooking: function(bookingId){
+
+          var Booking = Parse.Object.extend("Booking");
+          var booking = new Booking()
+          booking.id = bookingId
+
+
+          var InvitationRequest = Parse.Object.extend("InvitationRequest");
+          var query = new Parse.Query(InvitationRequest)
+          query.equalTo('booking',booking)
+          query.include('user')
+          return query.find();
+
+        },
+
+        findMyInvitations: function(){
+          var InvitationRequest = Parse.Object.extend("InvitationRequest");
+          var query = new Parse.Query(InvitationRequest)
+          query.equalTo('user',Parse.User.current())
+          query.include('booking')
+          return query.find();
+
+        },
+
+        acceptInvitation: function(invitation){
+
+          var booking = invitation.get('booking')
+          booking.add('players',Parse.User.current().id)
+          return booking.save()
+          .then(
+            function(obj){
+              var InvitationRequest = Parse.Object.extend("InvitationRequest");
+              var ir = new InvitationRequest();
+              ir.id = invitation.id
+              ir.destroy()
+          }, function(error){
+            console.log(error);
+          })
+
+        }
+
+        declineInvitation: function(invitation){
+          
         }
 
     }

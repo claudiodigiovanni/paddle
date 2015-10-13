@@ -22,12 +22,26 @@
             <button class="button button-light" ng-click="invite(p.id)">Invita</button>
           </div>
         </div>
-
-
-
       </div>
     </div>
+  </div>
 
+  <div class="list">
+    <ion-item>Inviti già spediti</ion-item>
+    <div class="card" style="text-align:center" ng-repeat="i in invitations">
+      <div class="item item-text-wrap">
+
+        <div class="row">
+          <div class="col">
+            Nome: {{i.get('user').get('nome')}} <br>
+            Livello: {{i.get('user').get('level')}}
+          </div>
+          <div class="col">
+            
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 
