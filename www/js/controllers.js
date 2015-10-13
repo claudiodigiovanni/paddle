@@ -1236,6 +1236,10 @@ $scope.ok = function(){
   var model = {name:""}
   $scope.model = model
 
+  $scope.bookingId = $stateParams.bookingId
+
+  console.log($scope.bookingId);
+
   $scope.change = function(){
 
     console.log($scope.model.name.length);
@@ -1251,23 +1255,18 @@ $scope.ok = function(){
       }, function(error){
         console.log(error);
       })
-
-
     }
-
   }
 
-  $scope.invite = function(){
+  $scope.invite = function(userId){
     console.log('invitation');
-    MyObjects.invite(user,booking)
+    MyObjects.invite(userId,$scope.bookingId)
     .then(
       function(obj){
         console.log('ok');
     }, function(error){
       console.log(error);
     })
-
-
   }
 
 })

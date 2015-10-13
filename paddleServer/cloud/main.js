@@ -291,8 +291,15 @@ Parse.Cloud.define("requestForSubscription", function(request, response){
 });
 
   Parse.Cloud.define("invite", function(request, response){
-    var user = request.params.user
-    var booking = request.params.booking
+    var userId = request.params.user
+    var bookingId = request.params.booking
+
+    var user = new Parse.User()
+    user.id = userId
+
+    var Booking = Parse.Object.extend("Booking");
+    var booking = new Booking()
+    booking.id = bookingId
 
     var InvitationRequest = Parse.Object.extend("InvitationRequest");
     var ir = new InvitationRequest()

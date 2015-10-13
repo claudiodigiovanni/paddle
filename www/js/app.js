@@ -289,7 +289,7 @@ views: {
 })
 
 .state('tab.invitation', {
-  url: '/invitation',
+  url: '/invitation:bookingId',
   views: {
     'tab-bookCourt': {
       templateUrl: 'templates/invitation.html',

@@ -783,9 +783,9 @@ angular.module('starter.services', [])
           return query.find()
 
         },
-        invite:function(userToInvite,bookingCalled){
+        invite:function(userIdToInvite,bookingIdCalled){
 
-          Parse.Cloud.run('invite', {user:userToInvite,booking: bookingCalled})
+          Parse.Cloud.run('invite', {user:userIdToInvite,booking: bookingIdCalled})
           .then(
             function(response){
               return ok
