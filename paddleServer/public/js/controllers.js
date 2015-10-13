@@ -4,40 +4,10 @@ angular.module('starter.controllers', [])
 
 
 
+//*********************INSTALL NEW UPDATE *************************************
 
-  // Update app code with new release from Ionic Deploy
-  doUpdate = function() {
-    $ionicDeploy.update().then(function(res) {
-      console.log('Ionic Deploy: Update Success! ', res);
-    }, function(err) {
-      console.log('Ionic Deploy: Update error! ', err);
-    }, function(prog) {
-      console.log('Ionic Deploy: Progress... ', prog);
-    });
-  };
 
-  // Check Ionic Deploy for new code
-  checkForUpdates = function() {
-    console.log('Ionic Deploy: Checking for updates');
-    return $ionicDeploy.check().then(function(hasUpdate) {
-      console.log('Ionic Deploy: Update available: ' + hasUpdate);
-      $scope.hasUpdate = hasUpdate;
-      return hasUpdate;
-    }, function(err) {
-      console.error('Ionic Deploy: Unable to check for updates', err);
-    });
-  }
-
-  checkForUpdates()
-  .then(
-    function(hasUpdate){
-      if (hasUpdate)
-        doUpdate()
-
-  }, function(error){
-    console.log(error);
-  })
-
+//*********************FINE NEW UPDATE *************************************
 
   var edit = {text:"xxxx"}
 

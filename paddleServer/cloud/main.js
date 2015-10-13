@@ -161,7 +161,7 @@ Parse.Cloud.define("signUp", function(request, response){
   var platform = request.params.platform;
 
   /*if (platform != 'ios' && platform != 'android'){
-      var googleParams = "secret=6Le_Kg0TAAAAACpZHdJjXwy_eXA6aLasfrfOavNr&response=" +  request.params.captchaResponse
+      var googleParams = "secret=6Lc5tw4TAAAAAHwt9evSu8Txn6odKxqEUs1T9AI5&response=" +  request.params.captchaResponse
 
       Parse.Cloud.httpRequest({
             url: 'https://www.google.com/recaptcha/api/siteverify?' + googleParams
