@@ -49,34 +49,19 @@
 <script id="ranges-modal.html" type="text/ng-template">
   <div class="modal">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Giorno {{selectedDay}} - Scegli Orario</h1>
+      <h1 class="title"><i class="icon ion-ios-information positive" ng-click="openPopover($event)"></i> Giorno {{selectedDay}} - Scegli Orario : {{selectedHours}}</h1>
+
+
       <button class="button button-light" ng-click="closeModal()">close</button>
     </ion-header-bar>
     <ion-content>
+
+
+
     <label class="item item-input item-floating-label" ng-show="userRole == 'segreteria'">
       <span class="input-label">Utente</span>
       <input type="text" placeholder="Utente" ng-model="booking.note">
     </label>
-    <ion-toggle  ng-model="booking.callToAction">
-        Call To Action!
-    </ion-toggle>
-    <div class="card" style="text-align:center" ng-if="resolved">
-      <div class="item item-text-wrap">
-        <i class="icon ion-checkmark-circled energized"></i>
-        {{resolved}}
-      </div>
-    </div>
-    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
-    <div class="list" ng-show="avalaivableCourts != null">
-      <label class="item item-divider">
-        Scegli il campo che preferisci
-      </label>
-
-      <ion-radio-fix ng-model="booking.court" ng-value="{{$index + 1}}" ng-repeat="court in avalaivableCourts">
-        Campo {{court | courtName:booking.gameType}}
-      </ion-radio-fix>
-
-      </div>
     <div class="row">
       <div class="col">
       <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
@@ -87,8 +72,34 @@
       <button class="button button-block button-assertive" ng-click="closeModal()" ng-show="showAddButton">
         Annulla
       </button>
-
       </div>
+    </div>
+    <ion-toggle  ng-model="booking.callToAction">
+        Call To Action!
+    </ion-toggle>
+
+    <div class="card" style="text-align:center" ng-if="resolved">
+      <div class="item item-text-wrap">
+        <i class="icon ion-checkmark-circled energized"></i>
+        {{resolved}}
+      </div>
+    </div>
+
+
+
+
+
+    <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
+
+    <div class="list" ng-show="avalaivableCourts != null">
+      <label class="item item-divider">
+        Scegli il campo che preferisci
+      </label>
+
+      <ion-radio-fix ng-model="booking.court" ng-value="{{$index + 1}}" ng-repeat="court in avalaivableCourts">
+        Campo {{court | courtName:booking.gameType}}
+      </ion-radio-fix>
+
     </div>
 
 
@@ -142,6 +153,18 @@
 
     </ion-content>
   </div>
+</script>
+
+<script id="my-popover.html" type="text/ng-template">
+  <ion-popover-view>
+    <ion-header-bar>
+      <h1 class="title">Help</h1>
+    </ion-header-bar>
+    <ion-content>
+      Seleziona una o più fascie orarie e quindi il campo nel quale desideri giocare dalla lista in fondo alla pagina.
+      Seleziona l'opzione "Call To Action" se intendi giocare una partita ad inviti.
+    </ion-content>
+  </ion-popover-view>
 </script>
 
 

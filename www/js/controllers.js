@@ -4,40 +4,10 @@ angular.module('starter.controllers', [])
 
 
 
+//*********************INSTALL NEW UPDATE *************************************
 
-  // Update app code with new release from Ionic Deploy
-  doUpdate = function() {
-    $ionicDeploy.update().then(function(res) {
-      console.log('Ionic Deploy: Update Success! ', res);
-    }, function(err) {
-      console.log('Ionic Deploy: Update error! ', err);
-    }, function(prog) {
-      console.log('Ionic Deploy: Progress... ', prog);
-    });
-  };
 
-  // Check Ionic Deploy for new code
-  checkForUpdates = function() {
-    console.log('Ionic Deploy: Checking for updates');
-    return $ionicDeploy.check().then(function(hasUpdate) {
-      console.log('Ionic Deploy: Update available: ' + hasUpdate);
-      $scope.hasUpdate = hasUpdate;
-      return hasUpdate;
-    }, function(err) {
-      console.error('Ionic Deploy: Unable to check for updates', err);
-    });
-  }
-
-  checkForUpdates()
-  .then(
-    function(hasUpdate){
-      if (hasUpdate)
-        doUpdate()
-
-  }, function(error){
-    console.log(error);
-  })
-
+//*********************FINE NEW UPDATE *************************************
 
   var edit = {text:"xxxx"}
 
@@ -231,7 +201,7 @@ $scope.login = function(){
           $scope.modal.hide();
           $ionicLoading.hide();
           //$state.go('tab.dash');
-          $state.go('help');
+          $state.go('tab.dash');
           //***********************************************************
           var Circolo = Parse.Object.extend("Circolo");
           var query = new Parse.Query(Circolo);
@@ -398,7 +368,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover) {
 
   var toggleCoach = {value:false}
   $scope.toggleCoach = toggleCoach
@@ -490,6 +460,19 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     selectedRanges = [];
     $scope.selectedHours = ""
     //$scope.$apply();
+  };
+
+  $ionicPopover.fromTemplateUrl('my-popover.html', {
+      scope: $scope
+    }).then(function(popover) {
+      $scope.popover = popover;
+    });
+
+    $scope.openPopover = function($event) {
+    $scope.popover.show($event);
+  };
+  $scope.closePopover = function() {
+    $scope.popover.hide();
   };
   //***************************FINE SEZIONE MODAL*****************************************************
 

@@ -164,7 +164,7 @@ angular.module('starter.services', [])
         .then(
           function(results){
             var item = results[0];
-            console.log(results);
+            //console.log(results);
             text.push(item.get('area1'))
             text.push(item.get('area2'))
             text.push(item.get('area3'))
@@ -541,7 +541,7 @@ angular.module('starter.services', [])
 
                   //[{day:d, avalaibleRanges: []}]
                   courtsAvalabilities = results
-                  console.log(results);
+                  //console.log(results);
 
 
                 }, function(error){
@@ -558,8 +558,8 @@ angular.module('starter.services', [])
             .then(
               function(disponibilitaCoach){
 
-                console.log(disponibilitaCoach);
-                console.log(courtsAvalabilities);
+                //console.log(disponibilitaCoach);
+                //console.log(courtsAvalabilities);
 
                 _.each(disponibilitaCoach,function (d){
                   _.each(d.get('ranges'),function(r){

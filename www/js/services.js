@@ -164,7 +164,7 @@ angular.module('starter.services', [])
         .then(
           function(results){
             var item = results[0];
-            console.log(results);
+            //console.log(results);
             text.push(item.get('area1'))
             text.push(item.get('area2'))
             text.push(item.get('area3'))
