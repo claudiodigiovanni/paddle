@@ -468,12 +468,17 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.popover = popover;
     });
 
-    $scope.openPopover = function($event) {
+  $scope.openPopover = function($event) {
     $scope.popover.show($event);
   };
   $scope.closePopover = function() {
     $scope.popover.hide();
   };
+
+  $scope.gotoInvitation = function(){
+    $state.go('tab.invitation')
+  }
+
   //***************************FINE SEZIONE MODAL*****************************************************
 
   $scope.toggleChange = function(){
@@ -651,7 +656,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.book = function(){
 
     if ($scope.selectedDay === null  || selectedRanges.length === 0) {
-      $scope.resolved = "Selezionare giorno e fascia oraria."
+      $scope.resolved = "Selezionare la fascia oraria."
       return;
     }
 
@@ -1224,4 +1229,45 @@ $scope.ok = function(){
   Parse.User.logOut();
   $state.go('login');
 }
+})
+
+.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal) {
+
+  var model = {name:""}
+  $scope.model = model
+
+  $scope.change = function(){
+
+    console.log($scope.model.name.length);
+
+    if ($scope.model.name != null && $scope.model.name.length > 3){
+
+      MyObjects.findPlayersWithName($scope.model.name)
+      .then(
+        function(results){
+          console.log(results);
+          $scope.players = results
+
+      }, function(error){
+        console.log(error);
+      })
+
+
+    }
+
+  }
+
+  $scope.invite = function(){
+    console.log('invitation');
+    MyObjects.invite(user,booking)
+    .then(
+      function(obj){
+        console.log('ok');
+    }, function(error){
+      console.log(error);
+    })
+
+
+  }
+
 })

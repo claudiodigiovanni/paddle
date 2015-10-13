@@ -286,6 +286,16 @@ views: {
       $state.go('tab.dash');
     }
   }
+})
+
+.state('tab.invitation', {
+  url: '/invitation',
+  views: {
+    'tab-bookCourt': {
+      templateUrl: 'templates/invitation.html',
+      controller: 'InvitationCtrl'
+    }
+  }
 });
 
 

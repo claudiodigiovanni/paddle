@@ -288,11 +288,24 @@ Parse.Cloud.define("requestForSubscription", function(request, response){
     }
   })
 
+});
 
+  Parse.Cloud.define("invite", function(request, response){
+    var user = request.params.user
+    var booking = request.params.booking
 
+    var InvitationRequest = Parse.Object.extend("InvitationRequest");
+    var ir = new InvitationRequest()
+    ir.set('user',user)
+    ir.set('booking',booking)
+    ir.save()
+    .then(
+      function(ir){
+        response.success('ok')
 
-
-
-
+    }, function(error){
+      console.log(error);
+      response.error(error);
+    })
 
 });

@@ -775,9 +775,33 @@ angular.module('starter.services', [])
           })
 
 
+        },
+        findPlayersWithName:function(name){
+
+          var query = new Parse.Query(Parse.User);
+          query.contains("nome", name);
+          return query.find()
+
+        },
+        invite:function(userToInvite,bookingCalled){
+
+          Parse.Cloud.run('invite', {user:userToInvite,booking: bookingCalled})
+          .then(
+            function(response){
+              return ok
+              //$ionicLoading.hide()
+
+
+          }, function(error){
+            return error
+            console.log(error);
+            //$ionicLoading.hide()
+          })
+
         }
 
-    };
+    }
+
   })
 
 .factory('Utility',function($state,$ionicLoading){
