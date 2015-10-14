@@ -1,3 +1,5 @@
+
+
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicDeploy) {
@@ -476,7 +478,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   };
 
   $scope.gotoInvitation = function(){
-    $state.go('tab.invitation',{'bookingId':$scope.booking.id})
+    //console.log($scope.booking);
+    console.log('chousura');
+    $scope.modalok.hide();
+    $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
   }
 
   //***************************FINE SEZIONE MODAL*****************************************************
@@ -781,6 +786,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   .then(
     function(results){
 
+      console.log(results);
+
       $scope.invitations = results
       $scope.$apply()
 
@@ -795,10 +802,19 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     MyObjects.acceptInvitation(invitation)
     .then(
       function(obj){
-        console.log('ok');
+        return MyObjects.findMyInvitations()
     }, function(error){
       console.log(error);
     })
+    .then(
+      function(results){
+        $scope.invitations = results
+        $scope.$apply()
+
+    }, function(error){
+      console.log(error);
+    })
+
 
   }
 
@@ -807,7 +823,15 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     MyObjects.declineInvitation(invitation)
     .then(
       function(obj){
-        console.log('ok');
+        return MyObjects.findMyInvitations()
+    }, function(error){
+      console.log(error);
+    })
+    .then(
+      function(results){
+        $scope.invitations = results
+        $scope.$apply()
+
     }, function(error){
       console.log(error);
     })
@@ -1270,27 +1294,34 @@ $scope.ok = function(){
 }
 })
 
-.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal) {
+.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading) {
+
+
 
   var model = {name:""}
   $scope.model = model
+  $scope.invitations = []
+  var actualGame = $rootScope.gameTypes[$stateParams.gameType]
+  var  numPlayers = parseInt(actualGame.numberPlayers) -1
+
 
   $scope.bookingId = $stateParams.bookingId
 
-  console.log($scope.bookingId);
 
   $scope.change = function(){
 
-    console.log($scope.model.name.length);
+    if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
 
-    if ($scope.model.name != null && $scope.model.name.length > 3){
-
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
       MyObjects.findPlayersWithName($scope.model.name)
       .then(
         function(results){
           console.log(results);
           $scope.players = results
           $scope.$apply()
+          $ionicLoading.hide()
 
       }, function(error){
         console.log(error);
@@ -1298,7 +1329,24 @@ $scope.ok = function(){
     }
   }
 
+  $scope.close = function(){
+    $state.go("tab.account")
+  }
+
   $scope.invite = function(userId){
+
+    model.name = ""
+    if ($scope.invitations.length >= parseInt(numPlayers)){
+      var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: 'Scusa! In quanti volete giocare???'
+       });
+       return
+    }
+
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
     console.log('invitation');
     MyObjects.invite(userId,$scope.bookingId)
     .then(
@@ -1312,6 +1360,7 @@ $scope.ok = function(){
       function(obj){
         console.log(obj);
         $scope.invitations = obj
+        $ionicLoading.hide()
         //$scope.$apply()
     }, function(error){
       console.log(error);

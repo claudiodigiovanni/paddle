@@ -151,4 +151,89 @@ angular.module('starter.directives', [])
 
         }]
     }
+})
+
+.directive('weather', function() {
+    return {
+        restrict: 'E',
+        scope: {
+          day: '='
+        },
+        templateUrl: 'templates/ng-show-weather.html',
+        controller: ['$scope', '$http', 'weatherService', '$rootScope', '$q', function($scope, $http, weatherService, $rootScope,$q) {
+
+
+          var forecastDay = []
+          weatherService.getWeather5Days().then(function(data){
+
+          console.log(data);
+          forecastDay = _.filter(data.list,function(f){
+
+            console.log('xxxxxxxxxx');
+            console.log(f.dt_txt);
+            console.log(f.main.temp);
+            console.log(f.rain['3h']);
+            console.log(f.wind.speed);
+            console.log(f.weather[0].icon);
+
+            return (new Date(f.dt*1000).getDate() == $scope.day)
+
+
+            //http://openweathermap.org/img/w/10d.png
+          })
+
+          console.log(forecastDay);
+        })
+        .then(
+          function(obj){
+            var dataChart = [
+              ['Ora', 'Temp', 'Pioggia(mm)', 'Vento(m/s)']
+            ]
+
+            _.each(forecastDay, function(f){
+              var item = []
+              item.push(new Date(f.dt*1000).getHours())
+              item.push(f.main.temp)
+              item.push(f.rain['3h'])
+              item.push(f.wind.speed)
+              dataChart.push(item)
+            })
+            console.log(dataChart);
+            var data = google.visualization.arrayToDataTable(dataChart)
+
+            var options = {
+              title: 'Previsioni Meteo',
+              vAxis: {title: 'Quantità'},
+              hAxis: {title: 'Ora', ticks: [0,3,8,12,15,18,21,24] },
+              seriesType: 'bars',
+              series: {4: {type: 'line'}}
+            };
+            var chart = new google.visualization.ComboChart(document.getElementById('chartdiv'));
+
+            chart.draw(data, options);
+
+        }, function(error){
+          console.log(error);
+        })
+
+
+
+
+        /*var data = google.visualization.arrayToDataTable([
+        ['Ora', 'Temp', 'Pioggia', 'Vento'],
+        ['2004', 1000, 400],
+        ['2005', 1170, 460],
+        ['2006', 660, 1120],
+        ['2007', 1030, 540]
+      ]);*/
+
+
+
+
+
+
+
+
+        }]
+    }
 });

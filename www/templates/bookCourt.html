@@ -58,6 +58,8 @@
 
 
 
+
+
     <label class="item item-input item-floating-label" ng-show="userRole == 'segreteria'">
       <span class="input-label">Utente</span>
       <input type="text" placeholder="Utente" ng-model="booking.note">
@@ -77,6 +79,9 @@
     <ion-toggle  ng-model="booking.callToAction">
         Call To Action!
     </ion-toggle>
+
+    <div id="chartdiv"></div>
+    <weather day="14"></weather>
 
     <div class="card" style="text-align:center" ng-if="resolved">
       <div class="item item-text-wrap">
@@ -116,10 +121,18 @@
     <ion-content>
 <span class="item item-text-wrap">Prenotazione Effettuata! <b>Data:</b> {{booking.get("date") | date:'dd/MM/yyyy'}} <b>Campo:</b> {{booking.get("court") | courtName:booking.get("gameType")}}</span>
 
-    <button class="button  button-small button-positive" ng-click="closeModalok()" > ok
-    </button>
-    <button class="button  button-small button-positive" ng-click="gotoInvitation()" > Invita amici
-    </button>
+    <div class="row">
+      <div class="col">
+        <button class="button  button-block button-positive" ng-click="closeModalok()" > Chiudi
+        </button>
+      </div>
+      <div class="col">
+        <button class="button  button-block button-positive" ng-click="gotoInvitation()" > Invita amici
+        </button>
+      </div>
+    </div>
+
+
 
     </ion-content>
   </div>

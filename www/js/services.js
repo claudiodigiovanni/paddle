@@ -419,22 +419,32 @@ angular.module('starter.services', [])
         var mycontext = this
 
         var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
+        var query1 = new Parse.Query(Booking);
         var today = new Date();
         today.setHours(0);
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-        query.greaterThanOrEqualTo("date", today);
+        query1.greaterThanOrEqualTo("date", today);
         var user = Parse.User.current()
         if (user.get('maestro') != null){
-          query.equalTo("maestro", user.get('maestro'));
+          query1.equalTo("maestro", user.get('maestro'));
         }
-        else query.equalTo("user", user );
-        query.ascending("date");
-        query.include('players')
+        else query1.equalTo("user", user );
+        query1.ascending("date");
+        query1.include('players')
+
+
+        var Booking = Parse.Object.extend("Booking");
+        var query2 = new Parse.Query(Booking);
+        query2.equalTo('players',Parse.User.current())
+        query2.greaterThanOrEqualTo("date", today);
+        query2.include('players')
+
+        var mainQuery = Parse.Query.or(query1, query2);
+
         $ionicLoading.hide()
-        return query.find()
+        return mainQuery.find()
       },
 
       deleteBooking: function(item){
@@ -824,14 +834,18 @@ angular.module('starter.services', [])
           var query = new Parse.Query(InvitationRequest)
           query.equalTo('user',Parse.User.current())
           query.include('booking')
-          return query.find();
+          query.include('booking.players')
+          query.include('booking.user')
+          return query.find()
+
+
 
         },
 
         acceptInvitation: function(invitation){
 
           var booking = invitation.get('booking')
-          booking.add('players',Parse.User.current().id)
+          booking.add('players',Parse.User.current())
           return booking.save()
           .then(
             function(obj){
@@ -843,10 +857,15 @@ angular.module('starter.services', [])
             console.log(error);
           })
 
-        }
+        },
 
         declineInvitation: function(invitation){
-          
+
+          var InvitationRequest = Parse.Object.extend("InvitationRequest");
+          var ir = new InvitationRequest();
+          ir.id = invitation.id
+          return ir.destroy()
+
         }
 
     }
@@ -936,12 +955,26 @@ angular.module('starter.services', [])
   };
 })
 
-.factory('Person', function () {
-    return function Person (name) {
-      this.name = name;
-      console.log('Hello ' + this.name + "!");
-      this.changeName = function(){
-         this.name = 'Ben2222'
+.factory('weatherService', ['$http', '$q', function ($http, $q){
+      function getWeatherForecast5Days () {
+        var deferred = $q.defer();
+        $http.get('http://api.openweathermap.org/data/2.5/forecast?q=roma,it&units=metric&appid=b76dfef9065842dab1454f9c5c92e340')
+          .success(function(data){
+            deferred.resolve(data);
+          })
+          .error(function(err){
+            console.log('Error retrieving markets');
+            deferred.reject(err);
+          });
+        return deferred.promise;
       }
-    };
-  });
+
+
+
+
+
+      return {
+        getWeather5Days: getWeatherForecast5Days
+
+      };
+    }]);

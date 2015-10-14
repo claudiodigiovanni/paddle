@@ -46,12 +46,29 @@
         <ion-item><b>Inviti Ricevuti</b></ion-item>
         <ion-item ng-repeat="i in invitations">
 
-          {{i.get('booking').get('date')}}
+          <b><i class="icon ion-person"></i></b> {{i.get('booking').get('user').get('nome')}}&nbsp;
+          <b><i class="icon ion-android-done"></i></b> {{i.get('booking').get('gameType') | gameName}}&nbsp;
+
+          <b><i class="icon ion-calendar"></i></b> {{i.get('booking').get('date') | date:'dd/MM/yyyy'}}&nbsp;
+          <b><i class="icon ion-clock"></b></i> {{i.get('booking').get('ranges') | range}}&nbsp;&nbsp;
+
+
+          &nbsp;&nbsp;
+          <b><i class="icon ion-android-pin"></i></b> {{i.get('booking').get("court") | courtName:i.get('booking').get('gameType') }} &nbsp;
+
+        <i class="icon ion-person-stalker" ></i>&nbsp;
+        <ion-list >
+          <ion-item ng-repeat="player in i.get('booking').get('players') track by $index">
+              {{player.get('nome')}} - Livello: {{player.get('level')}}
+          </ion-item>
+        </ion-list>
+
+
           <ion-option-button class="button-balanced"
                            ng-click="accept(i)">
           Accetta
         </ion-option-button>
-          <ion-option-button class="button-balanced"
+          <ion-option-button class="button-assertive"
                            ng-click="decline(i)">
           Declina
         </ion-option-button>

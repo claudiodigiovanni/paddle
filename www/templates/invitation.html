@@ -1,51 +1,46 @@
-<ion-view view-title="Inviti">
+<div class="bar bar-header bar-light">
+  <h1 class="title">Inviti</h1>
+  <button class="button button-positive button-outline" ng-click="close()">
+    chiudi
+  </button>
+</div>
 
 
-
-<ion-content>
+<ion-content class="has-header">
 
   <label class="item item-input">
     <input type="text" placeholder="Scrivi i primi tre caratteri del nome..." ng-model="model.name" ng-keypress="change()">
   </label>
-
-
-  <div class="list">
-    <div class="card" style="text-align:center" ng-repeat="p in players">
-      <div class="item item-text-wrap">
-
-        <div class="row">
-          <div class="col">
-            Nome: {{p.get('nome')}} <br>
-            Livello: {{p.get('level')}}
-          </div>
-          <div class="col">
-            <button class="button button-light" ng-click="invite(p.id)">Invita</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <br>
 
   <div class="list">
-    <ion-item>Inviti già spediti</ion-item>
-    <div class="card" style="text-align:center" ng-repeat="i in invitations">
-      <div class="item item-text-wrap">
+    <div class="item item-button-right" ng-repeat="p in players">
+      <h1><i class="icon ion-person"></i> {{p.get('nome')}}</h1>
 
-        <div class="row">
-          <div class="col">
-            Nome: {{i.get('user').get('nome')}} <br>
-            Livello: {{i.get('user').get('level')}}
-          </div>
-          <div class="col">
-            
-          </div>
-        </div>
-      </div>
-    </div>
+        <i class="icon ion-ios-speedometer-outline"></i> {{p.get('level')}}
+
+
+    <button class="button button-positive button-outline" ng-click="invite(p.id)">
+      <i class="icon ion-ios-plus-outline"></i>
+    </button>
   </div>
 
 
+  </div>
 
+
+  <ion-item>Inviti già spediti: {{invitations.length}}</ion-item>
+  <div class="list">
+          <span class="item item-avatar" ng-repeat="i in invitations">
+          <img src="img/man.png">
+          <h2>{{i.get('user').get('nome')}}</h2>
+          <p>
+            <i class="icon ion-ios-speedometer-outline"></i> {{i.get('user').get('level')}}
+          </p>
+        </span>
+  </div>
 
 </ion-content>
-</ion-view>
+<div class="bar bar-footer bar-light">
+  <div class="title"></div>
+</div>
