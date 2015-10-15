@@ -5,9 +5,13 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
+
+
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
 .run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading) {
+
+
 
 
 
@@ -18,6 +22,10 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $cordovaSplashscreen.hide()
         }, 100)
     }
+
+
+
+    console.log('ok init.....');
 
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -286,6 +294,13 @@ views: {
       $state.go('tab.dash');
     }
   }
+})
+
+.state('invitation', {
+  url: '/invitation/:bookingId/:gameType',
+  templateUrl: 'templates/invitation.html',
+  controller: 'InvitationCtrl'
+
 });
 
 

@@ -151,4 +151,112 @@ angular.module('starter.directives', [])
 
         }]
     }
+})
+
+.directive('weather', function() {
+    return {
+        restrict: 'E',
+        scope: {
+          date: '='
+        },
+        templateUrl: 'templates/ng-show-weather.html',
+        controller: ['$scope', '$http', 'weatherService', '$rootScope', '$q', function($scope, $http, weatherService, $rootScope,$q) {
+
+          $scope.$watch('date',function(obj){
+
+            console.log($scope.date);
+
+            var dataChart = {}
+
+            var today = new Date();
+            today.setHours(0);
+            today.setMinutes(0);
+            today.setSeconds(0);
+            today.setMilliseconds(0);
+
+            var maxForecastDate = today
+            maxForecastDate.setDate(today.getDate() + 4)
+
+            if ($scope.date == null || $scope.date > maxForecastDate){
+              $scope.dataChart = dataChart
+              return dataChart
+            }
+
+
+            console.log("AVANTI!!!!");
+
+            //-----------INIZIO WATCH----------
+            var forecastDay = []
+            weatherService.getWeather5Days().then(function(data){
+
+            console.log(data);
+            forecastDay = _.filter(data.list,function(f){
+
+              console.log(f.weather[0].icon);
+
+              return (new Date(f.dt*1000).getDate() == $scope.date.getDate())
+
+
+              //http://openweathermap.org/img/w/10d.png
+            })
+
+            console.log(forecastDay);
+            })
+            .then(
+            function(obj){
+
+
+              var h = []
+              /*var t = []
+              var r = []
+              var w = []*/
+              var i = []
+
+              _.each(forecastDay, function(f){
+
+                h.push(new Date(f.dt*1000).getHours())
+                /*t.push(f.main.temp)
+                r.push(f.rain['3h'])
+                w.push(f.wind.speed)*/
+                i.push("http://openweathermap.org/img/w/" + f.weather[0].icon + ".png" )
+
+              })
+
+              //dataChart = {hour:h,temp:t,rain:r,wind:w, icon:i}
+              dataChart = {hour:h,icon:i}
+              console.log(dataChart);
+              $scope.dataChart = dataChart
+
+              console.log($scope.day);
+            //-----------FINE WATCH------------
+
+
+
+          })
+
+
+        }, function(error){
+          console.log(error);
+        })
+
+
+
+
+        /*var data = google.visualization.arrayToDataTable([
+        ['Ora', 'Temp', 'Pioggia', 'Vento'],
+        ['2004', 1000, 400],
+        ['2005', 1170, 460],
+        ['2006', 660, 1120],
+        ['2007', 1030, 540]
+      ]);*/
+
+
+
+
+
+
+
+
+        }]
+    }
 });

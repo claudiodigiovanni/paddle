@@ -502,8 +502,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
 
     else {
-      //console.log(false);
-
       booking.maestro = null
       $scope.coachAvalabilities = []
       avalaibleRanges = []
@@ -518,7 +516,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     console.log(coach);
     booking.maestro = coach
     $scope.coachesModal.hide();
-    console.log('selectCoach 2222');
+
     // coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
     MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear,coach.id, booking.gameType )
     .then(
@@ -558,9 +556,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.showAddButton = false;
     $scope.selectedDay =  day;
 
+
+
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + day;
     var date = new Date(d);
+
+    //Usato dalla direttiva Weather
+    $scope.selectedDate = date
 
     if(booking.maestro != null){
       //coachAvalabilities => [{day:d.get('date').getDate(),range:r}]
@@ -1308,7 +1311,8 @@ $scope.ok = function(){
   $scope.bookingId = $stateParams.bookingId
 
 
-  $scope.change = function(){
+  $scope.search = function(){
+
 
     if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
 
@@ -1336,6 +1340,7 @@ $scope.ok = function(){
   $scope.invite = function(userId){
 
     model.name = ""
+    $scope.players = null
     if ($scope.invitations.length >= parseInt(numPlayers)){
       var alertPopup = $ionicPopup.alert({
          title: 'Opsss!',
@@ -1355,15 +1360,22 @@ $scope.ok = function(){
         return MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
     }, function(error){
       console.log(error);
+      throw error
     })
     .then(
       function(obj){
         console.log(obj);
         $scope.invitations = obj
+
         $ionicLoading.hide()
         //$scope.$apply()
     }, function(error){
+      $ionicLoading.hide()
       console.log(error);
+      var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: error.message
+       });
     })
 
 

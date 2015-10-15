@@ -1,43 +1,15 @@
+
+
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicDeploy) {
 
 
 
+//*********************INSTALL NEW UPDATE *************************************
 
-  // Update app code with new release from Ionic Deploy
-  doUpdate = function() {
-    $ionicDeploy.update().then(function(res) {
-      console.log('Ionic Deploy: Update Success! ', res);
-    }, function(err) {
-      console.log('Ionic Deploy: Update error! ', err);
-    }, function(prog) {
-      console.log('Ionic Deploy: Progress... ', prog);
-    });
-  };
 
-  // Check Ionic Deploy for new code
-  checkForUpdates = function() {
-    console.log('Ionic Deploy: Checking for updates');
-    return $ionicDeploy.check().then(function(hasUpdate) {
-      console.log('Ionic Deploy: Update available: ' + hasUpdate);
-      $scope.hasUpdate = hasUpdate;
-      return hasUpdate;
-    }, function(err) {
-      console.error('Ionic Deploy: Unable to check for updates', err);
-    });
-  }
-
-  checkForUpdates()
-  .then(
-    function(hasUpdate){
-      if (hasUpdate)
-        doUpdate()
-
-  }, function(error){
-    console.log(error);
-  })
-
+//*********************FINE NEW UPDATE *************************************
 
   var edit = {text:"xxxx"}
 
@@ -498,12 +470,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.popover = popover;
     });
 
-    $scope.openPopover = function($event) {
+  $scope.openPopover = function($event) {
     $scope.popover.show($event);
   };
   $scope.closePopover = function() {
     $scope.popover.hide();
   };
+
+  $scope.gotoInvitation = function(){
+    //console.log($scope.booking);
+    console.log('chousura');
+    $scope.modalok.hide();
+    $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
+  }
+
   //***************************FINE SEZIONE MODAL*****************************************************
 
   $scope.toggleChange = function(){
@@ -578,9 +558,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.showAddButton = false;
     $scope.selectedDay =  day;
 
+
+
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + day;
     var date = new Date(d);
+
+    //Usato dalla direttiva Weather
+    $scope.selectedDate = date
 
     if(booking.maestro != null){
       //coachAvalabilities => [{day:d.get('date').getDate(),range:r}]
@@ -681,7 +666,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.book = function(){
 
     if ($scope.selectedDay === null  || selectedRanges.length === 0) {
-      $scope.resolved = "Selezionare giorno e fascia oraria."
+      $scope.resolved = "Selezionare la fascia oraria."
       return;
     }
 
@@ -800,6 +785,64 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }, function(error){
     console.log(error);
   })
+
+
+  MyObjects.findMyInvitations()
+  .then(
+    function(results){
+
+      console.log(results);
+
+      $scope.invitations = results
+      $scope.$apply()
+
+  }, function(error){
+    console.log(error);
+  })
+
+
+
+  $scope.accept = function(invitation){
+
+    MyObjects.acceptInvitation(invitation)
+    .then(
+      function(obj){
+        return MyObjects.findMyInvitations()
+    }, function(error){
+      console.log(error);
+    })
+    .then(
+      function(results){
+        $scope.invitations = results
+        $scope.$apply()
+
+    }, function(error){
+      console.log(error);
+    })
+
+
+  }
+
+  $scope.decline = function(invitation){
+
+    MyObjects.declineInvitation(invitation)
+    .then(
+      function(obj){
+        return MyObjects.findMyInvitations()
+    }, function(error){
+      console.log(error);
+    })
+    .then(
+      function(results){
+        $scope.invitations = results
+        $scope.$apply()
+
+    }, function(error){
+      console.log(error);
+    })
+
+  }
+
 
 
 
@@ -1254,4 +1297,92 @@ $scope.ok = function(){
   Parse.User.logOut();
   $state.go('login');
 }
+})
+
+.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading) {
+
+
+
+  var model = {name:""}
+  $scope.model = model
+  $scope.invitations = []
+  var actualGame = $rootScope.gameTypes[$stateParams.gameType]
+  var  numPlayers = parseInt(actualGame.numberPlayers) -1
+
+
+  $scope.bookingId = $stateParams.bookingId
+
+
+  $scope.search = function(){
+
+
+    if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
+
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+      MyObjects.findPlayersWithName($scope.model.name)
+      .then(
+        function(results){
+          console.log(results);
+          $scope.players = results
+          $scope.$apply()
+          $ionicLoading.hide()
+
+      }, function(error){
+        console.log(error);
+      })
+    }
+  }
+
+  $scope.close = function(){
+    $state.go("tab.account")
+  }
+
+  $scope.invite = function(userId){
+
+    model.name = ""
+    $scope.players = null
+    if ($scope.invitations.length >= parseInt(numPlayers)){
+      var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: 'Scusa! In quanti volete giocare???'
+       });
+       return
+    }
+
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
+    console.log('invitation');
+    MyObjects.invite(userId,$scope.bookingId)
+    .then(
+      function(obj){
+        console.log('ok');
+        return MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
+    }, function(error){
+      console.log(error);
+      throw error
+    })
+    .then(
+      function(obj){
+        console.log(obj);
+        $scope.invitations = obj
+
+        $ionicLoading.hide()
+        //$scope.$apply()
+    }, function(error){
+      $ionicLoading.hide()
+      console.log(error);
+      var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: error.message
+       });
+    })
+
+
+
+
+  }
+
 })

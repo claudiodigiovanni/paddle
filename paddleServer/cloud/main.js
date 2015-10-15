@@ -290,7 +290,26 @@ Parse.Cloud.define("requestForSubscription", function(request, response){
 
 });
 
+var InvitationRequestFollowUp = function(response,user,booking){
+
+  var InvitationRequest = Parse.Object.extend("InvitationRequest");
+  var ir = new InvitationRequest()
+  ir.set('user',user)
+  ir.set('booking',booking)
+  ir.save()
+  .then(
+    function(obj){
+      sendEmail(toAddress,"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire che è il mittente!! ")
+      response.success('ok')
+  }, function(error){
+    console.log(error);
+    response.error(error)
+  })
+
+}
+
   Parse.Cloud.define("invite", function(request, response){
+
     var userId = request.params.user
     var bookingId = request.params.booking
 
@@ -302,17 +321,23 @@ Parse.Cloud.define("requestForSubscription", function(request, response){
     booking.id = bookingId
 
     var InvitationRequest = Parse.Object.extend("InvitationRequest");
-    var ir = new InvitationRequest()
-    ir.set('user',user)
-    ir.set('booking',booking)
-    ir.save()
+    var query = new Parse.Query(InvitationRequest)
+    query.equalTo('user',user)
+    query.equalTo('booking',booking)
+    query.find()
     .then(
-      function(ir){
-        response.success('ok')
+      function(results){
+        if (results.length > 0){
+          response.error("Utente già invitato....")
+        }
+        else{
+          InvitationRequestFollowUp(response,user,booking)
+        }
 
     }, function(error){
       console.log(error);
-      response.error(error);
+      response.error(error)
     })
+
 
 });

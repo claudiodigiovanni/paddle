@@ -157,60 +157,83 @@ angular.module('starter.directives', [])
     return {
         restrict: 'E',
         scope: {
-          day: '='
+          date: '='
         },
         templateUrl: 'templates/ng-show-weather.html',
         controller: ['$scope', '$http', 'weatherService', '$rootScope', '$q', function($scope, $http, weatherService, $rootScope,$q) {
 
+          $scope.$watch('date',function(obj){
 
-          var forecastDay = []
-          weatherService.getWeather5Days().then(function(data){
+            console.log($scope.date);
 
-          console.log(data);
-          forecastDay = _.filter(data.list,function(f){
+            var dataChart = {}
 
-            console.log('xxxxxxxxxx');
-            console.log(f.dt_txt);
-            console.log(f.main.temp);
-            console.log(f.rain['3h']);
-            console.log(f.wind.speed);
-            console.log(f.weather[0].icon);
+            var today = new Date();
+            today.setHours(0);
+            today.setMinutes(0);
+            today.setSeconds(0);
+            today.setMilliseconds(0);
 
-            return (new Date(f.dt*1000).getDate() == $scope.day)
+            var maxForecastDate = today
+            maxForecastDate.setDate(today.getDate() + 4)
+
+            if ($scope.date == null || $scope.date > maxForecastDate){
+              $scope.dataChart = dataChart
+              return dataChart
+            }
 
 
-            //http://openweathermap.org/img/w/10d.png
+            console.log("AVANTI!!!!");
+
+            //-----------INIZIO WATCH----------
+            var forecastDay = []
+            weatherService.getWeather5Days().then(function(data){
+
+            console.log(data);
+            forecastDay = _.filter(data.list,function(f){
+
+              console.log(f.weather[0].icon);
+
+              return (new Date(f.dt*1000).getDate() == $scope.date.getDate())
+
+
+              //http://openweathermap.org/img/w/10d.png
+            })
+
+            console.log(forecastDay);
+            })
+            .then(
+            function(obj){
+
+
+              var h = []
+              /*var t = []
+              var r = []
+              var w = []*/
+              var i = []
+
+              _.each(forecastDay, function(f){
+
+                h.push(new Date(f.dt*1000).getHours())
+                /*t.push(f.main.temp)
+                r.push(f.rain['3h'])
+                w.push(f.wind.speed)*/
+                i.push("http://openweathermap.org/img/w/" + f.weather[0].icon + ".png" )
+
+              })
+
+              //dataChart = {hour:h,temp:t,rain:r,wind:w, icon:i}
+              dataChart = {hour:h,icon:i}
+              console.log(dataChart);
+              $scope.dataChart = dataChart
+
+              console.log($scope.day);
+            //-----------FINE WATCH------------
+
+
+
           })
 
-          console.log(forecastDay);
-        })
-        .then(
-          function(obj){
-            var dataChart = [
-              ['Ora', 'Temp', 'Pioggia(mm)', 'Vento(m/s)']
-            ]
-
-            _.each(forecastDay, function(f){
-              var item = []
-              item.push(new Date(f.dt*1000).getHours())
-              item.push(f.main.temp)
-              item.push(f.rain['3h'])
-              item.push(f.wind.speed)
-              dataChart.push(item)
-            })
-            console.log(dataChart);
-            var data = google.visualization.arrayToDataTable(dataChart)
-
-            var options = {
-              title: 'Previsioni Meteo',
-              vAxis: {title: 'Quantità'},
-              hAxis: {title: 'Ora', ticks: [0,3,8,12,15,18,21,24] },
-              seriesType: 'bars',
-              series: {4: {type: 'line'}}
-            };
-            var chart = new google.visualization.ComboChart(document.getElementById('chartdiv'));
-
-            chart.draw(data, options);
 
         }, function(error){
           console.log(error);

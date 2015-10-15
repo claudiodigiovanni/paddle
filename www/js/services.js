@@ -789,7 +789,8 @@ angular.module('starter.services', [])
         findPlayersWithName:function(name){
 
           var query = new Parse.Query(Parse.User);
-          query.contains("nome", name);
+          query.equalTo('circolo',Parse.User.current().get('circolo'))
+          query.contains("nome", name.toLowerCase());
           return query.find()
 
         },

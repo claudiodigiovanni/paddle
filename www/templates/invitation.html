@@ -1,16 +1,22 @@
-<div class="bar bar-header bar-light">
-  <h1 class="title">Inviti</h1>
+
+<div class="bar bar-header item-input-inset">
+
   <button class="button button-positive button-outline" ng-click="close()">
     chiudi
+  </button>&nbsp;&nbsp;
+  <label class="item-input-wrapper">
+    <i class="icon ion-ios-search placeholder-icon"></i>
+    <input type="search" placeholder="Scrivi i primi tre caratteri del nome" ng-model="model.name">
+  </label>
+  <button class="button button-clear" ng-click="search()">
+    Cerca
   </button>
+
 </div>
 
 
 <ion-content class="has-header">
 
-  <label class="item item-input">
-    <input type="text" placeholder="Scrivi i primi tre caratteri del nome..." ng-model="model.name" ng-keypress="change()">
-  </label>
   <br>
 
   <div class="list">
