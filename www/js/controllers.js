@@ -445,9 +445,19 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.coachAvalabilities = []
       $scope.selectedDay = null
 
+      $scope.toggleCoach.value = false
+      booking.maestro = null
+      avalaibleRanges = []
+
   });
 
   $scope.$watch('booking.gameType',function(obj){
+    console.log('$watch on booking.gameType...');
+
+    $scope.toggleCoach.value = false
+    booking.maestro = null
+    $scope.coachAvalabilities = []
+    avalaibleRanges = []
 
   })
 
@@ -486,7 +496,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   //***************************FINE SEZIONE MODAL*****************************************************
 
-  $scope.toggleChange = function(){
+  $scope.toggleCoach = function(){
 
 
 
@@ -1375,9 +1385,6 @@ $scope.ok = function(){
          template: error.message
        });
     })
-
-
-
 
   }
 

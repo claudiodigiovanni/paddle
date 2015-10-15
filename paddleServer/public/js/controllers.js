@@ -445,9 +445,19 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.coachAvalabilities = []
       $scope.selectedDay = null
 
+      $scope.toggleCoach.value = false
+      booking.maestro = null
+      avalaibleRanges = []
+
   });
 
   $scope.$watch('booking.gameType',function(obj){
+    console.log('$watch on booking.gameType...');
+
+    $scope.toggleCoach.value = false
+    booking.maestro = null
+    $scope.coachAvalabilities = []
+    avalaibleRanges = []
 
   })
 
@@ -486,7 +496,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   //***************************FINE SEZIONE MODAL*****************************************************
 
-  $scope.toggleChange = function(){
+  $scope.toggleCoach = function(){
 
 
 
@@ -502,8 +512,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
 
     else {
-      //console.log(false);
-
       booking.maestro = null
       $scope.coachAvalabilities = []
       avalaibleRanges = []
@@ -513,12 +521,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.selectCoach = function(coach){
 
-
-
     console.log(coach);
     booking.maestro = coach
     $scope.coachesModal.hide();
-    console.log('selectCoach 2222');
+
     // coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
     MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear,coach.id, booking.gameType )
     .then(
@@ -1379,9 +1385,6 @@ $scope.ok = function(){
          template: error.message
        });
     })
-
-
-
 
   }
 
