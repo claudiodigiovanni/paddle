@@ -511,8 +511,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.selectCoach = function(coach){
 
-
-
     console.log(coach);
     booking.maestro = coach
     $scope.coachesModal.hide();
