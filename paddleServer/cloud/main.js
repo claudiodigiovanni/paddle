@@ -299,7 +299,7 @@ var InvitationRequestFollowUp = function(response,user,booking){
   ir.save()
   .then(
     function(obj){
-      sendEmail(toAddress,"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire che è il mittente!! ")
+      sendEmail(user.get('email'),"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire che è il mittente!! ")
       response.success('ok')
   }, function(error){
     console.log(error);
@@ -315,7 +315,7 @@ var InvitationRequestFollowUp = function(response,user,booking){
 
     var user = new Parse.User()
     user.id = userId
-
+    
     var Booking = Parse.Object.extend("Booking");
     var booking = new Booking()
     booking.id = bookingId
