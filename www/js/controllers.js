@@ -13,9 +13,10 @@ angular.module('starter.controllers', [])
 
   var edit = {text:"xxxx"}
 
-  $scope.edit = edit
+  $scope.edit = edit 
+  
 
-
+  
 
   $ionicModal.fromTemplateUrl('edit.html', {
     scope: $scope,
