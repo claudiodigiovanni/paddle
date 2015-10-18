@@ -15,7 +15,7 @@ angular.module('starter.controllers', [])
 
   $scope.edit = edit 
   
-
+  //Commento xxx
   
 
   $ionicModal.fromTemplateUrl('edit.html', {
