@@ -1,5 +1,4 @@
 
-
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicDeploy) {
@@ -13,10 +12,10 @@ angular.module('starter.controllers', [])
 
   var edit = {text:"xxxx"}
 
-  $scope.edit = edit
+  $scope.edit = edit 
 
-
-
+     
+  
   $ionicModal.fromTemplateUrl('edit.html', {
     scope: $scope,
     animation: 'slide-in-up',

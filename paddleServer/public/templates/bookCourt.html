@@ -30,17 +30,12 @@
   <calendar coach-avalabilities='coachAvalabilities' coach="toggleCoach.value" selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
 
 <br>
+
 <div class="list" ng-show="true">
-
-    <label class="item item-radio" ng-repeat="g in gameTypes">
-      <input type="radio" name="group" ng-model="booking.gameType" value="{{$index}}">
-      <div class="item-content">
-        {{g.name}}
-      </div>
-      <i class="radio-icon ion-checkmark"></i>
-    </label>
-
-  </div>
+<ion-radio-fix ng-model="booking.gameType" ng-value="{{$index}}" ng-repeat="g in gameTypes">
+                  {{g.name}}
+</ion-radio-fix>
+</div>
 
 
 
@@ -77,7 +72,7 @@
       </button>
       </div>
     </div>
-    <ion-toggle  ng-model="booking.callToAction">
+    <ion-toggle  ng-model="booking.callToAction" ng-hide="toggleCoach.value">
         Call To Action!
     </ion-toggle>
 
