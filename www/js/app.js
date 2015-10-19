@@ -69,6 +69,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
             }
 
+            
+  
         } else {
             // show the signup or login page
             console.log('currentUser is null.!!');
