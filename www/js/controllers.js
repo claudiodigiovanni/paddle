@@ -1,12 +1,32 @@
 
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicDeploy) {
+.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
 
 
 //*********************INSTALL NEW UPDATE *************************************
+   /* var deploy = new Ionic.Deploy();
+  
+    // Update app code with new release from Ionic Deploy
+    var doUpdate = function() {
+      deploy.update().then(function(res) {
+        console.log('Ionic Deploy: Update Success! ', res);
+      }, function(err) {
+        console.log('Ionic Deploy: Update error! ', err);
+      }, function(prog) {
+        console.log('Ionic Deploy: Progress... ', prog);
+      });
+    };
 
+    // Check Ionic Deploy for new code
+    console.log('Ionic Deploy: Checking for updates');
+      deploy.check().then(function(hasUpdate) {
+        console.log('Ionic Deploy: Update available: ' + hasUpdate);
+        
+      }, function(err) {
+        console.error('Ionic Deploy: Unable to check for updates', err);
+      });*/
 
 //*********************FINE NEW UPDATE *************************************
 
