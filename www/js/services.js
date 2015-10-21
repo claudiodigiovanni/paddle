@@ -603,6 +603,7 @@ angular.module('starter.services', [])
 
         //var maestro = null;
         
+        
         var Maestro = Parse.Object.extend("Maestro");
 
         console.log(maestroId);
