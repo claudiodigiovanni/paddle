@@ -416,7 +416,7 @@ angular.module('starter.services', [])
           template: 'Loading...'
         });
 
-        var mycontext = this
+        var promises = [];
 
         var Booking = Parse.Object.extend("Booking");
         var query1 = new Parse.Query(Booking);
@@ -432,19 +432,31 @@ angular.module('starter.services', [])
         }
         else query1.equalTo("user", user );
         query1.ascending("date");
-        query1.include('players')
+        query1.include('players');
+        promises.push(query1.find())
 
-
-        var Booking = Parse.Object.extend("Booking");
         var query2 = new Parse.Query(Booking);
+        //Escludo i risultati precedenti....
+        query1.notEqualTo("user", user );
+        //Cerco le prenotazioni alle quali sono stato invitato o mi sono unito....
         query2.equalTo('players',Parse.User.current())
         query2.greaterThanOrEqualTo("date", today);
         query2.include('players')
+        promises.push(query2.find())  
 
-        var mainQuery = Parse.Query.or(query1, query2);
 
-        $ionicLoading.hide()
-        return mainQuery.find()
+        return $q.all(promises).then(
+            function(results){
+              $ionicLoading.hide()
+              return _.flatten(results)
+              
+              return 
+        
+          }, function(error){
+            $ionicLoading.hide()
+            console.log(error);
+          })
+            
       },
 
       deleteBooking: function(item){
@@ -454,15 +466,6 @@ angular.module('starter.services', [])
         console.log(b);
         return b.destroy();
 
-        /*var query = new Parse.Query(Booking);
-        return query.get(item.objectId)
-        .then(
-          function(obj){
-            return obj.destroy();
-
-        }, function(error){
-          console.log(error);
-        })*/
 
       },
       findAvalabilities: function(month,year,gameT){

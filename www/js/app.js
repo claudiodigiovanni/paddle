@@ -173,6 +173,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   .state('tab.dash', {
     url: '/dash',
+    cache: false,
     views: {
       'tab-dash': {
         templateUrl: 'templates/tab-dash.html',

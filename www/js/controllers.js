@@ -4,12 +4,12 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
 
-
 //*********************INSTALL NEW UPDATE *************************************
-   /* var deploy = new Ionic.Deploy();
+
+    var deploy = new Ionic.Deploy();
   
     // Update app code with new release from Ionic Deploy
-    var doUpdate = function() {
+    var doUpdate = function() { 
       deploy.update().then(function(res) {
         console.log('Ionic Deploy: Update Success! ', res);
       }, function(err) {
@@ -19,14 +19,21 @@ angular.module('starter.controllers', [])
       });
     };
 
-    // Check Ionic Deploy for new code
-    console.log('Ionic Deploy: Checking for updates');
+    $scope.doRefresh = function(){
+     // Check Ionic Deploy for new code
+      console.log('Ionic Deploy: Checking for updates');
       deploy.check().then(function(hasUpdate) {
         console.log('Ionic Deploy: Update available: ' + hasUpdate);
+        doUpdate();
         
       }, function(err) {
         console.error('Ionic Deploy: Unable to check for updates', err);
-      });*/
+      });
+      $scope.$broadcast('scroll.refreshComplete');
+      $scope.$apply()
+
+  }
+   
 
 //*********************FINE NEW UPDATE *************************************
 
@@ -803,7 +810,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   MyObjects.findMyBookings()
   .then(
     function(results){
-
+      console.log(results)
       $scope.bookings = results
       $scope.$apply()
 
@@ -1325,7 +1332,6 @@ $scope.ok = function(){
 })
 
 .controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading) {
-
 
 
   var model = {name:""}
