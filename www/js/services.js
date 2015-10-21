@@ -212,8 +212,6 @@ angular.module('starter.services', [])
         });
         var defer = $q.defer()
         var courtsAvalaivable = []
-        var courtsNumber = 0;
-
         var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
 
         var courts = _.range(1,parseInt(courtsNumber) + 1)
@@ -622,7 +620,7 @@ angular.module('starter.services', [])
       },
       getDisponibilitaCoachForCalendar:function(month,year,maestroId){
         var avalabilities = []
-        var maestro = null;
+        
         var Maestro = Parse.Object.extend("Maestro");
 
         //console.log(maestroId);
