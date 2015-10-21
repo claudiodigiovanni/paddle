@@ -546,6 +546,7 @@ angular.module('starter.services', [])
             $ionicLoading.show({
               template: 'Loading...'
             });
+            
 
             console.log('maestroId:' + maestroId);
             return this.findAvalabilities(month,year,typeG)
