@@ -601,7 +601,7 @@ angular.module('starter.services', [])
       },
       getDisponibilitaCoach:function(month,year,maestroId){
 
-        var maestro = null;
+        //var maestro = null;
         var Maestro = Parse.Object.extend("Maestro");
 
         console.log(maestroId);
