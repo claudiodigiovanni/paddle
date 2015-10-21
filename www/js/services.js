@@ -605,7 +605,7 @@ angular.module('starter.services', [])
         var Maestro = Parse.Object.extend("Maestro");
 
         console.log(maestroId);
-        var maestro = new Maestro()
+        var maestro = new Maestro();
         maestro.id = maestroId
         var daysInMonth = Utility.getDaysInMonth(month,year);
         var startDate = new Date(year + "/" + (parseInt(month) + 1) + "/" + 1);
