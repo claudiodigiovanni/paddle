@@ -73,21 +73,25 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
 
 Parse.Cloud.define("enableUser", function(request, response){
   Parse.Cloud.useMasterKey();
+
   //circoloId è il circolo dell'amministratore che concede l'abilitazione....
-  var circoloId = request.params.circoloId
+  var Circolo = Parse.Object.extend("Circolo");
+  var circolo = new Circolo();
+  circolo.id = request.params.circoloId
+
   var query = new Parse.Query(Parse.User);
   query.get(request.params.userId)
   .then(
     function(user){
 
       //L'utente, già iscritto, ha chiesto l'abilitazione ad un altro circolo
-      if (user.get("subscriptions").indexOf(circoloId) == -1){
-          user.add('subscriptions',circoloId)
+      if (user.get("subscriptions").indexOf(circolo.id) == -1){
+          user.add('subscriptions',circolo.id)
           user.save()
           var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
           var query = new Parse.Query(SubscriptionRequest)
-          query.equalTo("user",user.id)
-          query.equalTo("circolo",circoloId)
+          query.equalTo("user",user)
+          query.equalTo("circolo",circolo)
           query.first()
           .then(
             function(sr){
@@ -109,8 +113,6 @@ Parse.Cloud.define("enableUser", function(request, response){
 
 
       }
-
-
 
   }, function(error){
     console.log(error);
@@ -223,25 +225,15 @@ Parse.Cloud.define("signUp", function(request, response){
   });
 });
 
-var followUpWithRequestForSubscription = function(circoloId,userId,userName,response){
+var followUpWithRequestForSubscription = function(circolo,user,userName,response){
 
   var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
   var sr = new SubscriptionRequest();
-  sr.set("circolo",circoloId)
-  sr.set("user",userId)
+  sr.set("circolo",circolo)
+  sr.set("user",user)
   return sr.save()
   .then(
     function(sr){
-      var Circolo = Parse.Object.extend("Circolo")
-      var query =  new Parse.Query(Circolo);
-      console.log(circoloId);
-      return query.get(circoloId)
-  }, function(error){
-    console.log(error);
-    response.error(error);
-  })
-  .then(
-    function(circolo){
       var query = new Parse.Query(Parse.User);
       query.equalTo('circolo',circolo)
       query.equalTo('role','admin')
@@ -266,21 +258,27 @@ var followUpWithRequestForSubscription = function(circoloId,userId,userName,resp
 }
 
 Parse.Cloud.define("requestForSubscription", function(request, response){
-  var circoloId = request.params.circoloId
-  var userId = request.params.userId
+
+  var Circolo = Parse.Object.extend("Circolo");
+  var circolo = new Circolo();
+  circolo.id = request.params.circoloId
+
+  var user = new Parse.User()
+  user.id = request.params.userId
+
   var userName = request.params.userName
 
   var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
   var query = new Parse.Query(SubscriptionRequest)
-  query.equalTo("user",userId)
-  query.equalTo("circolo",circoloId)
+  query.equalTo("user",user)
+  query.equalTo("circolo",circolo)
 
   query.find({
     success:function(results){
         if (results.length > 0)
           response.error("Richiesta già inviata");
         else {
-          followUpWithRequestForSubscription(circoloId,userId,userName,response)
+          followUpWithRequestForSubscription(circolo,user,userName,response)
         }
     },
     error: function(error){
@@ -315,7 +313,7 @@ var InvitationRequestFollowUp = function(response,user,booking){
 
     var user = new Parse.User()
     user.id = userId
-    
+
     var Booking = Parse.Object.extend("Booking");
     var booking = new Booking()
     booking.id = bookingId

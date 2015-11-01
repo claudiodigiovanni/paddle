@@ -47,15 +47,11 @@ angular.module('starter.services', [])
           template: 'Loading...'
         });
         var defer = $q.defer()
-        console.log(circolo.id);
-        console.log(Parse.User.current().id);
         Parse.Cloud.run('requestForSubscription', {circoloId:circolo.id,userName:Parse.User.current().get('nome'),userId:Parse.User.current().id})
         .then(
           function(response){
             defer.resolve(response);
             $ionicLoading.hide()
-
-
         }, function(error){
           defer.reject(error)
           console.log(error);
@@ -68,46 +64,19 @@ angular.module('starter.services', [])
       getUsersFromSubscribtionRequest:function(){
 
 
-        var getUser = function(item){
-          var query = new Parse.Query(Parse.User);
-          return query.get(item.get('user'))
-
-        }
-        var promises = [];
-        var ret = []
         var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
         var query = new Parse.Query(SubscriptionRequest);
-        query.equalTo('circolo',Parse.User.current().get('circolo').id)
+        query.equalTo('circolo',Parse.User.current().get('circolo'))
+        query.include("user")
         return query.find()
         .then(
           function(results){
-            //console.log(results);
-            _.each(results,function(item){
-              var promise = getUser(item)
-              .then(
-                function(user){
-                  ret.push(user)
-
-              }, function(error){
-                console.log(error);
-              })
-              promises.push(promise);
-
-            })
-            //Quando tutte le promise sono state risolte....
-            return $q.all(promises)
-            .then(
-              function(obj){
-                //console.log(ret);
-                return ret
-            }, function(error){
-              console.log(error);
-            })
-
-
+            console.log(results);
+            return _.pluck(results,"attributes.user")
         }, function(error){
           console.log(error);
         })
+
 
       },
 
@@ -115,35 +84,27 @@ angular.module('starter.services', [])
         $ionicLoading.show({
           template: 'Loading...'
         });
-        var ret = []
+        var promises = []
         var myContext = this
         var c = Parse.User.current().get('circolo');
         var query = new Parse.Query(Parse.User);
         query.equalTo('enabled',false)
         query.equalTo('circolo',c)
         console.log('getUsersToEnable...');
-        return query.find()
-        .then(
-          function(results){
-            ret = ret.concat(results)
-            return myContext.getUsersFromSubscribtionRequest()
+        promises.push (query.find())
+        promises.push (myContext.getUsersFromSubscribtionRequest())
+
+        return $q.all(promises).then(
+            function(results){
+              $ionicLoading.hide()
+              return _.flatten(results)
 
 
-        }, function(error){
-          $ionicLoading.hide()
-          console.log(error);
-        })
-        .then(
-          function(results){
-            console.log(results);
-            ret = ret.concat(results)
+          }, function(error){
             $ionicLoading.hide()
-            return ret
+            console.log(error);
+          })
 
-        }, function(error){
-          $ionicLoading.hide()
-          console.log(error);
-        })
 
       },
 
@@ -440,21 +401,21 @@ angular.module('starter.services', [])
         query2.equalTo('players',Parse.User.current())
         query2.greaterThanOrEqualTo("date", today);
         query2.include('players')
-        promises.push(query2.find())  
+        promises.push(query2.find())
 
 
         return $q.all(promises).then(
             function(results){
               $ionicLoading.hide()
               return _.flatten(results)
-              
-              return 
-        
+
+              return
+
           }, function(error){
             $ionicLoading.hide()
             console.log(error);
           })
-            
+
       },
 
       deleteBooking: function(item){
@@ -544,7 +505,7 @@ angular.module('starter.services', [])
             $ionicLoading.show({
               template: 'Loading...'
             });
-            
+
 
             console.log('maestroId:' + maestroId);
             return this.findAvalabilities(month,year,typeG)
@@ -599,8 +560,8 @@ angular.module('starter.services', [])
       },
       getDisponibilitaCoach:function(month,year,maestroId){
 
-        //var maestro = null; 
-        
+        //var maestro = null;
+
         var Maestro = Parse.Object.extend("Maestro");
 
         console.log(maestroId);
@@ -620,7 +581,7 @@ angular.module('starter.services', [])
       },
       getDisponibilitaCoachForCalendar:function(month,year,maestroId){
         var avalabilities = []
-        
+
         var Maestro = Parse.Object.extend("Maestro");
 
         //console.log(maestroId);
