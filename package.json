@@ -37,6 +37,11 @@
     {
       "locator": "https://github.com/phonegap-build/PushPlugin.git",
       "id": "com.phonegap.plugins.PushPlugin"
+    },
+    "ai.api.apiaiplugin",
+    {
+      "locator": "https://github.com/macdonst/SpeechRecognitionPlugin",
+      "id": "org.apache.cordova.speech.speechrecognition"
     }
   ],
   "cordovaPlatforms": [

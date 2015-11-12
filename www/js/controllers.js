@@ -1,15 +1,90 @@
 
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
+.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicLoading) {
+var recognition
+
+ionic.Platform.ready(function(){
+  console.log('ready......');
+  try {
+    recognition = new SpeechRecognition();
+    //recognition.lang("it-IT");
+    console.log('ready2222......');
+      recognition.onresult = function(event) {
+          if (event.results.length > 0) {
+              alert(event.results[0][0].transcript);
+
+          }
+      }
+  } catch (e) {
+    console.log(e);
+  }
+
+})
+
+$scope.voiceCommand2 = function (){
+  console.log("voicecommand2");
+  try{
+      console.log(recognition);
+
+      recognition.start('it');
+  }
+  catch(error){
+
+    console.log(error);
+
+  }
+
+}
+
+  $scope.voiceCommand = function (){
+    $ionicLoading.show({
+      template: '<ion-spinner icon="lines"></ion-spinner><br>You can speak to me ! ...'
+    });
+
+
+
+
+
+      /*  window.ApiAIPromises.requestVoice(
+        {
+          contexts: [ "book" ]
+        })
+        .then(function (response) {
+            // some response processing
+            //console.log(response.result.action);
+            alert(JSON.stringify(response));
+        })
+        .fail(function (error) {
+            // some error processing
+            console.log(error);
+        });*/
+
+        ApiAIPlugin.requestVoice(
+          {}, // empty for simple requests, some optional parameters can be here
+          function (response) {
+            // place your result processing here
+            console.log('errore111');
+            alert(JSON.stringify(response));
+            console.log('aaaaaaaaa');
+          },
+          function (error) {
+            // place your error processing here
+            console.log('errore2222');
+            console.log(error);
+          });
+
+
+      }
+
 
 
 //*********************INSTALL NEW UPDATE *************************************
 
     var deploy = new Ionic.Deploy();
-  
+
     // Update app code with new release from Ionic Deploy
-    var doUpdate = function() { 
+    var doUpdate = function() {
       deploy.update().then(function(res) {
         console.log('Ionic Deploy: Update Success! ', res);
       }, function(err) {
@@ -25,7 +100,7 @@ angular.module('starter.controllers', [])
       deploy.check().then(function(hasUpdate) {
         console.log('Ionic Deploy: Update available: ' + hasUpdate);
         doUpdate();
-        
+
       }, function(err) {
         console.error('Ionic Deploy: Unable to check for updates', err);
       });
@@ -33,16 +108,16 @@ angular.module('starter.controllers', [])
       $scope.$apply()
 
   }
-   
+
 
 //*********************FINE NEW UPDATE *************************************
 
   var edit = {text:"xxxx"}
 
-  $scope.edit = edit 
+  $scope.edit = edit
 
-     
-  
+
+
   $ionicModal.fromTemplateUrl('edit.html', {
     scope: $scope,
     animation: 'slide-in-up',

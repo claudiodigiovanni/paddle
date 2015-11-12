@@ -13,9 +13,27 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
 
 
-
-
   $ionicPlatform.ready(function() {
+
+    console.log('....ready.......');
+
+
+    /*window.ApiAIPlugin.init(
+      {
+        subscriptionKey: "fceadd42-db0f-487a-b751-de0d82ed5eed", // insert your subscription key here
+        clientAccessToken: "dc852e22f60e43279c6101d4b6ebb991", // insert your client access key here
+        lang: "it" // set lang tag from list of supported languages
+      },
+      function(result) { console.log('API.AI: initialition OK') },
+      function(error) { }
+    );
+    window.ApiAIPlugin.setListeningFinishCallback(
+      function(){
+        $ionicLoading.hide();
+      }
+    );
+    */
+
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
       $timeout(function() {
@@ -69,8 +87,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
             }
 
-            
-  
+
+
         } else {
             // show the signup or login page
             console.log('currentUser is null.!!');
