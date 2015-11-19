@@ -4,7 +4,7 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope,$ionicLoading) {
 var recognition
 
-ionic.Platform.ready(function(){
+/*ionic.Platform.ready(function(){
   console.log('ready......');
   try {
     recognition = new SpeechRecognition();
@@ -20,7 +20,7 @@ ionic.Platform.ready(function(){
     console.log(e);
   }
 
-})
+})*/
 
 $scope.voiceCommand2 = function (){
   console.log("voicecommand2");
@@ -41,8 +41,6 @@ $scope.voiceCommand2 = function (){
     $ionicLoading.show({
       template: '<ion-spinner icon="lines"></ion-spinner><br>You can speak to me ! ...'
     });
-
-
 
 
 

@@ -18,7 +18,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     console.log('....ready.......');
 
 
-    /*window.ApiAIPlugin.init(
+    window.ApiAIPlugin.init(
       {
         subscriptionKey: "fceadd42-db0f-487a-b751-de0d82ed5eed", // insert your subscription key here
         clientAccessToken: "dc852e22f60e43279c6101d4b6ebb991", // insert your client access key here
@@ -32,7 +32,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
         $ionicLoading.hide();
       }
     );
-    */
+    
 
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
