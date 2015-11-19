@@ -1,5 +1,5 @@
 
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', []) 
 
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
@@ -38,7 +38,7 @@ angular.module('starter.controllers', [])
 //*********************FINE NEW UPDATE *************************************
 
   var edit = {text:"xxxx"}
-
+  
   $scope.edit = edit 
 
      
@@ -49,6 +49,7 @@ angular.module('starter.controllers', [])
     backdropClickToClose:false
   }).then(function(modal) {
     $scope.modal = modal;
+
   })
   .then(
     function(obj){
@@ -56,6 +57,7 @@ angular.module('starter.controllers', [])
       return MyObjects.getDashboardText()
 
   }, function(error){
+    
     console.log(error);
   })
   .then(
