@@ -3,6 +3,20 @@ var _ = require("underscore");
 
 var Mailgun = require('mailgun');
 
+var moment = require('moment')
+
+var getHoursFromRanges = function(ranges){
+      var ret = "";
+      _.each(ranges,function(r){
+        var end = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        r  = r - 0.5
+        var start = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        ret += "  " + start + "-" + end;
+      })
+      return ret;
+    }
+
+
 var sendEmail = function(toAddress,subjectx,textx){
   Mailgun.initialize('sandboxb318624be69540219e6c0e4769735e6b.mailgun.org', 'key-c88b7957c124942a3a24311f0970f929');
 
@@ -37,6 +51,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
   var gameTypes = []
   var id = request.object.id
 
+  var circolo = null;
   var Booking = Parse.Object.extend("Booking")
   var query = new Parse.Query(Booking);
   query.include('players')
@@ -45,7 +60,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
   .then(
     function(b){
       //************************
-      var circolo = b.get('circolo')
+      circolo = b.get('circolo')
       gameTypes.push(circolo.get("gameType1"))
       gameTypes.push(circolo.get("gameType2"))
       gameTypes.push(circolo.get("gameType3"))
@@ -67,6 +82,64 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
   }, function(error){
     console.log(error);
   })
+  .then(
+    function(){
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.greaterThanOrEqualTo("date", new Date());
+        //query.lessThanOrEqualTo("date", endDate);
+        query.ascending("date");
+        query.include('user');
+        return query.find()
+
+    }
+    )
+  .then(
+    function(queryResult){
+
+      var messagex = ""
+
+      _.each(queryResult,function(item){
+
+        var date = moment(item.get("date")).add('days',1);
+        console.log(date)
+
+        
+        messagex = messagex.concat( "Campo: " ,item.get("court") , 
+                                    " - Datax: " , date.format("DD/MM/YYYY")  , 
+                                    " - Orario: " , getHoursFromRanges(item.get("ranges")),
+                                    " - Utente: " , item.get("user").get("nome"),"\n")
+                
+      })
+
+      console.log(messagex)
+
+      //************SEND EMAIL TO ADMIN****************
+      var toAddress
+      var query = new Parse.Query(Parse.User);
+      console.log("CIRCOLO")
+      console.log(circolo)
+      query.equalTo('circolo',circolo)
+      query.equalTo('role','admin')
+
+      query.first()
+      .then(
+        function(admin){
+          toAddress = admin.get('email')
+      }, function(error){
+        console.log(error);
+      })
+      .then(
+        function(obj){
+          console.log(toAddress);
+          sendEmail(toAddress,"Prenotazione Utente",messagex)
+      }, function(error){
+        console.log(error);
+      }) 
+      //****************************
+      
+    }
+  )
 
 
 });

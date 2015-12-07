@@ -11,9 +11,9 @@ angular.module('starter.controllers', [])
     // Update app code with new release from Ionic Deploy
     var doUpdate = function() { 
       deploy.update().then(function(res) {
-        console.log('Ionic Deploy: Update Success! ', res);
+        alert('Ionic Deploy: Update Success! ', res);
       }, function(err) {
-        console.log('Ionic Deploy: Update error! ', err);
+        alert('Ionic Deploy: Update error! ', err);
       }, function(prog) {
         console.log('Ionic Deploy: Progress... ', prog);
       });
@@ -21,13 +21,13 @@ angular.module('starter.controllers', [])
 
     $scope.doRefresh = function(){
      // Check Ionic Deploy for new code
-      console.log('Ionic Deploy: Checking for updates');
+      alert('Ionic Deploy: Checking for updates');
       deploy.check().then(function(hasUpdate) {
-        console.log('Ionic Deploy: Update available: ' + hasUpdate);
+        alert('Ionic Deploy: Update available: ' + hasUpdate);
         doUpdate();
         
       }, function(err) {
-        console.error('Ionic Deploy: Unable to check for updates', err);
+        alert('Ionic Deploy: Unable to check for updates...' + err);
       });
       $scope.$broadcast('scroll.refreshComplete');
       $scope.$apply()
