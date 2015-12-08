@@ -398,7 +398,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading) {
 
   var toggleCoach = {value:false}
   $scope.toggleCoach = toggleCoach
@@ -709,17 +709,22 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       return;
     }
 
+    $ionicLoading.show({
+          template: 'Please wait...'
+    });
+
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
     booking.ranges = selectedRanges;
 
-    console.log(booking);
+    //console.log(booking);
 
     MyObjects.createBooking(booking)
     .then(
       function(result){
+      $ionicLoading.hide();
 
       $scope.modal.hide();
 
@@ -729,6 +734,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     }, function(error){
 
+      $ionicLoading.hide();
       console.log(error);
       $scope.resolved = "Oooops! L'orario non è più disponibile!"
 

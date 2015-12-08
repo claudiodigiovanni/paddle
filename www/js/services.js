@@ -171,6 +171,7 @@ angular.module('starter.services', [])
         $ionicLoading.show({
           template: 'Loading...'
         });
+        console.log("gameType:" + gameT)
         var defer = $q.defer()
         var courtsAvalaivable = []
         var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
@@ -243,7 +244,7 @@ angular.module('starter.services', [])
                 book.add('players',Parse.User.current())
 
             }
-            book.set("gameType",obj.gameType);
+            book.set("gameType",obj.gameType.toString());
             book.set("note",obj.note);
             book.set("payed",false);
 
@@ -257,6 +258,7 @@ angular.module('starter.services', [])
               maestro.id = maestroId
               book.set('maestro',maestro)
             }
+
 
             return book.save(null)
 
