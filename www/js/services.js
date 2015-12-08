@@ -247,6 +247,7 @@ angular.module('starter.services', [])
             book.set("gameType",obj.gameType.toString());
             book.set("note",obj.note);
             book.set("payed",false);
+            book.set("playersNumber",obj.playersNumber)
 
             var maestroId = obj.maestro != null ? obj.maestro.id : -1
 
@@ -696,8 +697,9 @@ angular.module('starter.services', [])
           .then(
             function(cta){
 
-              var actualGame = $rootScope.gameTypes[cta.get('gameType')]
-              var numPlayers = parseInt(actualGame.numberPlayers)
+              //var actualGame = $rootScope.gameTypes[cta.get('gameType')]
+              //var numPlayers = parseInt(actualGame.numberPlayers)
+              var numberPlayers = cta.get('playersNumber')
               if (cta.get("players").length == numPlayers ){
                 defer.reject('Partita già al completo!')
               }

@@ -374,11 +374,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   var p = currentUser.password
   var l = currentUser.level
   var c = currentUser.circolo
+  var x = currentUser.phoneNumber
 
 
   console.log(currentUser);
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, 
+                            captchaResponse: $scope.captchaResponse, platform: $rootScope.platform, phoneNumber:x }, {
     success: function(user) {
       //$scope.modal.hide();
       $ionicLoading.hide();
@@ -487,6 +489,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.coachAvalabilities = []
     avalaibleRanges = []
 
+
+    $scope.numberPlayers = $rootScope.gameTypes[booking.gameType].numberPlayers
+    console.log('numberPlayers....' + $scope.numberPlayers )
+
+    //Assegno un default
+    booking.playersNumber = $scope.numberPlayers[0]
+
   })
 
 
@@ -516,13 +525,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   };
 
   $scope.gotoInvitation = function(){
-    //console.log($scope.booking);
-    console.log('chousura');
+    
     $scope.modalok.hide();
     $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
   }
 
   //***************************FINE SEZIONE MODAL*****************************************************
+
+
 
   $scope.toggleCoach = function(){
 
@@ -884,8 +894,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
 
-
-
   $scope.delete = function(item){
 
     console.log('delete');
@@ -927,6 +935,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.date = Utility.formatDate(today)
 
+  $scope.selectedDay = today.getDate()
+
   var currentMonth = parseInt(today.getMonth())  ;
   var currentYear = today.getFullYear();
   $scope.currentMonth = currentMonth;
@@ -964,6 +974,27 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     })
 
   };
+
+  $scope.delete = function(item){
+
+    console.log('delete');
+    
+    var m = parseInt($scope.currentMonth) + 1
+    var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
+
+    MyObjects.deleteBooking(item)
+    .then(function(item){
+      return MyObjects.findBookingsForSegreteria(new Date(datex))
+    })
+    .then(
+      function(results){
+        $scope.results = results
+        //$scope.$apply()
+    }, function(error){
+      console.log(error);
+    })
+
+  }
 
   $scope.dayClicked = function(day){
 

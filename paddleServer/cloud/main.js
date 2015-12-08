@@ -47,6 +47,8 @@ Parse.Cloud.define("hello", function(request, response) {
 
 Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response) {
 
+  var toAddress
+  var messagex = "..."
 
   var gameTypes = []
   var id = request.object.id
@@ -61,11 +63,12 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
     function(b){
       //************************
       circolo = b.get('circolo')
-      gameTypes.push(circolo.get("gameType1"))
+      /*gameTypes.push(circolo.get("gameType1"))
       gameTypes.push(circolo.get("gameType2"))
       gameTypes.push(circolo.get("gameType3"))
       var actualGame = gameTypes[b.get('gameType')]
-      var numPlayers = parseInt(actualGame.numberPlayers)
+      var numPlayers = parseInt(actualGame.numberPlayers)*/
+      var numberPlayers = b.get("playersNumber")
       if (b.get('callToAction') == true && b.get("players").length == numPlayers ){
         //sendEmail
         console.log('sendEmail.........');
@@ -86,44 +89,54 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
     function(){
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
+        query.equalTo('circolo',circolo)
         query.greaterThanOrEqualTo("date", new Date());
         //query.lessThanOrEqualTo("date", endDate);
         query.ascending("date");
         query.include('user');
         return query.find()
 
-    }
-    )
+    }, function(error){
+      console.log(error);
+    })
   .then(
     function(queryResult){
-
-      var messagex = ""
 
       _.each(queryResult,function(item){
 
         var date = moment(item.get("date")).add('days',1);
         console.log(date)
 
-        
-        messagex = messagex.concat( "Campo: " ,item.get("court") , 
+        var lastOne = ""
+        if (id == item.id)
+          lastOne = "***"
+        messagex = messagex.concat( lastOne,"Campo: " ,item.get("court") , 
                                     " - Datax: " , date.format("DD/MM/YYYY")  , 
                                     " - Orario: " , getHoursFromRanges(item.get("ranges")),
-                                    " - Utente: " , item.get("user").get("nome"),"\n")
+                                    " - Utente: " , item.get("user").get("nome"),
+                                    " - Tel: " , item.get("user").get("phoneNumber"),lastOne,"\n")
                 
       })
+      return messagex
+    }, function(error){
+    console.log(error);
+    })
+  .then(
+      function(messagex){
 
-      console.log(messagex)
+      //console.log(messagex)
 
       //************SEND EMAIL TO ADMIN****************
-      var toAddress
+      
       var query = new Parse.Query(Parse.User);
       console.log("CIRCOLO")
       console.log(circolo)
       query.equalTo('circolo',circolo)
       query.equalTo('role','admin')
 
-      query.first()
-      .then(
+      return query.first()
+    })
+    .then(
         function(admin){
           toAddress = admin.get('email')
       }, function(error){
@@ -138,10 +151,6 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       }) 
       //****************************
       
-    }
-  )
-
-
 });
 
 Parse.Cloud.define("enableUser", function(request, response){
@@ -224,6 +233,7 @@ Parse.Cloud.define("signUp", function(request, response){
   user.set("level", request.params.level)
   user.set("enabled",false)
   user.set("nome",request.params.nome )
+  user.set("phoneNumber",request.params.phoneNumber)
   var Circolo = Parse.Object.extend("Circolo");
   var c = new Circolo();
   c.id = request.params.circolo

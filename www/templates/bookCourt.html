@@ -18,7 +18,7 @@
   </div>
 
   <ion-toggle  ng-model="toggleCoach.value" ng-change="toggleCoach()">
-      Lezione con Maestro
+      Maestro
   </ion-toggle>
 
   <br>
@@ -31,12 +31,26 @@
 
 <br>
 
-<div class="list" ng-show="true">
-<ion-radio-fix ng-model="booking.gameType" ng-value="{{$index}}" ng-repeat="g in gameTypes">
-                  {{g.name}}
-</ion-radio-fix>
-</div>
 
+
+
+
+<div class="row">
+<div class="col">
+  <div class="list" ng-show="true">
+      <ion-radio-fix ng-model="booking.gameType" ng-value="{{$index}}" ng-repeat="g in gameTypes" name="gameType">
+                        {{g.name}}
+      </ion-radio-fix>
+</div>
+</div>
+<div class="col">
+  <div class="list" ng-show="true">
+      <ion-radio-fix ng-model="booking.playersNumber" ng-value="{{num}}" ng-repeat="num in numberPlayers" name="playersNumber">
+                        {{num}} giocatori
+      </ion-radio-fix>
+</div>
+</div>
+</div>
 
 
 </ion-content>
