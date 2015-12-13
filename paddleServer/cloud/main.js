@@ -178,7 +178,7 @@ Parse.Cloud.define("enableUser", function(request, response){
           .then(
             function(sr){
               sr.destroy()
-              sendEmail(user.get('email'),"Iscrizione","La tua richiesta di iscrizione a Magic Padel è stata accettata. Complimenti!")
+              sendEmail(user.get('email'),"Iscrizione","La tua richiesta di iscrizione a Magic Booking è stata accettata. Complimenti!")
               response.success('Abilitazione ok!!!')
 
           }, function(error){
@@ -190,7 +190,7 @@ Parse.Cloud.define("enableUser", function(request, response){
       else {
         user.set('enabled',true)
         user.save()
-        sendEmail(user.get('email'),"Iscrizione","La tua richiesta di iscrizione a Magic Padel è stata accettata. Complimenti!")
+        sendEmail(user.get('email'),"Iscrizione","La tua richiesta di iscrizione a Magic Booking è stata accettata. Complimenti!")
         response.success('Abilitazione ok!!!')
 
 
