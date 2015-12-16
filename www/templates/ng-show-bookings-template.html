@@ -11,6 +11,7 @@
 
     &nbsp;&nbsp;
     <b><i class="icon ion-android-pin"></i></b> {{booking.get("court") | courtName:booking.get('gameType') }} &nbsp;
+    <b><i class="icon ion-person"></i></b>&nbsp;{{booking.get("user").get("nome")}} &nbsp; {{booking.get("note") != null ? " - " + booking.get("note") : " "}} 
 
 
 

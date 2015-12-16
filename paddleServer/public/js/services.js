@@ -116,6 +116,9 @@ angular.module('starter.services', [])
       },
 
       getDashboardText : function(){
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
         var text = []
         var c = Parse.User.current().get('circolo');
         var Dashboard = Parse.Object.extend("Dashboard");
@@ -129,9 +132,11 @@ angular.module('starter.services', [])
             text.push(item.get('area1'))
             text.push(item.get('area2'))
             text.push(item.get('area3'))
+            $ionicLoading.hide()
             return text;
 
         }, function(error){
+          $ionicLoading.hide()
           Utility.handleParseError(error);
         })
       },
@@ -171,6 +176,7 @@ angular.module('starter.services', [])
         $ionicLoading.show({
           template: 'Loading...'
         });
+        console.log("gameType:" + gameT)
         var defer = $q.defer()
         var courtsAvalaivable = []
         var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
@@ -243,9 +249,10 @@ angular.module('starter.services', [])
                 book.add('players',Parse.User.current())
 
             }
-            book.set("gameType",obj.gameType);
+            book.set("gameType",obj.gameType.toString());
             book.set("note",obj.note);
             book.set("payed",false);
+            book.set("playersNumber",obj.playersNumber)
 
             var maestroId = obj.maestro != null ? obj.maestro.id : -1
 
@@ -257,6 +264,7 @@ angular.module('starter.services', [])
               maestro.id = maestroId
               book.set('maestro',maestro)
             }
+
 
             return book.save(null)
 
@@ -392,6 +400,7 @@ angular.module('starter.services', [])
         else query1.equalTo("user", user );
         query1.ascending("date");
         query1.include('players');
+        query1.include('user')
         promises.push(query1.find())
 
         var query2 = new Parse.Query(Booking);
@@ -401,6 +410,7 @@ angular.module('starter.services', [])
         query2.equalTo('players',Parse.User.current())
         query2.greaterThanOrEqualTo("date", today);
         query2.include('players')
+        query2.include('user')
         promises.push(query2.find())
 
 
@@ -682,6 +692,10 @@ angular.module('starter.services', [])
 
       addCallToActionPlayer: function(cta){
 
+        $ionicLoading.show({
+            template: 'Loading...'
+          });
+
           var defer = $q.defer()
           var user = Parse.User.current();
           var Booking = Parse.Object.extend("Booking");
@@ -694,8 +708,9 @@ angular.module('starter.services', [])
           .then(
             function(cta){
 
-              var actualGame = $rootScope.gameTypes[cta.get('gameType')]
-              var numPlayers = parseInt(actualGame.numberPlayers)
+              //var actualGame = $rootScope.gameTypes[cta.get('gameType')]
+              //var numPlayers = parseInt(actualGame.numberPlayers)
+              var numPlayers = cta.get('playersNumber')
               if (cta.get("players").length == numPlayers ){
                 defer.reject('Partita già al completo!')
               }
@@ -716,10 +731,10 @@ angular.module('starter.services', [])
                   defer.reject('Utente già inserito')
 
               }
-
+              $ionicLoading.hide();
               return defer.promise
           }, function(error){
-
+            $ionicLoading.hide();
             Utility.handleParseError(error);
 
           })

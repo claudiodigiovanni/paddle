@@ -68,7 +68,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       gameTypes.push(circolo.get("gameType3"))
       var actualGame = gameTypes[b.get('gameType')]
       var numPlayers = parseInt(actualGame.numberPlayers)*/
-      var numberPlayers = b.get("playersNumber")
+      var numPlayers = b.get("playersNumber")
       if (b.get('callToAction') == true && b.get("players").length == numPlayers ){
         //sendEmail
         console.log('sendEmail.........');
@@ -94,6 +94,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         //query.lessThanOrEqualTo("date", endDate);
         query.ascending("date");
         query.include('user');
+        query.include('maestro');
         return query.find()
 
     }, function(error){
@@ -114,7 +115,8 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
                                     " - Datax: " , date.format("DD/MM/YYYY")  , 
                                     " - Orario: " , getHoursFromRanges(item.get("ranges")),
                                     " - Utente: " , item.get("user").get("nome"),
-                                    " - Tel: " , item.get("user").get("phoneNumber"),lastOne,"\n")
+                                    " - Tel: " , item.get("user").get("phoneNumber"),
+                                    " - Maestro: ", item.get("maestro") != null ? item.get("maestro").get("nome") : "-" , lastOne,"\n")
                 
       })
       return messagex
@@ -234,6 +236,7 @@ Parse.Cloud.define("signUp", function(request, response){
   user.set("enabled",false)
   user.set("nome",request.params.nome )
   user.set("phoneNumber",request.params.phoneNumber)
+  user.set("codfis",request.params.codfis)
   var Circolo = Parse.Object.extend("Circolo");
   var c = new Circolo();
   c.id = request.params.circolo
@@ -390,6 +393,7 @@ var InvitationRequestFollowUp = function(response,user,booking){
 }
 
   Parse.Cloud.define("invite", function(request, response){
+
 
     var userId = request.params.user
     var bookingId = request.params.booking

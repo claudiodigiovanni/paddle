@@ -31,11 +31,32 @@
 
 <br>
 
-<div class="list" ng-show="true">
-<ion-radio-fix ng-model="booking.gameType" ng-value="{{$index}}" ng-repeat="g in gameTypes">
-                  {{g.name}}
-</ion-radio-fix>
+
+<div class="row center"> 
+<div class="col">
+<b>Voglio giocare a...</b>
 </div>
+</div>
+
+
+  <div class="list" ng-show="true">
+      <ion-radio-fix ng-model="booking.gameType" ng-value="{{$index}}" ng-repeat="g in gameTypes" name="gameType">
+                        {{g.name}}
+      </ion-radio-fix>
+  </div>
+
+<div class="row center"> 
+<div class="col">
+  <b>Opzioni</b>
+</div>
+</div>
+
+
+  <div class="list" ng-show="true">
+      <ion-radio-fix ng-model="booking.playersNumber" ng-value="{{num}}" ng-repeat="num in numberPlayers" name="playersNumber">
+                        {{num}} player
+      </ion-radio-fix>
+  </div>
 
 
 

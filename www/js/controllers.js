@@ -63,7 +63,10 @@ angular.module('starter.controllers', [])
   .then(
     function(text){
 
-        $scope.text = text
+        //$scope.text = text
+        $scope.text0 = text[0]
+        $scope.text1 = text[1]
+        $scope.text2 = text[2]
 
   }, function(error){
     console.log(error);
@@ -73,7 +76,8 @@ angular.module('starter.controllers', [])
   $scope.closeModal = function() {
     $scope.modal.hide();
     MyObjects.saveDashboardText($scope.index,edit.text)
-    $scope.text[$scope.index] = edit.text
+    var myx = "text" + $scope.index
+    $scope[myx] = edit.text
     //$state.go('tab.account');
   };
 
@@ -82,8 +86,8 @@ angular.module('starter.controllers', [])
   });
 
   $scope.openModal = function(index) {
-
-    edit.text = $scope.text[index]
+    var myx = "text" + index
+    edit.text = $scope[myx]
     $scope.index = index
     $scope.modal.show();
     //$state.go('tab.account');
@@ -375,11 +379,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   var l = currentUser.level
   var c = currentUser.circolo
   var x = currentUser.phoneNumber
+  var y = currentUser.codfis
 
 
   console.log(currentUser);
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, 
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, codfis:y,
                             captchaResponse: $scope.captchaResponse, platform: $rootScope.platform, phoneNumber:x }, {
     success: function(user) {
       //$scope.modal.hide();
@@ -389,7 +394,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     },
     error: function(error) {
       $ionicLoading.hide();
-      mymessage.text = "Non è possibile registrarsi. (Error :  " + error + ")";
+      mymessage.text = error;
       console.log(error);
     }
   })

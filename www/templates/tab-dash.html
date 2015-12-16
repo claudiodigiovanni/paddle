@@ -7,37 +7,32 @@
     <div class="list card">
       <div class="item item-divider">News</div>
       <div class="item item-body">
-        <div>
-          {{text[0]}}
+           <p ng-bind-html="text0"></p>
           <button class="button button-small button-positive" ng-click="openModal(0)" ng-show="userRole == 'admin'">
               Edit
           </button>
-        </div>
       </div>
     </div>
     <div class="list card">
       <div class="item item-divider">Tornei</div>
       <div class="item item-body">
-        <div>
-            {{text[1]}}
+       
+             <p ng-bind-html="text1"></p>
             <button class="button button-small button-positive" ng-click="openModal(1)" ng-show="userRole == 'admin'">
               Edit
             </button>
-        </div>
       </div>
     </div>
     <div class="list card">
       <div class="item item-divider">Promozioni</div>
       <div class="item item-body">
-        <div>
-            {{text[2]}}
+             <p ng-bind-html="text2"></p>
             <button class="button button-small button-positive" ng-click="openModal(2)" ng-show="userRole == 'admin'">
               Edit
             </button>
-        </div>
       </div>
     </div>
-    <h6>Trascina la pagina verso il basso per scaricare eventuali aggiornamenti.</h6>
+    <h6>ver. 0.4.0</h6>
   </ion-content>
 
   <script id="edit.html" type="text/ng-template">

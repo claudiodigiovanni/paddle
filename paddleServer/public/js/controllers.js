@@ -11,9 +11,9 @@ angular.module('starter.controllers', [])
     // Update app code with new release from Ionic Deploy
     var doUpdate = function() { 
       deploy.update().then(function(res) {
-        console.log('Ionic Deploy: Update Success! ', res);
+        alert('Ionic Deploy: Update Success! ', res);
       }, function(err) {
-        console.log('Ionic Deploy: Update error! ', err);
+        alert('Ionic Deploy: Update error! ', err);
       }, function(prog) {
         console.log('Ionic Deploy: Progress... ', prog);
       });
@@ -21,13 +21,13 @@ angular.module('starter.controllers', [])
 
     $scope.doRefresh = function(){
      // Check Ionic Deploy for new code
-      console.log('Ionic Deploy: Checking for updates');
+      alert('Ionic Deploy: Checking for updates');
       deploy.check().then(function(hasUpdate) {
-        console.log('Ionic Deploy: Update available: ' + hasUpdate);
+        alert('Ionic Deploy: Update available: ' + hasUpdate);
         doUpdate();
         
       }, function(err) {
-        console.error('Ionic Deploy: Unable to check for updates', err);
+        alert('Ionic Deploy: Unable to check for updates...' + err);
       });
       $scope.$broadcast('scroll.refreshComplete');
       $scope.$apply()
@@ -63,7 +63,10 @@ angular.module('starter.controllers', [])
   .then(
     function(text){
 
-        $scope.text = text
+        //$scope.text = text
+        $scope.text0 = text[0]
+        $scope.text1 = text[1]
+        $scope.text2 = text[2]
 
   }, function(error){
     console.log(error);
@@ -73,7 +76,8 @@ angular.module('starter.controllers', [])
   $scope.closeModal = function() {
     $scope.modal.hide();
     MyObjects.saveDashboardText($scope.index,edit.text)
-    $scope.text[$scope.index] = edit.text
+    var myx = "text" + $scope.index
+    $scope[myx] = edit.text
     //$state.go('tab.account');
   };
 
@@ -82,8 +86,8 @@ angular.module('starter.controllers', [])
   });
 
   $scope.openModal = function(index) {
-
-    edit.text = $scope.text[index]
+    var myx = "text" + index
+    edit.text = $scope[myx]
     $scope.index = index
     $scope.modal.show();
     //$state.go('tab.account');
@@ -374,11 +378,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   var p = currentUser.password
   var l = currentUser.level
   var c = currentUser.circolo
+  var x = currentUser.phoneNumber
+  var y = currentUser.codfis
 
 
   console.log(currentUser);
 
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, captchaResponse: $scope.captchaResponse, platform: $rootScope.platform}, {
+  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, codfis:y,
+                            captchaResponse: $scope.captchaResponse, platform: $rootScope.platform, phoneNumber:x }, {
     success: function(user) {
       //$scope.modal.hide();
       $ionicLoading.hide();
@@ -387,7 +394,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     },
     error: function(error) {
       $ionicLoading.hide();
-      mymessage.text = "Non è possibile registrarsi. (Error :  " + error + ")";
+      mymessage.text = error;
       console.log(error);
     }
   })
@@ -398,7 +405,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading) {
 
   var toggleCoach = {value:false}
   $scope.toggleCoach = toggleCoach
@@ -487,6 +494,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.coachAvalabilities = []
     avalaibleRanges = []
 
+
+    $scope.numberPlayers = $rootScope.gameTypes[booking.gameType].numberPlayers
+    console.log('numberPlayers....' + $scope.numberPlayers )
+
+    //Assegno un default
+    booking.playersNumber = $scope.numberPlayers[0]
+
   })
 
 
@@ -516,13 +530,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   };
 
   $scope.gotoInvitation = function(){
-    //console.log($scope.booking);
-    console.log('chousura');
+    
     $scope.modalok.hide();
     $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
   }
 
   //***************************FINE SEZIONE MODAL*****************************************************
+
+
 
   $scope.toggleCoach = function(){
 
@@ -709,17 +724,22 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       return;
     }
 
+    $ionicLoading.show({
+          template: 'Please wait...'
+    });
+
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
     booking.date = date;
     booking.ranges = selectedRanges;
 
-    console.log(booking);
+    //console.log(booking);
 
     MyObjects.createBooking(booking)
     .then(
       function(result){
+      $ionicLoading.hide();
 
       $scope.modal.hide();
 
@@ -729,6 +749,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     }, function(error){
 
+      $ionicLoading.hide();
       console.log(error);
       $scope.resolved = "Oooops! L'orario non è più disponibile!"
 
@@ -878,8 +899,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
 
-
-
   $scope.delete = function(item){
 
     console.log('delete');
@@ -921,6 +940,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.date = Utility.formatDate(today)
 
+  $scope.selectedDay = today.getDate()
+
   var currentMonth = parseInt(today.getMonth())  ;
   var currentYear = today.getFullYear();
   $scope.currentMonth = currentMonth;
@@ -958,6 +979,27 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     })
 
   };
+
+  $scope.delete = function(item){
+
+    console.log('delete');
+    
+    var m = parseInt($scope.currentMonth) + 1
+    var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
+
+    MyObjects.deleteBooking(item)
+    .then(function(item){
+      return MyObjects.findBookingsForSegreteria(new Date(datex))
+    })
+    .then(
+      function(results){
+        $scope.results = results
+        //$scope.$apply()
+    }, function(error){
+      console.log(error);
+    })
+
+  }
 
   $scope.dayClicked = function(day){
 
