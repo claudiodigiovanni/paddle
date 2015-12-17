@@ -115,10 +115,10 @@
 
     <div class="list" ng-show="avalaivableCourts != null">
       <label class="item item-divider">
-        Scegli il campo che preferisci
+        Scegli il campo che preferisci...
       </label>
 
-      <ion-radio-fix ng-model="booking.court" ng-value="{{$index + 1}}" ng-repeat="court in avalaivableCourts">
+      <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
         Campo {{court | courtName:booking.gameType}}
       </ion-radio-fix>
 

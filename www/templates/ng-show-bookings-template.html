@@ -57,7 +57,9 @@
 
 </div>
 
-    <span ng-show="userRole == 'segreteria' || userRole == 'admin'"><i class="ion-ios-list-outline"></i> {{booking.note}}</span>
+    <span ng-show="userRole == 'segreteria' || userRole == 'admin'"><i class="ion-ios-list-outline"></i> 
+    {{booking.note}}
+    </span>
 
     <ion-option-button class="button-assertive"
                      ng-click="delete({b:booking})">

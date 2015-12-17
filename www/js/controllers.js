@@ -692,6 +692,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
         $scope.avalaivableCourts = obj
         console.log('avalaivableCourts');
+        console.log(obj);
 
     }, function(error){
       console.log(error);
