@@ -145,8 +145,17 @@ angular.module('starter.directives', [])
           showpay: '@'
         },
         templateUrl: 'templates/ng-show-bookings-template.html',
-        controller: ['$scope', '$http', 'Utility', '$rootScope', function($scope, $http, Utility, $rootScope) {
+        controller: ['$scope', '$http', 'Utility', '$rootScope', 'MyObjects',function($scope, $http, Utility, $rootScope, MyObjects) {
 
+          //console.log($rootScope.userRole)
+          $scope.userRole = $rootScope.userRole
+
+          $scope.payment = function(booking,type,qty){
+            console.log('yyyy')
+            MyObjects.payment(booking,type,qty)
+            //MyObjects.findBookings(2,2015)
+
+          }
 
 
         }]

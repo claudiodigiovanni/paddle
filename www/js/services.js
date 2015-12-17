@@ -254,6 +254,9 @@ angular.module('starter.services', [])
             book.set("payed",false);
             book.set("playersNumber",obj.playersNumber)
 
+            var ps = {quote:0,tessere:0}
+            book.set("payments",ps)
+
             var maestroId = obj.maestro != null ? obj.maestro.id : -1
 
 
@@ -846,6 +849,18 @@ angular.module('starter.services', [])
           ir.id = invitation.id
           return ir.destroy()
 
+        },
+
+
+        payment: function(booking,type,qty){
+          var ps = booking.get('payments')
+          console.log(booking.get('payments')[type])
+          var x = parseInt(booking.get('payments')[type]) + parseInt(qty)
+          ps[type] = x
+          console.log(x)
+            booking.set('payments',ps);
+            return booking.save();
+          //console.log("payment")
         }
 
     }

@@ -80,10 +80,16 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         })
 
       }
+      console.log('********')
+      console.log(b.createdAt)
+      console.log(b.updatedAt)
+      if (b.createdAt.getTime() != b.updatedAt.getTime())
+        throw "Prenotazione già esistente...non invio mail.."
       //***********************
 
   }, function(error){
     console.log(error);
+    throw error
   })
   .then(
     function(){
@@ -98,7 +104,8 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         return query.find()
 
     }, function(error){
-      console.log(error);
+        console.log(error);
+        throw error
     })
   .then(
     function(queryResult){
@@ -121,7 +128,8 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       })
       return messagex
     }, function(error){
-    console.log(error);
+        console.log(error);
+        throw error
     })
   .then(
       function(messagex){
@@ -137,20 +145,26 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       query.equalTo('role','admin')
 
       return query.first()
+    },function(error){
+        console.log(error);
+        throw error
+      })
+  .then(
+      function(admin){
+        toAddress = admin.get('email')
+    }, function(error){
+      console.log(error);
+      throw error
     })
     .then(
-        function(admin){
-          toAddress = admin.get('email')
-      }, function(error){
-        console.log(error);
-      })
-      .then(
-        function(obj){
-          console.log(toAddress);
-          sendEmail(toAddress,"Prenotazione Utente",messagex)
-      }, function(error){
-        console.log(error);
-      }) 
+      function(obj){
+        console.log(toAddress);
+        sendEmail(toAddress,"Prenotazione Utente",messagex)
+    }, function(error){
+      console.log(error);
+
+    })
+
       //****************************
       
 });

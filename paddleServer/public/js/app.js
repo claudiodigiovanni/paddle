@@ -64,6 +64,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $rootScope.currentUser = currentUser;
             $rootScope.userRole = currentUser.get('role')
 
+            //console.log($rootScope.userRole)
+
             if ($rootScope.gameTypes == null){
               $rootScope.gameTypes = JSON.parse(window.localStorage['gameTypes'])
 
