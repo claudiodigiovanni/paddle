@@ -1,0 +1,28 @@
+<ion-view view-title="Vista Campi {{datex}}">
+
+
+ <ion-header-bar class="bar bar-subheader custom">
+      <div class=" item item-input-inset">
+        <div class="col">Orario</div>
+         <div class="col" ng-repeat="court in courts">{{court | courtName : "0"}} </div>
+      </div>
+    </ion-header-bar>
+
+    <ion-content class="has-subheader-custom">
+
+        <div class="row item courtsViewFont" ng-repeat="row in myresults">
+
+        <div class="col">{{row.range | hourFromRange }}</div>
+
+        <div class="col" ng-repeat="court in row.courts"> 
+          <span ng-repeat="booking in court">{{booking.get('user').get('nome') + " " + booking.get('note')}} </span>
+        </div>
+
+        </div>
+
+    </ion-content>
+
+
+</ion-view>
+
+

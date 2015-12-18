@@ -10,26 +10,37 @@
 
     &nbsp;&nbsp;
     <b><i class="icon ion-android-pin"></i></b> {{booking.get("court") | courtName:booking.get('gameType') }} &nbsp;
-    <b><i class="icon ion-person"></i></b>&nbsp;{{booking.get("user").get("nome")}} &nbsp; {{booking.get("note") != null ? " - " + booking.get("note") : " "}} &nbsp;
-<br><br>
+    <b><i class="icon ion-person"></i></b>&nbsp;{{booking.get("user").get("nome")}} &nbsp;
+<br>
 <div ng-show="userRole == 'segreteria' || userRole == 'admin'">    
+  <div class="row">
+    <div class="col-25">
     <b>Quote:</b>
+    </div>
+    <div class="col">
     <button class="button  button-positive button-small" ng-click="payment(booking,'quote',-1)">
       -
     </button>&nbsp;&nbsp;
     {{booking.get("payments").quote}}&nbsp;&nbsp;
     <button class="button button-positive button-small" ng-click="payment(booking,'quote',1)">
       +
-    </button>&nbsp;
-    
-    <b>Tessere:</b>
-    <button class="button  button-positive button-small" ng-click="payment(booking,'tessere',-1)">
-      -
-    </button>&nbsp;&nbsp;
-    {{booking.get("payments").tessere}}&nbsp;&nbsp;
-    <button class="button  button-positive button-small" ng-click="payment(booking,'tessere',1)">
-      +
-    </button>&nbsp;
+    </button>
+    </div>
+  </div>
+    <div class="row">
+     <div class="col-25"->
+      <b>Tessere:</b>
+     </div>
+    <div class="col">
+      <button class="button  button-positive button-small" ng-click="payment(booking,'tessere',-1)">
+        -
+      </button>&nbsp;&nbsp;
+      {{booking.get("payments").tessere}}&nbsp;&nbsp;
+      <button class="button  button-positive button-small" ng-click="payment(booking,'tessere',1)">
+        +
+      </button>&nbsp;
+     </div>
+    </div>
 </div>
 
 
@@ -50,17 +61,27 @@
     <i class="icon ion-happy-outline balanced"></i>
   </div>
 
-
   <div class="item-icon-right" ng-show="booking.get('payed') == false" ng-click="pay({b:booking})">
     <i class="icon ion-sad-outline assertive"></i>
   </div>
 
 </div>
 
-    <span ng-show="userRole == 'segreteria' || userRole == 'admin'"><i class="ion-ios-list-outline"></i> 
-    {{booking.note}}
-    </span>
-
+<div class="row" ng-show="userRole == 'segreteria' || userRole == 'admin'">
+  <div class="col">
+  <label class="item item-input" >
+    <span class="input-label"><b>Note</b></span>
+    <input type="text" ng-init="booking.note=booking.get('note')" ng-model="booking.note">
+  </label>
+  </div>
+  <div class="col">
+    <button class="button button-outline button-positive" ng-click="saveNote(booking)">
+      Salva
+    </button>
+  </div>
+</div>
+  
+    
     <ion-option-button class="button-assertive"
                      ng-click="delete({b:booking})">
     Cancella

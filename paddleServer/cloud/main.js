@@ -48,7 +48,7 @@ Parse.Cloud.define("hello", function(request, response) {
 Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response) {
 
   var toAddress
-  var messagex = "..."
+  var messagex = ""
 
   var gameTypes = []
   var id = request.object.id
@@ -98,9 +98,11 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         query.equalTo('circolo',circolo)
         query.greaterThanOrEqualTo("date", new Date());
         //query.lessThanOrEqualTo("date", endDate);
-        query.ascending("date");
+        query.addAscending("date,court");
         query.include('user');
         query.include('maestro');
+        //query.ascending("court");
+
         return query.find()
 
     }, function(error){

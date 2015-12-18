@@ -861,10 +861,52 @@ angular.module('starter.services', [])
             booking.set('payments',ps);
             return booking.save();
           //console.log("payment")
+        },
+
+        courtsView: function(datex){
+
+            //console.log(datex)
+            var ranges = _.range(15, parseInt(config.slotsNumber) + 1);
+            var courtsNumber = $rootScope.gameTypes[0].courtsNumber
+            var courts = _.range(1,parseInt(courtsNumber) + 1)
+
+              //KKK: Sistemare il gameType...ora è cablato su paddle....
+            return this.findBookingsInDate(datex,"0")
+              .then(function (bookings){
+                  //console.log(bookings)
+                    var ret = []
+                   _.each(ranges,function(r){
+                      var row = {}
+                      row.range = r
+                      row.courts = []
+                      courts.forEach(function(courtx){
+                          var p = _.filter(bookings, function(item){
+                          if (item.get("ranges").indexOf(r) != -1 && item.get("court") == courtx){
+                                return item
+                          }
+
+                          })
+                          if (p == null)
+                            p = []
+                          row.courts.push(p)
+                      })
+                      ret.push(row)
+                    })
+                   //console.log(ret)
+                   return ret
+
+              })
+          
+        },
+
+        saveNote: function(booking){
+          console.log('noteToSave')
+          var newNote = booking.note
+          booking.set("note", newNote);
+          console.log(booking)
+          booking.save(null)
         }
-
     }
-
   })
 
 .factory('Utility',function($state,$ionicLoading){
@@ -923,6 +965,17 @@ angular.module('starter.services', [])
         var start = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
         ret += "  " + start + "-" + end;
       })
+      return ret;
+    },
+
+    getHourFromSlot : function(r){
+      var ret = "";
+      
+        var end = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        r  = r - 0.5
+        var start = (parseInt(r) % 2) === 0 ? parseInt(r) / 2 : (parseInt(r / 2)) + ".30";
+        ret += "  " + start + "-" + end;
+  
       return ret;
     },
 

@@ -15,7 +15,14 @@
   </div>
 </div>
 
+<div class="item item-text-wrap center" >
+<button class="button  button-outline button-assertive" ng-click="gotoCourtsView()">
+        Vista Campi {{date}}
+</button>
+</div>
+
 <div class="item item-text-wrap">
+
   <!-- xxx -->
   <show-bookings bookings="results.bookingsToPayBeforeToday" text="Prenotazioni precedenti da saldare" pay="pay(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
@@ -23,10 +30,16 @@
 </div>
 
 <div class="item item-text-wrap">
+
   <!-- xxx -->
   <show-bookings bookings="results.bookingsInDate" date="date" text="Prenotazioni" pay="pay(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
 </div>
+
+
+
+
+
 
 
 

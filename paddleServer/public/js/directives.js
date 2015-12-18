@@ -150,9 +150,18 @@ angular.module('starter.directives', [])
           //console.log($rootScope.userRole)
           $scope.userRole = $rootScope.userRole
 
+
+
           $scope.payment = function(booking,type,qty){
-            console.log('yyyy')
+            
             MyObjects.payment(booking,type,qty)
+            //MyObjects.findBookings(2,2015)
+
+          }
+
+          $scope.saveNote = function(booking){
+            console.log('saveNote...' + booking.note)
+            MyObjects.saveNote(booking)
             //MyObjects.findBookings(2,2015)
 
           }

@@ -4,6 +4,11 @@ angular.module('starter.filters', [])
     return Utility.getHoursFromRanges(input)
   };
 })
+.filter('hourFromRange', function(Utility) {
+  return function(input) {
+    return Utility.getHourFromSlot(input)
+  };
+})
 .filter('courtName', function($rootScope) {
   return function(court,gameType) {
     if (gameType == null || $rootScope.gameTypes == null)
@@ -16,7 +21,7 @@ angular.module('starter.filters', [])
 .filter('gameName', function($rootScope) {
   return function(gameType) {
     if (gameType == null || $rootScope.gameTypes == null)
-      return court
+      return gameType
     var game = $rootScope.gameTypes[parseInt(gameType)]
     //console.log(gameType);
     return game.name

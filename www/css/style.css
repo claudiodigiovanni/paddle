@@ -49,4 +49,26 @@ i.ion-social-pinterest-outline {
   color: rgb(219, 110, 31)
 }
 
+.bar-subheader.custom
+{
+  height: 14px !important;
+  border: none;
+}
+
+.has-subheader-custom {
+    top: 70px !important;
+}
+
+.courtsViewFont{
+
+  
+  font-size: 10px;
+  /*background-color:#f5f5f5;*/
+  font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
+
+text-rendering: optimizeLegibility;
+color: #444;
+
+}
+
 </style>

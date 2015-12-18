@@ -270,6 +270,17 @@ views: {
 }
 })
 
+.state('tab.courtsView', {
+url: '/courtsView/:datez',
+cache: false,
+views: {
+  'tab-account': {
+    templateUrl: 'templates/courtsView.html',
+    controller: 'courtsView'
+  }
+}
+})
+
 .state('tab.manageSubscriptions', {
 url: '/manageSubscriptions',
 cache: false,

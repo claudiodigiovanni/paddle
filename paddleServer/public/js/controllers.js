@@ -834,7 +834,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   MyObjects.findMyBookings()
   .then(
     function(results){
-      console.log(results)
+      //console.log(results)
       $scope.bookings = results
       $scope.$apply()
 
@@ -931,7 +931,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-.controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility){
+.controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state){
+
+
 
   var today = new Date();
   today.setHours(0);
@@ -942,6 +944,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.date = Utility.formatDate(today)
 
   $scope.selectedDay = today.getDate()
+
+  console.log($scope.selectedDay)
 
   var currentMonth = parseInt(today.getMonth())  ;
   var currentYear = today.getFullYear();
@@ -960,6 +964,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
   $scope.$on('currentDateChanged', function(event, x) {
+      console.log('on currentDateChanged.....')
       var m = x.split(":")[0]
       var y = x.split(":")[1]
       $scope.currentMonth = m
@@ -1021,7 +1026,43 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   }
 
+  $scope.gotoCourtsView = function(){
+
+    if ($scope.selectedDay == null){
+      var today = new Date();
+      $scope.selectedDay = today.getDate()
+    }
+    
+    var m = parseInt($scope.currentMonth) + 1
+    var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
+    //console.log(datex)
+
+    $state.go('tab.courtsView',{'datez': datex});
+
+  }
+
+
+
 })
+
+.controller('courtsView', function($scope, MyObjects,$ionicModal, config,$ionicPopup,$stateParams,$rootScope, Utility) {
+  var datex = $stateParams.datez
+  $scope.datex = Utility.formatDate(new Date(datex))
+  //KKK: Sistemare il gameType...ora è cablato su paddle....
+  var courtsNumber = $rootScope.gameTypes[0].courtsNumber
+  $scope.courts = _.range(1,parseInt(courtsNumber) + 1)
+
+
+    //console.log(datex)
+    MyObjects.courtsView(new Date( datex))
+    .then(function(results){
+  
+      $scope.myresults = results
+    })
+
+
+})
+
 
 .controller('callToAction', function($scope, MyObjects,$ionicModal, config,$ionicPopup) {
 
@@ -1308,6 +1349,14 @@ $scope.setAsDefault = function(circolo){
     function(obj){
       $scope.circolo = circolo
       window.localStorage['circolo'] = circolo.get('nome')
+      
+       /* var gameTypes = []
+        gameTypes.push(circolo.get('gameType1'))
+        gameTypes.push(circolo.get('gameType2'))
+        gameTypes.push(circolo.get('gameType3'))
+        window.localStorage['gameTypes'] = JSON.stringify(gameTypes)*/
+
+      
       $scope.$apply()
       var alertPopup = $ionicPopup.alert({
          title: 'ok',
@@ -1459,3 +1508,5 @@ $scope.ok = function(){
   }
 
 })
+
+
