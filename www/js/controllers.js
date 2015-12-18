@@ -1308,6 +1308,14 @@ $scope.setAsDefault = function(circolo){
     function(obj){
       $scope.circolo = circolo
       window.localStorage['circolo'] = circolo.get('nome')
+      
+       /* var gameTypes = []
+        gameTypes.push(circolo.get('gameType1'))
+        gameTypes.push(circolo.get('gameType2'))
+        gameTypes.push(circolo.get('gameType3'))
+        window.localStorage['gameTypes'] = JSON.stringify(gameTypes)*/
+
+      
       $scope.$apply()
       var alertPopup = $ionicPopup.alert({
          title: 'ok',
