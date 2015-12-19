@@ -239,7 +239,7 @@ angular.module('starter.services', [])
                 book.set("court",obj.court.toString())
             }
             else {
-              //Nel caso di prenotazione con maestro
+              //Prende il primo campo disponibile
                 book.set("court",courtsAvalaivable[0].toString());
             }
 
@@ -863,15 +863,15 @@ angular.module('starter.services', [])
           //console.log("payment")
         },
 
-        courtsView: function(datex){
+        courtsView: function(datex,gameType){
 
             //console.log(datex)
             var ranges = _.range(15, parseInt(config.slotsNumber) + 1);
-            var courtsNumber = $rootScope.gameTypes[0].courtsNumber
+            var courtsNumber = $rootScope.gameTypes[gameType].courtsNumber
             var courts = _.range(1,parseInt(courtsNumber) + 1)
 
               //KKK: Sistemare il gameType...ora è cablato su paddle....
-            return this.findBookingsInDate(datex,"0")
+            return this.findBookingsInDate(datex,gameType)
               .then(function (bookings){
                   //console.log(bookings)
                     var ret = []

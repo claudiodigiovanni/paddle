@@ -2,10 +2,21 @@
 
 
  <ion-header-bar class="bar bar-subheader custom">
+      
+      <h5>{{message}}</h5>
+      <div class="item item-input-inset">
+        <label class="item-input-wrapper">
+          <input type="text" placeholder="nome (note)" ng-model="mybooking.note" ng-change="clear()">
+        </label>
+        <button class="button button-small positive" ng-click="book()">
+          Conferma
+        </button>
+      </div>
       <div class=" item item-input-inset">
         <div class="col">Orario</div>
          <div class="col" ng-repeat="court in courts">{{court | courtName : "0"}} </div>
       </div>
+
     </ion-header-bar>
 
     <ion-content class="has-subheader-custom">
@@ -15,7 +26,10 @@
         <div class="col">{{row.range | hourFromRange }}</div>
 
         <div class="col" ng-repeat="court in row.courts"> 
-          <span ng-repeat="booking in court">{{booking.get('user').get('nome') + " " + booking.get('note')}} </span>
+        <i class="icon ion-checkmark-circled my-ion-checkmark-circled {{getRangeStatus(row.range,$index+1)}}" ng-show="court.length == 0" ng-click="setRangeStatus(row.range,$index+1)"></i>
+          <span ng-repeat="booking in court">
+            {{booking.get('user').get('nome') + " " + booking.get('note')}} <i class="icon ion-information-circled positive" ng-click="openModal(booking)"></i>
+          </span>
         </div>
 
         </div>
@@ -24,5 +38,116 @@
 
 
 </ion-view>
+
+
+<script id="bookingDetail.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Info</h1>
+      <button class="button button-light" ng-click="closeModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+   
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+ <ul class="list">
+    <li class="item">
+      <b><i class="icon ion-android-done"></i></b> {{bookingx.get('gameType') | gameName}}&nbsp;
+    </li>
+    <li class="item">
+      <b><i class="icon ion-calendar"></i></b> {{bookingx.get('date') | date:'dd/MM/yyyy'}}&nbsp;
+    </li>
+    <li class="item">
+      <b><i class="icon ion-clock"></b></i> {{bookingx.get('ranges') | range}}&nbsp;&nbsp;
+    </li>
+    <li class="item">
+      <b><i class="icon ion-android-pin"></i></b> {{bookingx.get("court") | courtName:bookingx.get('gameType') }} &nbsp;
+    </li>
+    <li class="item">
+      <b><i class="icon ion-person"></i></b>&nbsp;{{bookingx.get("user").get("nome")}} &nbsp;
+    </li>
+    <li class="item">
+    <div class="row">
+      <div class="col-25">
+        <b>Quote:</b> 
+      </div>
+      <div class="col">
+        <button class="button  button-positive button-small" ng-click="payment(bookingx,'quote',-1)">
+          -
+        </button>&nbsp;&nbsp;
+        {{bookingx.get("payments").quote}}&nbsp;&nbsp;
+        <button class="button button-positive button-small" ng-click="payment(bookingx,'quote',1)">
+          +
+        </button>
+      </div>
+      </div>
+    </li>
+    <li class="item">
+    <div class="row">
+        <div class="col-25">
+          <b>Tessere:</b>
+        </div>
+        <div class="col">
+          <button class="button  button-positive button-small" ng-click="payment(bookingx,'tessere',-1)">
+            -
+          </button>&nbsp;&nbsp;
+          {{bookingx.get("payments").tessere}}&nbsp;&nbsp;
+          <button class="button  button-positive button-small" ng-click="payment(bookingx,'tessere',1)">
+            +
+          </button>&nbsp;
+          </div>
+      </div>
+    </li>
+    <li class="item" ng-show="bookingx.get('callToAction') == true">
+      <i class="icon ion-person-stalker" ></i>&nbsp;
+      <ion-list >
+        <ion-item ng-repeat="player in bookingx.get('players')">
+            {{player.get('nome')}} - Livello: {{player.get('level')}}
+        </ion-item>
+      </ion-list>
+      
+    </li>
+    <li class="item">
+      <div class="row">
+        <div class="col-25">
+          <b>Pagato:</b>
+        </div>
+        <div class="col" ng-show="bookingx.get('payed') == true">
+          <i class="icon ion-happy-outline balanced my-ion-happy-outline"></i>
+        </div>
+        <div class="col" ng-show="bookingx.get('payed') == false" ng-click="pay(bookingx)">
+          <i class="icon ion-sad-outline assertive my-ion-sad-outline"></i>
+        </div>
+      </div>
+    </li>
+    <li class="item">
+      
+      <div class="row">
+        <div class="col-75">
+         <label class="item item-input">
+            <span class="input-label"><b>Note</b></span>
+            <input type="text" ng-model="bookingx.note">
+          </label>
+        </div>
+        <div class="col">
+          <button class="button  button-positive button-small" ng-click="saveNote(bookingx)">
+              salva
+          </button>&nbsp;
+        </div>
+        </div>
+    </li>
+    <li class="item center">
+    <button class="button button-assertive" ng-click="delete(bookingx)">
+              Elimina
+    </button>&nbsp;
+    </li>
+</ul>
+
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+
+
+
 
 

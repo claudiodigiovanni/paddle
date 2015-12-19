@@ -51,24 +51,37 @@ i.ion-social-pinterest-outline {
 
 .bar-subheader.custom
 {
-  height: 14px !important;
+  height: 34px !important;
   border: none;
 }
 
 .has-subheader-custom {
-    top: 70px !important;
+    top: 165px !important;
 }
 
 .courtsViewFont{
 
   
-  font-size: 10px;
+  font-size: 12px;
   /*background-color:#f5f5f5;*/
   font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
 
 text-rendering: optimizeLegibility;
 color: #444;
 
+}
+
+.my-ion-happy-outline{
+  font-size: 30px !important;
+
+}
+
+.my-ion-sad-outline{
+  font-size: 30px !important;
+}
+
+.my-ion-checkmark-circled{
+  font-size: 24px !important;
 }
 
 </style>

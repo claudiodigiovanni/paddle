@@ -271,7 +271,7 @@ views: {
 })
 
 .state('tab.courtsView', {
-url: '/courtsView/:datez',
+url: '/courtsView/:datez/:gameType',
 cache: false,
 views: {
   'tab-account': {

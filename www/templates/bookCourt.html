@@ -113,14 +113,16 @@
 
     <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
 
-    <div class="list" ng-show="avalaivableCourts != null">
+    <div class="list" ng-show="false">
       <label class="item item-divider">
         Scegli il campo che preferisci...
       </label>
 
+
       <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
         Campo {{court | courtName:booking.gameType}}
       </ion-radio-fix>
+
 
     </div>
 
