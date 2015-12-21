@@ -97,7 +97,7 @@
           </div>
       </div>
     </li>
-    <li class="item" ng-show="bookingx.get('callToAction') == true">
+    <li class="item" ng-show="bookingx.get('players') != null">
       <i class="icon ion-person-stalker" ></i>&nbsp;
       <ion-list >
         <ion-item ng-repeat="player in bookingx.get('players')">
