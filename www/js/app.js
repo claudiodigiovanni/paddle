@@ -317,6 +317,17 @@ views: {
   templateUrl: 'templates/invitation.html',
   controller: 'InvitationCtrl'
 
+})
+
+.state('tab.manageUsers', {
+url: '/manageUsers',
+cache: false,
+views: {
+  'tab-account': {
+    templateUrl: 'templates/manageUsers.html',
+    controller: 'manageUsers'
+  }
+}
 });
 
 

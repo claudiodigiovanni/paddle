@@ -1011,8 +1011,23 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   }
 
+  $scope.gotoUserMgmt = function(){
+
+    $state.go('tab.manageUsers')
+  }
+
 
 })
+
+.controller('manageUsers', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state){
+
+    //$scope.myresults = MyObjects.getUsers('');
+    MyObjects.getUsers('')
+    .then(function(ret){
+      $scope.myresults = ret
+    })
+
+  })
 
 .controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state){
 

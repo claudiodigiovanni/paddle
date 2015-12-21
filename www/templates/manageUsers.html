@@ -1,0 +1,56 @@
+<ion-view view-title="Gestione Utenti">
+
+
+ <ion-header-bar class="bar bar-subheader custom">
+      
+      <h5>.........</h5>
+   
+
+    </ion-header-bar>
+
+    <ion-content class="has-subheader-custom">
+      <div class="row item courtsViewFont">
+        <div class="col">Nome</div>
+        <div class="col">Email</div>
+        <div class="col">Telefono</div>
+        <div class="col">Codice Fiscale</div>
+        <div class="col">Credito</div>
+        <div class="col">Dettaglio</div>
+        </div>
+
+        <div class="row item courtsViewFont" ng-repeat="user in myresults">
+          <div class="col">{{user.get('nome')}}</div>
+          <div class="col">{{user.get('email')}}</div>
+          <div class="col">{{user.get('phoneNumber')}}</div>
+          <div class="col">{{user.get('createdAt')}}</div>
+          <div class="col">{{user.get('codFis')}}</div>
+          <div class="col">Credito</div>
+          <div class="col">
+            <i class="icon ion-search" ng-click=""></i>
+          </div>
+        </div>
+    </ion-content>
+
+</ion-view>
+
+
+<script id="userDetail.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Info</h1>
+      <button class="button button-light" ng-click="closeModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+   
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+
+
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+
+
+
+
+

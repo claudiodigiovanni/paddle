@@ -940,6 +940,13 @@ angular.module('starter.services', [])
           booking.set("note", newNote);
           console.log(booking)
           booking.save(null)
+        },
+
+        getUsers: function (name){
+          var c = Parse.User.current().get('circolo');
+          var query = new Parse.Query(Parse.User);
+          query.equalTo('circolo',c)
+          return query.find()
         }
     }
   })
