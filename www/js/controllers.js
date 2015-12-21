@@ -1345,6 +1345,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
 
+  $scope.gotoAccount = function(){
+    $state.go ('tab.account')
+  }
+
+
 })
 
 
