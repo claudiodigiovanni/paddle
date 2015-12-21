@@ -486,9 +486,22 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   });
 
+  $scope.getGameType = function(index){
+    if (index == booking.gameType )
+      return "balanced"
+    return "dark"
+  }
+
+  $scope.setGameType = function(index){
+    booking.gameType = index
+  }
+
+  
+  
+
   $scope.$watch('booking.gameType',function(obj){
     console.log('$watch on booking.gameType...');
-
+    console.log(booking.gameType)
     $scope.toggleCoach.value = false
     booking.maestro = null
     $scope.coachAvalabilities = []
@@ -502,6 +515,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     booking.playersNumber = $scope.numberPlayers[0]
 
   })
+
+  
 
 
   $scope.openModal = function() {
@@ -601,6 +616,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
     console.log('dayClicked' + day);
+    
+    console.log(booking.gameType)
     selectedRanges = [];
     $scope.resolved = null;
     $scope.avalaivableCourts = null
@@ -630,14 +647,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
     else{
 
-      // [range]
-      MyObjects.findaAvalaibleRangesInDate(date,booking.gameType)
+      console.log(booking.gameType)
+
+    
+      //booking.gameType + di tipo string....
+      MyObjects.findaAvalaibleRangesInDate(date, booking.gameType)
       .then(
         function(ranges){
           avalaibleRanges = ranges;
+          console.log("avalaibleRanges length:" + avalaibleRanges.length)
           $scope.showAddButton = true;
 
+
           $scope.modal.show()
+
 
       }, function(error){
         console.log(error);
@@ -762,9 +785,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope) {
+  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup) {
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
+
 
     $ionicModal.fromTemplateUrl('set-level.html', {
       scope: $scope,
@@ -836,7 +860,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     function(results){
       //console.log(results)
       $scope.bookings = results
-      $scope.$apply()
+      //$scope.$apply()
 
   }, function(error){
     console.log(error);
@@ -850,7 +874,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       console.log(results);
 
       $scope.invitations = results
-      $scope.$apply()
+      //$scope.$apply()
 
   }, function(error){
     console.log(error);
@@ -866,18 +890,42 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
         return MyObjects.findMyInvitations()
     }, function(error){
       console.log(error);
+      throw error
     })
     .then(
       function(results){
         $scope.invitations = results
-        $scope.$apply()
+        //$scope.$apply()
+        return MyObjects.findMyBookings()
 
     }, function(error){
       console.log(error);
+      throw error
     })
+   .then(
+    function(results){
+      //console.log(results)
+      $scope.bookings = results
+      //$scope.$apply()
 
+  }, function(error){
+    console.log(error);
+    var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: error 
+       });
+    //throw error
+  })
+    
 
   }
+
+  $scope.info = function(){
+      $ionicPopup.alert({
+         title: 'Info',
+         template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili." 
+       });
+    }
 
   $scope.decline = function(invitation){
 
@@ -891,11 +939,21 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     .then(
       function(results){
         $scope.invitations = results
-        $scope.$apply()
+        //$scope.$apply()
+        return MyObjects.findMyBookings()
 
     }, function(error){
       console.log(error);
     })
+    .then(
+    function(results){
+      //console.log(results)
+      $scope.bookings = results
+      //$scope.$apply()
+
+  }, function(error){
+    console.log(error);
+  })
 
   }
 
@@ -905,11 +963,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     console.log('delete');
 
     MyObjects.deleteBooking(item)
-    MyObjects.findMyBookings()
+    .then(function(){
+      return MyObjects.findMyBookings()
+    })
     .then(
       function(results){
         $scope.bookings = results
-        $scope.$apply()
+        //$scope.$apply()
     }, function(error){
       console.log(error);
     })
@@ -926,6 +986,29 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.manageSubscriptions = function(){
     $state.go('tab.manageSubscriptions');
+  }
+
+  $scope.doRefresh = function(){
+
+    MyObjects.findMyInvitations()
+    .then(
+      function(results){
+        $scope.invitations = results
+        $scope.$broadcast('scroll.refreshComplete');
+        //$scope.$apply()
+         
+
+    })
+    MyObjects.findMyBookings()
+    .then(
+    function(results){
+      //console.log(results)
+      $scope.bookings = results
+      $scope.$broadcast('scroll.refreshComplete');
+      //$scope.$apply()
+
+  })
+
   }
 
 
@@ -1068,8 +1151,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 .controller('courtsView', function($scope, MyObjects,$ionicModal, config,$ionicLoading,$stateParams,$rootScope, Utility, $state) {
 
-  console.log('*********************************courtsView*********************')
-
   $ionicModal.fromTemplateUrl('bookingDetail.html', {
     scope: $scope,
     animation: 'slide-in-up',
@@ -1097,8 +1178,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   var datex = $stateParams.datez
   var gameType = $stateParams.gameType
-
-  console.log(gameType)
   $scope.datex = Utility.formatDate(new Date(datex))
 
   var mybooking = {};
@@ -1121,10 +1200,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.courts = _.range(1,parseInt(courtsNumber) + 1)
 
   //console.log(datex)
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
   MyObjects.courtsView(new Date( datex), gameType)
   .then(function(results){
 
     $scope.myresults = results
+    $ionicLoading.hide()
   })
 
    $scope.setRangeStatus = function(range,courtx){
@@ -1146,7 +1229,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
    $scope.getRangeStatus = function(range,courtx){
     //alert('getRangeStatus' + pos);
     if (court == courtx && selectedRanges.indexOf(range) != -1){
-      return "balanced";
+      return "positive";
     }
       return "dark";
   }
@@ -1650,7 +1733,7 @@ $scope.ok = function(){
     $state.go("tab.account")
   }
 
-  $scope.invite = function(userId){
+  $scope.invite = function(user){
 
     model.name = ""
     $scope.players = null
@@ -1666,7 +1749,7 @@ $scope.ok = function(){
       template: 'Loading...'
     });
     console.log('invitation');
-    MyObjects.invite(userId,$scope.bookingId)
+    MyObjects.invite(user.id,user.get('email'),$scope.bookingId)
     .then(
       function(obj){
         console.log('ok');

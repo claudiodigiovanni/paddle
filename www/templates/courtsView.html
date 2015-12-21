@@ -28,7 +28,7 @@
         <div class="col" ng-repeat="court in row.courts"> 
         <i class="icon ion-checkmark-circled my-ion-checkmark-circled {{getRangeStatus(row.range,$index+1)}}" ng-show="court.length == 0" ng-click="setRangeStatus(row.range,$index+1)"></i>
           <span ng-repeat="booking in court">
-            {{booking.get('user').get('nome') + " " + booking.get('note')}} <i class="icon ion-information-circled positive" ng-click="openModal(booking)"></i>
+            {{booking.get('user').get('nome') + " " + booking.get('note')}} <i class="icon ion-information-circled {{booking.get('payed') == true ? 'balanced ' : 'assertive'}}" ng-click="openModal(booking)"></i>
           </span>
         </div>
 

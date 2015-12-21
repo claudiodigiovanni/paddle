@@ -390,7 +390,7 @@ Parse.Cloud.define("requestForSubscription", function(request, response){
 
 });
 
-var InvitationRequestFollowUp = function(response,user,booking){
+var InvitationRequestFollowUp = function(response,user,mail,booking){
 
   var InvitationRequest = Parse.Object.extend("InvitationRequest");
   var ir = new InvitationRequest()
@@ -399,7 +399,8 @@ var InvitationRequestFollowUp = function(response,user,booking){
   ir.save()
   .then(
     function(obj){
-      sendEmail(user.get('email'),"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire che è il mittente!! ")
+      
+      sendEmail(mail,"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire chi è il mittente!! ")
       response.success('ok')
   }, function(error){
     console.log(error);
@@ -413,6 +414,7 @@ var InvitationRequestFollowUp = function(response,user,booking){
 
     var userId = request.params.user
     var bookingId = request.params.booking
+    var mail = request.params.mail
 
     var user = new Parse.User()
     user.id = userId
@@ -420,19 +422,38 @@ var InvitationRequestFollowUp = function(response,user,booking){
     var Booking = Parse.Object.extend("Booking");
     var booking = new Booking()
     booking.id = bookingId
+    var query = new Parse.Query(Booking)
+    query.equalTo('objectId',bookingId)
+    query.equalTo('players',user)
+    return query.find()
+    .then(function(results){
 
-    var InvitationRequest = Parse.Object.extend("InvitationRequest");
-    var query = new Parse.Query(InvitationRequest)
-    query.equalTo('user',user)
-    query.equalTo('booking',booking)
-    query.find()
+      console.log('*************INVITE************RESULTS')
+      console.log(results)
+      
+      if (results != null && results.length > 0){
+        //response.error("L'utente è gia della partita!")
+        throw "L'utente è gia della partita!"
+      }
+    },function(error){
+      throw error
+    })
+    .then(function(){
+      var InvitationRequest = Parse.Object.extend("InvitationRequest");
+      var query = new Parse.Query(InvitationRequest)
+      query.equalTo('user',user)
+      query.equalTo('booking',booking)
+      return query.find()
+    },function(error){
+      throw error
+    })
     .then(
       function(results){
         if (results.length > 0){
           response.error("Utente già invitato....")
         }
         else{
-          InvitationRequestFollowUp(response,user,booking)
+          InvitationRequestFollowUp(response,user,mail,booking)
         }
 
     }, function(error){

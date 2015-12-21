@@ -239,7 +239,7 @@ angular.module('starter.services', [])
                 book.set("court",obj.court.toString())
             }
             else {
-              //Nel caso di prenotazione con maestro
+              //Prende il primo campo disponibile
                 book.set("court",courtsAvalaivable[0].toString());
             }
 
@@ -357,7 +357,7 @@ angular.module('starter.services', [])
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
         query.equalTo("date", date);
-        query.equalTo("gameType",gameT);
+        query.equalTo("gameType",gameT.toString());
         var c = Parse.User.current().get('circolo')
 
         query.equalTo('circolo',c)
@@ -401,6 +401,7 @@ angular.module('starter.services', [])
           query1.equalTo("maestro", user.get('maestro'));
         }
         else query1.equalTo("user", user );
+        //query1.equalTo('callToAction', false);
         query1.ascending("date");
         query1.include('players');
         query1.include('user')
@@ -408,7 +409,7 @@ angular.module('starter.services', [])
 
         var query2 = new Parse.Query(Booking);
         //Escludo i risultati precedenti....
-        query1.notEqualTo("user", user );
+        query2.notEqualTo("user", user );
         //Cerco le prenotazioni alle quali sono stato invitato o mi sono unito....
         query2.equalTo('players',Parse.User.current())
         query2.greaterThanOrEqualTo("date", today);
@@ -431,12 +432,31 @@ angular.module('starter.services', [])
 
       },
 
+      //Se l'utente in sessione è l'organizzatore la partita viene cancellata
+      // Se l'utente in sessione è stato invitato viene tolto dai players
       deleteBooking: function(item){
+        
+        var players = item.get('players')
         var Booking = Parse.Object.extend("Booking");
-        var b = new Booking();
-        b.id = item.id
-        console.log(b);
-        return b.destroy();
+        if (item.get('user').id == Parse.User.current().id){
+          var b = new Booking();
+          b.id = item.id
+          console.log(b);
+          return b.destroy();  
+        }
+        else{
+          
+          var index = _.findIndex(players,function(p){
+            return p.id == Parse.User.current().id
+          })
+          
+          players.splice(index,1);
+          item.set('players',players)
+          
+          return item.save()
+
+        }
+        
 
 
       },
@@ -777,11 +797,11 @@ angular.module('starter.services', [])
 
         },
 
-        invite:function(userIdToInvite,bookingIdCalled){
+        invite:function(userIdToInvite,email, bookingIdCalled){
           console.log('invite service');
           var defer = $q.defer()
 
-          Parse.Cloud.run('invite', {user:userIdToInvite,booking: bookingIdCalled})
+          Parse.Cloud.run('invite', {user:userIdToInvite,mail: email, booking: bookingIdCalled})
           .then(
             function(response){
               defer.resolve('ok')
@@ -827,18 +847,35 @@ angular.module('starter.services', [])
 
         acceptInvitation: function(invitation){
 
-          var booking = invitation.get('booking')
-          booking.add('players',Parse.User.current())
-          return booking.save()
-          .then(
-            function(obj){
-              var InvitationRequest = Parse.Object.extend("InvitationRequest");
-              var ir = new InvitationRequest();
-              ir.id = invitation.id
-              ir.destroy()
-          }, function(error){
-            console.log(error);
-          })
+          var defer = $q.defer()
+          try{
+                var booking = invitation.get('booking')
+                var players = booking.get('players')
+                console.log(players)
+                var index = _.findIndex(players,function(p){
+                  return p.id == Parse.User.current().id
+                })
+                console.log(index)
+                if (index != -1){
+                  throw "Utente già iscritto alla partita..."
+                }
+                booking.add('players',Parse.User.current())
+                return booking.save()
+                .then(
+                  function(obj){
+                    var InvitationRequest = Parse.Object.extend("InvitationRequest");
+                    var ir = new InvitationRequest();
+                    ir.id = invitation.id
+                    ir.destroy()
+                }, function(error){
+                  console.log(error);
+                })
+              }
+              catch(error){
+                console.log(error)
+                defer.reject(error)
+                return defer.promise;
+              }
 
         },
 
@@ -863,15 +900,13 @@ angular.module('starter.services', [])
           //console.log("payment")
         },
 
-        courtsView: function(datex){
+        courtsView: function(datex,gameType){
 
             //console.log(datex)
             var ranges = _.range(15, parseInt(config.slotsNumber) + 1);
-            var courtsNumber = $rootScope.gameTypes[0].courtsNumber
+            var courtsNumber = $rootScope.gameTypes[gameType].courtsNumber
             var courts = _.range(1,parseInt(courtsNumber) + 1)
-
-              //KKK: Sistemare il gameType...ora è cablato su paddle....
-            return this.findBookingsInDate(datex,"0")
+            return this.findBookingsInDate(datex,gameType)
               .then(function (bookings){
                   //console.log(bookings)
                     var ret = []

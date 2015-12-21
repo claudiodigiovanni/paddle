@@ -1,5 +1,5 @@
 <ion-list >
-  <ion-item><b>{{text}} {{date}}</b></ion-item>
+  <ion-item><b>{{text}} {{date}} <i class="icon ion-information-circled positive" ng-click="info()"></i></b></ion-item>
   <ion-item ng-repeat="booking in bookings">
 
     <b><i class="icon ion-android-done"></i></b> {{booking.get('gameType') | gameName}}&nbsp;
@@ -11,41 +11,15 @@
     &nbsp;&nbsp;
     <b><i class="icon ion-android-pin"></i></b> {{booking.get("court") | courtName:booking.get('gameType') }} &nbsp;
     <b><i class="icon ion-person"></i></b>&nbsp;{{booking.get("user").get("nome")}} &nbsp;
+    <b><i class="icon ion-speakerphone" ng-show="booking.get('callToAction') == true"></i></b>
+
+    
 <br>
-<div ng-show="userRole == 'segreteria' || userRole == 'admin'">    
-  <div class="row">
-    <div class="col-25">
-    <b>Quote:</b>
-    </div>
-    <div class="col">
-    <button class="button  button-positive button-small" ng-click="payment(booking,'quote',-1)">
-      -
-    </button>&nbsp;&nbsp;
-    {{booking.get("payments").quote}}&nbsp;&nbsp;
-    <button class="button button-positive button-small" ng-click="payment(booking,'quote',1)">
-      +
-    </button>
-    </div>
-  </div>
-    <div class="row">
-     <div class="col-25"->
-      <b>Tessere:</b>
-     </div>
-    <div class="col">
-      <button class="button  button-positive button-small" ng-click="payment(booking,'tessere',-1)">
-        -
-      </button>&nbsp;&nbsp;
-      {{booking.get("payments").tessere}}&nbsp;&nbsp;
-      <button class="button  button-positive button-small" ng-click="payment(booking,'tessere',1)">
-        +
-      </button>&nbsp;
-     </div>
-    </div>
-</div>
 
 
 
-<div ng-show="booking.get('callToAction') == true">
+
+<div ng-show="booking.get('players').length > 0 ">
   <i class="icon ion-person-stalker" ></i>&nbsp;
   <ion-list >
     <ion-item ng-repeat="player in booking.get('players')">
@@ -67,24 +41,17 @@
 
 </div>
 
-<div class="row" ng-show="userRole == 'segreteria' || userRole == 'admin'">
-  <div class="col">
-  <label class="item item-input" >
-    <span class="input-label"><b>Note</b></span>
-    <input type="text" ng-init="booking.note=booking.get('note')" ng-model="booking.note">
-  </label>
-  </div>
-  <div class="col">
-    <button class="button button-outline button-positive" ng-click="saveNote(booking)">
-      Salva
-    </button>
-  </div>
-</div>
+
   
     
     <ion-option-button class="button-assertive"
                      ng-click="delete({b:booking})">
     Cancella
   </ion-option-button>
+   <ion-option-button class="button-positive"
+                     ng-click="gotoInvitation(booking)">
+    Invita
+  </ion-option-button>
+
   </ion-item>
 </ion-list>

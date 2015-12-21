@@ -145,7 +145,7 @@ angular.module('starter.directives', [])
           showpay: '@'
         },
         templateUrl: 'templates/ng-show-bookings-template.html',
-        controller: ['$scope', '$http', 'Utility', '$rootScope', 'MyObjects',function($scope, $http, Utility, $rootScope, MyObjects) {
+        controller: ['$scope', '$http', 'Utility', '$rootScope', 'MyObjects','$state','$ionicPopup',function($scope, $http, Utility, $rootScope, MyObjects,$state,$ionicPopup) {
 
           //console.log($rootScope.userRole)
           $scope.userRole = $rootScope.userRole
@@ -164,6 +164,17 @@ angular.module('starter.directives', [])
             MyObjects.saveNote(booking)
             //MyObjects.findBookings(2,2015)
 
+          }
+
+          $scope.gotoInvitation = function(booking){
+            $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
+          }
+
+          $scope.info = function(){
+            $ionicPopup.alert({
+               title: 'Info',
+               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili." 
+             });
           }
 
 

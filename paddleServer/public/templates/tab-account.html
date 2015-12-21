@@ -1,5 +1,6 @@
 <ion-view view-title="Account">
   <ion-content>
+  <ion-refresher pulling-text="aggiorna..." on-refresh="doRefresh()"></ion-refresher>
 
     <div class="card">
       <div class="item item-divider">
@@ -19,7 +20,7 @@
           <ion-item ng-show="userRole == 'admin' || userRole == 'segreteria'">
 
                 <button class="button button-outline button-assertive" ng-click="gotoStatistics()" >
-                    Gestione Pren.
+                    Prenotaz.
                 </button>
 
                 <button class="button  button-outline button-assertive" ng-click="gotoUserToEnable()">
@@ -35,17 +36,19 @@
 
     </div>
 
+    <ion-item class="center"><b>Trascina in  basso per aggiornare...</b></ion-item>
+
 
     <div class="item item-text-wrap">
       <!-- xxx -->
-      <show-bookings bookings="bookings" text="Prossimi impegni...."  delete="delete(b)" showpay="false"></show-bookings>
+      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" showpay="false"></show-bookings>
       <!-- xxx -->
 
     </div>
 
     <div class="item item-text-wrap">
       <ion-list >
-        <ion-item><b>Inviti Ricevuti</b></ion-item>
+        <ion-item><b>Inviti Ricevuti <i class="icon ion-information-circled positive" ng-click="info()"></i></b></ion-item>
         <ion-item ng-repeat="i in invitations">
 
           <b><i class="icon ion-person"></i></b> {{i.get('booking').get('user').get('nome')}}&nbsp;

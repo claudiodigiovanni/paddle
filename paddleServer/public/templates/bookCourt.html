@@ -21,6 +21,15 @@
       Maestro
   </ion-toggle>
 
+  <div class="item item-text-wrap center" >
+  <div class="row">
+    <div class="col" ng-repeat="game in gameTypes">
+      <i class="icon ion-checkmark-circled my-ion-checkmark-circled {{getGameType($index)}}"  ng-click="setGameType($index)"></i> {{game.name}}
+
+    </div>
+  </div>
+</div>
+
   <br>
 
   <div>
@@ -30,35 +39,6 @@
   <calendar coach-avalabilities='coachAvalabilities' coach="toggleCoach.value" selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
 
 <br>
-
-
-<div class="row center"> 
-<div class="col">
-<b>Voglio giocare a...</b>
-</div>
-</div>
-
-
-  <div class="list" ng-show="true">
-      <ion-radio-fix ng-model="booking.gameType" ng-value="{{$index}}" ng-repeat="g in gameTypes" name="gameType">
-                        {{g.name}}
-      </ion-radio-fix>
-  </div>
-
-<div class="row center"> 
-<div class="col">
-  <b>Opzioni</b>
-</div>
-</div>
-
-
-  <div class="list" ng-show="true">
-      <ion-radio-fix ng-model="booking.playersNumber" ng-value="{{num}}" ng-repeat="num in numberPlayers" name="playersNumber">
-                        {{num}} player
-      </ion-radio-fix>
-  </div>
-
-
 
 </ion-content>
 
@@ -113,14 +93,16 @@
 
     <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
 
-    <div class="list" ng-show="avalaivableCourts != null">
+    <div class="list" ng-show="false">
       <label class="item item-divider">
         Scegli il campo che preferisci...
       </label>
 
+
       <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
         Campo {{court | courtName:booking.gameType}}
       </ion-radio-fix>
+
 
     </div>
 
