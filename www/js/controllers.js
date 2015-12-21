@@ -1330,6 +1330,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
 
+  $scope.gotoStatistics = function(){
+    $state.go ('tab.account')
+  }
+
+
 })
 
 
