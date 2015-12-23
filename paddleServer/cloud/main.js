@@ -121,7 +121,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         if (id == item.id)
           lastOne = "***"
         messagex = messagex.concat( lastOne,"Campo: " ,item.get("court") , 
-                                    " - Datax: " , date.format("DD/MM/YYYY")  , 
+                                    " - Data: " , date.format("DD/MM/YYYY")  , 
                                     " - Orario: " , getHoursFromRanges(item.get("ranges")),
                                     " - Utente: " , item.get("user").get("nome"),
                                     " - Tel: " , item.get("user").get("phoneNumber"),
@@ -461,5 +461,46 @@ var InvitationRequestFollowUp = function(response,user,mail,booking){
       response.error(error)
     })
 
+})
+
+//******************************************************************************************
+Parse.Cloud.define("changeUserField", function(request, response){
+  Parse.Cloud.useMasterKey();
+
+  var userId = request.params.userId
+  var field = request.params.field
+  var newValue = request.params.newValue
+  var query = new Parse.Query(Parse.User);
+  query.get(userId)
+  .then(
+    function(user){
+          user.set(field,newValue)
+          user.save()
+          response.success("campo " + field + " modificato con successo...")
+      
+  }, function(error){
+    console.log(error);
+    response.error(error);
+  })
+
 
 });
+
+Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response) {
+  var id = request.object.id
+  var Payment = Parse.Object.extend("Payment");
+  var query = new Parse.Query(Payment)
+  query.include("user")
+  query.include("booking")
+  query.get(id).then(
+    function(payment){
+      var playDate = payment.get('booking').get('date')
+      var email = payment.get('user').get('email')
+      sendEmail(mail,"Pagamento Partita","Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate.format("DD/MM/YYYY") + ". Grazie!" )
+      
+    })
+
+ 
+  
+})
+//******************************************************************************************

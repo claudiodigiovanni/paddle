@@ -57,7 +57,7 @@
     <weather date="selectedDate"></weather>
 
 
-    <label class="item item-input item-floating-label" ng-show="userRole == 'segreteria'">
+    <label class="item item-input item-floating-label" ng-show="userRole == 'segreteria' || userRole == 'maestro'">
       <span class="input-label">Utente</span>
       <input type="text" placeholder="Utente" ng-model="booking.note">
     </label>

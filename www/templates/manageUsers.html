@@ -2,37 +2,118 @@
 
 
  <ion-header-bar class="bar bar-subheader custom">
+  <ion-item> {{message}} </ion-item>
+       <div class="item item-input-inset">
+        <label class="item-input-wrapper">
+          <input type="text" placeholder="nome " ng-model="userToSearch.nome" ng-change="clear()">
+        </label>
+        <button class="button button-small positive" ng-click="findUsers()">
+          Cerca
+        </button>
+        
+        <button class="button button-assertive " ng-click="getUsersToEnable()">
+          Utenti da abilitare..
+        </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="button button-positive " ng-click="gotoAccount()">
+          Chiudi..
+        </button>
+      </div>
       
-      <h5>.........</h5>
    
 
     </ion-header-bar>
 
     <ion-content class="has-subheader-custom">
       <div class="row item courtsViewFont">
-        <div class="col">Nome</div>
-        <div class="col">Email</div>
+        <div class="col"><i class="icon ion-search" ng-click=""></i> Nome</div>
+        
         <div class="col">Telefono</div>
-        <div class="col">Codice Fiscale</div>
+        <div class="col">Data Iscriz.</div>
+        <div class="col">Livello</div>
         <div class="col">Credito</div>
-        <div class="col">Dettaglio</div>
-        </div>
+        <div class="col">Abilitato</div>
+        <div class="col">Ricariche</div>
+        <div class="col">Pagamenti</div>
+      </div>
 
         <div class="row item courtsViewFont" ng-repeat="user in myresults">
-          <div class="col">{{user.get('nome')}}</div>
-          <div class="col">{{user.get('email')}}</div>
+          <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.get('nome')}}</div>
+          
           <div class="col">{{user.get('phoneNumber')}}</div>
-          <div class="col">{{user.get('createdAt')}}</div>
-          <div class="col">{{user.get('codFis')}}</div>
-          <div class="col">Credito</div>
-          <div class="col">
-            <i class="icon ion-search" ng-click=""></i>
-          </div>
+          <div class="col">{{user.createdAt | date: 'dd/mm/yyyy'}}</div>
+          <div class="col">{{user.get('level')}}</div>
+          <div class="col">{{user.get('residualCredit')}}</div>
+          <div class="col"><i class="icon my-ion-checkmark-circled {{user.get('enabled') == true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
+          
+          <div class="col"><i class="icon ion-card my-ion-checkmark-circled" ng-click="getRecharges(user)"></i> </div>
+          <div class="col"><i class="icon ion-cash my-ion-checkmark-circled" ng-click="getPayments(user)"></i> </div>
+
         </div>
     </ion-content>
 
 </ion-view>
 
+
+<script id="recharge.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Elenco Ricariche</h1>
+      <button class="button button-light" ng-click="closeRechargeModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+
+      <div class="item item-input-inset">
+        <label class="item-input-wrapper">
+          <input type="number" placeholder="Quantità " ng-model="recharge.qty" >
+        </label>
+        <button class="button button-small positive" ng-click="addCharge()">
+          Aggiungi
+        </button>
+      </div>
+
+    <div class="row item courtsViewFont">
+        <div class="col">Data</div>
+        <div class="col">Quantità</div>
+      </div>
+   
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+      <div class="row item courtsViewFont" ng-repeat="charge in recharges">
+          <div class="col"><i class="icon ion-search" ng-click=""></i>  {{charge.createdAt | date: "dd/mm/yyyy"}}</div>
+          <div class="col">{{charge.get('qty')}}</div>
+        </div>
+
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+
+<script id="payments.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Pagamenti</h1>
+      <button class="button button-light" ng-click="closePaymentModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+
+
+    <div class="row item courtsViewFont">
+        <div class="col">Data Pagamento</div>
+        <div class="col">Quantità</div>
+        <div class="col">Data Partita</div>
+      </div>
+   
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+      <div class="row item courtsViewFont" ng-repeat="p in payments">
+          <div class="col">{{p.createdAt | date: "dd/mm/yyyy"}}</div>
+          <div class="col">{{p.get('qty')}}</div>
+          <div class="col">{{p.get('booking').get('date') | date: 'dd/MM/yyyy'}}</div>
+        </div>
+
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
 
 <script id="userDetail.html" type="text/ng-template">
   <div class="modal">

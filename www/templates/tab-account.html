@@ -10,6 +10,7 @@
         <!-- xxx -->
         <ion-list >
           <ion-item>email: {{currentUser.get('email')}}</ion-item>
+          <ion-item>Crediti: {{currentUser.get('residualCredit')}}</ion-item>
           <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; <button class="button  button-small button-outline button-positive" ng-click="changeLevel()">
                 Modifica</button></ion-item>
           <ion-item>  <button class="button  button-outline button-positive" ng-click="resetPwd()">
@@ -23,12 +24,8 @@
                     Prenotaz.
                 </button>
 
-                <button class="button  button-outline button-assertive" ng-click="gotoUserToEnable()">
-                    Abilita Utenti
-                </button>
-
                  <button class="button  button-outline button-assertive" ng-click="gotoUserMgmt()">
-                    Gestione Utenti
+                    Utenti
                 </button>
 
 
@@ -85,6 +82,41 @@
         </ion-item>
 
     </div>
+
+    <div class="item item-text-wrap">
+      <ion-list >
+        <ion-item><b>Partite da saldare <i class="icon ion-information-circled positive" ng-click="info()"></i></b></ion-item>
+        <ion-item ng-repeat="booking in gameNotPayed">
+
+          <b><i class="icon ion-person"></i></b> {{booking.get('user').get('nome')}}&nbsp;
+          <b><i class="icon ion-android-done"></i></b> {{booking.get('gameType') | gameName}}&nbsp;
+
+          <b><i class="icon ion-calendar"></i></b> {{booking.get('date') | date:'dd/MM/yyyy'}}&nbsp;
+          <b><i class="icon ion-clock"></b></i> {{booking.get('ranges') | range}}&nbsp;&nbsp;
+
+
+        <i class="icon ion-person-stalker" ></i>&nbsp;
+        <ion-list >
+          <ion-item ng-repeat="player in booking.get('players') track by $index">
+              {{player.get('nome')}} - Livello: {{player.get('level')}}
+          </ion-item>
+        </ion-list>
+
+
+          <ion-option-button class="button-balanced"
+                           ng-click="payMyBooking(booking)">
+          Paga la tua quota
+        </ion-option-button>
+        
+        </ion-item>
+
+    </div>
+
+
+    
+
+
+
   </ion-content>
 
 
