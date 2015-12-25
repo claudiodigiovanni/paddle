@@ -45,6 +45,43 @@ Parse.Cloud.define("hello", function(request, response) {
   console.log('log server...');
 });
 
+Parse.Cloud.beforeSave(Parse.Object.extend("Booking"), function(request, response) {
+  
+  var mybooking = request.object
+  var ranges = mybooking.get('ranges')
+  
+  //Se la prenotazione è stata appena creata...
+  if (mybooking.createdAt != null )
+    response.success()
+  else{
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.equalTo("date", mybooking.get('date'));
+        query.equalTo("gameType",mybooking.get('gameType'));
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
+        query.equalTo('court',mybooking.get('court'))
+        query.find().then(
+          function(results){
+            var tmp = []
+            _.each(results, function (item){
+                tmp.push(item.get('ranges'))
+            })
+
+            var otherGamesRanges = _.flatten(tmp)
+            
+            var intersection = _.intersection(ranges,otherGamesRanges)
+            if (intersection.length > 0)
+              response.error('Ooooops!!! Prenotazione non disponibile!!!')
+
+            else
+             response.success()
+            
+          })
+  }
+
+});
+
 Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response) {
 
   var toAddress
@@ -80,9 +117,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         })
 
       }
-      console.log('********')
-      console.log(b.createdAt)
-      console.log(b.updatedAt)
+      
       if (b.createdAt.getTime() != b.updatedAt.getTime())
         throw "Prenotazione già esistente...non invio mail.."
       //***********************
@@ -115,8 +150,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       _.each(queryResult,function(item){
 
         var date = moment(item.get("date")).add('days',1);
-        console.log(date)
-
+        
         var lastOne = ""
         if (id == item.id)
           lastOne = "***"
@@ -141,8 +175,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       //************SEND EMAIL TO ADMIN****************
       
       var query = new Parse.Query(Parse.User);
-      console.log("CIRCOLO")
-      console.log(circolo)
+      
       query.equalTo('circolo',circolo)
       query.equalTo('role','admin')
 
@@ -487,6 +520,7 @@ Parse.Cloud.define("changeUserField", function(request, response){
 });
 
 Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response) {
+  //moment.locale('it');
   var id = request.object.id
   var Payment = Parse.Object.extend("Payment");
   var query = new Parse.Query(Payment)
@@ -494,9 +528,9 @@ Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response
   query.include("booking")
   query.get(id).then(
     function(payment){
-      var playDate = payment.get('booking').get('date')
+      var playDate = moment(payment.get('booking').get('date')).format('LL')
       var email = payment.get('user').get('email')
-      sendEmail(mail,"Pagamento Partita","Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate.format("DD/MM/YYYY") + ". Grazie!" )
+      sendEmail(email,"Pagamento Partita","Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate + ". Grazie!" )
       
     })
 

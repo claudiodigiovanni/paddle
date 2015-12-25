@@ -785,7 +785,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup) {
+  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate) {
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
 
@@ -883,7 +883,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
  MyObjects.findMyGameNotPayed()
   .then(
     function(results){
-      $scope.gameNotPayed = results
+      $scope.gameNotPayed = _.flatten(results)
+      
       //$scope.$apply()
   }, function(error){
     console.log(error);
@@ -934,6 +935,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
        });
     }
 
+  $scope.infoPayment = function(){
+    $ionicPopup.alert({
+       title: 'Info',
+       template: "Trascina verso destra l'elemento per visualizzare le opzioni disponibili. Anche se hai pagato la tua quota potresti continuare a vedere la prenotazione in quest'area perchè la segreteria non ha ricevuto tutte le restanti quote." 
+     });
+  }
+
   $scope.decline = function(invitation){
 
     MyObjects.declineInvitation(invitation)
@@ -983,24 +991,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   }
   $scope.payMyBooking = function(booking){
-    MyObjects.payMyBooking(booking)
-    .then(
-      function(ret){
-        return MyObjects.findMyGameNotPayed()
+    //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
+    MyObjects.payMyBooking(booking).then(function(ret){
+      $ionicListDelegate.closeOptionButtons()
+
+      //$state.go('tab.account')
     })
-    .then(
-      function(results){
-        $scope.gameNotPayed = results
-      }, function(error){
-    console.log(error);
-    })
+    //booking.set('payed',true)
+    //$scope.$apply()
   }
 
   $scope.gotoStatistics = function(){
     $state.go('tab.statistics');
   }
   
-
   $scope.gotoUserToEnable = function(){
     $state.go('tab.userToEnable');
   }
@@ -1307,6 +1311,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   var searchUser = {name: ""}
   $scope.searchUser = searchUser
 
+
   $ionicModal.fromTemplateUrl('bookingDetail.html', {
     scope: $scope,
     animation: 'slide-in-up',
@@ -1419,6 +1424,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $ionicLoading.hide()
   })
 
+  
+
    $scope.setRangeStatus = function(range,courtx){
     $scope.message = ""
     if (court != courtx)
@@ -1447,7 +1454,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.payQuota = function(booking,type,qty){
             
-      MyObjects.payment(booking,type,qty)
+      MyObjects.payBooking(booking,type,qty)
       //MyObjects.findBookings(2,2015)
 
     }
@@ -1536,7 +1543,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     mybooking.ranges = selectedRanges;
     mybooking.court = court
-    console.log(mybooking);
     MyObjects.createBooking(mybooking)
     .then(
       function(result){
@@ -1549,6 +1555,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
               return row.range == range
           })
           row.courts[parseInt(mybooking.court) - 1].push(result)
+          selectedRanges = []
           $scope.$apply()
 
       })
@@ -1581,9 +1588,21 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     
   };
 
-
   $scope.gotoAccount = function(){
     $state.go ('tab.account')
+  }
+
+  $scope.updateView = function(){
+        //console.log(datex)
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+      MyObjects.courtsView(new Date( datex), gameType)
+      .then(function(results){
+
+        $scope.myresults = results
+        $ionicLoading.hide()
+    })
   }
 
 

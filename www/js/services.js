@@ -731,9 +731,6 @@ angular.module('starter.services', [])
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
 
-
-
-
           return query.get(cta.id)
           .then(
             function(cta){
@@ -995,6 +992,7 @@ angular.module('starter.services', [])
         },
 
         payBooking: function(booking,type,qty){
+          console.log(booking)
           var ps = booking.get('payments')
           console.log(booking)
           //console.log(booking.get('payments')[type])
@@ -1058,7 +1056,15 @@ angular.module('starter.services', [])
         },
 
         findMyGameNotPayed: function(){
-         var promises = []
+          
+          var today = new Date();
+          today.setHours(0);
+          today.setMinutes(0);
+          today.setSeconds(0);
+          today.setMilliseconds(0);
+            
+
+          var promises = []
           var user = Parse.User.current() ;
           var Booking = Parse.Object.extend("Booking");
           var query1 = new Parse.Query(Booking);
@@ -1066,6 +1072,7 @@ angular.module('starter.services', [])
           //query1.equalTo('callToAction', false);
           query1.ascending("date");
           query1.equalTo('payed',false)
+          query1.lessThanOrEqualTo("date", today);
           query1.include('players');
           query1.include('user')
           promises.push(query1.find())
@@ -1078,13 +1085,18 @@ angular.module('starter.services', [])
           query2.equalTo('payed',false)
           query2.include('players');
           query2.include('user')
+          query2.lessThanOrEqualTo("date", today);
+          query2.ascending("date")
           promises.push(query2.find())
           return $q.all(promises)
 
         },
 
         payMyBooking: function(booking){
-          return payTessera(Parse.User.current(),booking,1)
+          return this.payTessera(Parse.User.current(),booking,1).then(
+            function(ret){
+              return Parse.User.current().fetch()
+          })
         }
 
 

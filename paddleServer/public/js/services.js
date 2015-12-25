@@ -278,7 +278,7 @@ angular.module('starter.services', [])
         })
       },
 
-      payBooking: function(booking){
+      setBookingPayed: function(booking){
 
         booking.set('payed',true);
         return booking.save();
@@ -431,11 +431,18 @@ angular.module('starter.services', [])
           })
 
       },
-
+      //Se l'utente in sessione ha ruolo admin o segreteria elimino e basta
+      //KKK eliminare le invitations
       //Se l'utente in sessione è l'organizzatore la partita viene cancellata
       // Se l'utente in sessione è stato invitato viene tolto dai players
       deleteBooking: function(item){
-        
+        if (Parse.User.current().get('role') == 'admin' || Parse.User.current().get('role') == 'segreteria'){
+          var Booking = Parse.Object.extend("Booking");
+          var b = new Booking();
+          b.id = item.id
+          console.log(b);
+          return b.destroy();  
+        }
         var players = item.get('players')
         var Booking = Parse.Object.extend("Booking");
         if (item.get('user').id == Parse.User.current().id){
@@ -724,9 +731,6 @@ angular.module('starter.services', [])
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
 
-
-
-
           return query.get(cta.id)
           .then(
             function(cta){
@@ -788,12 +792,21 @@ angular.module('starter.services', [])
 
 
         },
-        findPlayersWithName:function(name){
+        findPlayersWithName:function(namex){
 
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
           var query = new Parse.Query(Parse.User);
           query.equalTo('circolo',Parse.User.current().get('circolo'))
-          query.contains("nome", name.toLowerCase());
+          query.contains("nome", namex.toLowerCase());
+          query.descending("date")
+          query.limit(10)
           return query.find()
+          .then(function(results){
+            $ionicLoading.hide()
+            return results
+          })
 
         },
 
@@ -888,18 +901,6 @@ angular.module('starter.services', [])
 
         },
 
-
-        payment: function(booking,type,qty){
-          var ps = booking.get('payments')
-          console.log(booking.get('payments')[type])
-          var x = parseInt(booking.get('payments')[type]) + parseInt(qty)
-          ps[type] = x
-          console.log(x)
-            booking.set('payments',ps);
-            return booking.save();
-          //console.log("payment")
-        },
-
         courtsView: function(datex,gameType){
 
             //console.log(datex)
@@ -940,7 +941,166 @@ angular.module('starter.services', [])
           booking.set("note", newNote);
           console.log(booking)
           booking.save(null)
+        },
+
+      
+        getRecharges : function(user){
+
+          var Recharge = Parse.Object.extend("Recharge");
+          var query = new Parse.Query(Recharge);
+          query.equalTo("user", user)
+          query.descending("createdAt")
+          return query.find()
+
+        },
+
+        addCharge: function(user,qty){
+
+          var promises = []
+          //Aggiornare residualCredit di User
+          var Recharge = Parse.Object.extend("Recharge");
+          var r = new Recharge()
+          r.set("user",user)
+          r.set("qty",parseInt(qty))
+          promises.push(r.save())
+          var nrc = parseInt(user.get('residualCredit')) + parseInt(qty)
+          promises.push(Parse.Cloud.run('changeUserField', {userId:user.id,field:"residualCredit",newValue:nrc}))
+          return $q.all(promises)
+
+
+        },
+
+        getPayments: function(user){
+            var Payment = Parse.Object.extend("Payment");
+            var query = new Parse.Query(Payment);
+            query.equalTo("user", user)
+            query.include("booking")
+            query.descending("createdAt")
+            query.limit(30);
+            return query.find()
+        },
+
+        getPaymentsByBooking: function(booking){
+            var Payment = Parse.Object.extend("Payment");
+            var query = new Parse.Query(Payment);
+            query.equalTo("booking", booking)
+            query.descending("createdAt")
+            query.include("user")
+            query.include("booking")
+            
+            return query.find()
+        },
+
+        payBooking: function(booking,type,qty){
+          console.log(booking)
+          var ps = booking.get('payments')
+          console.log(booking)
+          //console.log(booking.get('payments')[type])
+          var x = parseInt(booking.get('payments')[type]) + parseInt(qty)
+          ps[type] = x
+          //console.log(x)
+          booking.set('payments',ps);
+          return booking.save();
+          //console.log("payment")
+        },
+
+
+        payTessera: function(user,booking,qty){
+
+          if (! this.checkCreditAvalability(user,qty))
+            throw "Credito Insufficiente...."
+
+          var promises = []
+          var Payment = Parse.Object.extend("Payment");
+          var pay = new Payment();
+          pay.set("user", user)
+          pay.set("booking", booking)
+          pay.set("qty",qty)
+          promises.push(pay.save())
+          promises.push(this.payBooking(booking,"tessere",qty))
+          var nrc = parseInt(user.get('residualCredit')) - parseInt(qty)
+          promises.push(Parse.Cloud.run('changeUserField', {userId:user.id,field:"residualCredit",newValue:nrc}))
+          return $q.all(promises)
+
+        },
+
+        checkCreditAvalability: function (user,qty){
+          
+          var residualCredit = user.get('residualCredit')
+          console.log(user)
+          console.log(residualCredit)
+          if (residualCredit != null && residualCredit >= parseInt(qty)){
+            return true
+          }
+          return false
+
+        },
+
+        deletePayment: function(payment){
+          console.log(payment)
+          var promises = []
+          var user = payment.get('user')
+          var qty = payment.get('qty')
+          var booking = payment.get('booking')
+          promises.push(payment.destroy())
+          promises.push(this.payBooking(booking,"tessere",-qty))
+          var nrc = parseInt(user.get('residualCredit')) + parseInt(qty)
+          promises.push(Parse.Cloud.run('changeUserField', {userId:user.id,field:"residualCredit",newValue:nrc}))
+          return $q.all(promises)
+           
+        },
+
+        enabling: function(user){
+            var newEnableState = ! user.get("enabled") 
+            return Parse.Cloud.run('changeUserField', {userId:user.id,field:"enabled",newValue:newEnableState})
+        },
+
+        findMyGameNotPayed: function(){
+          
+          var today = new Date();
+          today.setHours(0);
+          today.setMinutes(0);
+          today.setSeconds(0);
+          today.setMilliseconds(0);
+            
+
+          var promises = []
+          var user = Parse.User.current() ;
+          var Booking = Parse.Object.extend("Booking");
+          var query1 = new Parse.Query(Booking);
+          query1.equalTo("user", user );
+          //query1.equalTo('callToAction', false);
+          query1.ascending("date");
+          query1.equalTo('payed',false)
+          query1.lessThanOrEqualTo("date", today);
+          query1.include('players');
+          query1.include('user')
+          promises.push(query1.find())
+
+          var query2 = new Parse.Query(Booking);
+          //Escludo i risultati precedenti....
+          query2.notEqualTo("user", user );
+          //Cerco le prenotazioni alle quali sono stato invitato o mi sono unito....
+          query2.equalTo('players',user)
+          query2.equalTo('payed',false)
+          query2.include('players');
+          query2.include('user')
+          query2.lessThanOrEqualTo("date", today);
+          query2.ascending("date")
+          promises.push(query2.find())
+          return $q.all(promises)
+
+        },
+
+        payMyBooking: function(booking){
+          return this.payTessera(Parse.User.current(),booking,1).then(
+            function(ret){
+              return Parse.User.current().fetch()
+          })
         }
+
+
+
     }
   })
 

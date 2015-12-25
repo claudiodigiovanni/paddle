@@ -785,7 +785,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup) {
+  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate) {
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
 
@@ -871,7 +871,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   .then(
     function(results){
 
-      console.log(results);
+      //console.log(results);
 
       $scope.invitations = results
       //$scope.$apply()
@@ -880,7 +880,15 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     console.log(error);
   })
 
-
+ MyObjects.findMyGameNotPayed()
+  .then(
+    function(results){
+      $scope.gameNotPayed = _.flatten(results)
+      
+      //$scope.$apply()
+  }, function(error){
+    console.log(error);
+  })
 
   $scope.accept = function(invitation){
 
@@ -926,6 +934,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
          template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili." 
        });
     }
+
+  $scope.infoPayment = function(){
+    $ionicPopup.alert({
+       title: 'Info',
+       template: "Trascina verso destra l'elemento per visualizzare le opzioni disponibili. Anche se hai pagato la tua quota potresti continuare a vedere la prenotazione in quest'area perchè la segreteria non ha ricevuto tutte le restanti quote." 
+     });
+  }
 
   $scope.decline = function(invitation){
 
@@ -975,11 +990,21 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     })
 
   }
+  $scope.payMyBooking = function(booking){
+    //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
+    MyObjects.payMyBooking(booking).then(function(ret){
+      $ionicListDelegate.closeOptionButtons()
+
+      //$state.go('tab.account')
+    })
+    //booking.set('payed',true)
+    //$scope.$apply()
+  }
 
   $scope.gotoStatistics = function(){
     $state.go('tab.statistics');
   }
-
+  
   $scope.gotoUserToEnable = function(){
     $state.go('tab.userToEnable');
   }
@@ -1008,11 +1033,143 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       //$scope.$apply()
 
   })
+}
 
+
+  $scope.gotoUserMgmt = function(){
+
+    $state.go('tab.manageUsers')
   }
 
 
 })
+
+.controller('manageUsers', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state){
+
+  var recharge = {qty:""}
+  var userToSearch = {nome:""}
+
+
+  $scope.recharge = recharge
+  $scope.userToSearch = userToSearch
+
+  $ionicModal.fromTemplateUrl('recharge.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.rechargeModal = modal;
+
+    })
+
+    $ionicModal.fromTemplateUrl('payments.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.paymentsModal = modal;
+
+    })
+
+    $scope.findUsers = function(){
+        $scope.message = ""
+        MyObjects.findPlayersWithName($scope.userToSearch.nome)
+        .then(function(ret){
+          $scope.myresults = ret
+          if (ret.length == 0)
+            $scope.message = "Nessun utente trovato..."
+        })
+
+    }
+
+  
+    $scope.getRecharges = function(user){
+          console.log('openRecharge')
+          $scope.user = user
+          MyObjects.getRecharges(user)
+        .then(function(results){
+          $scope.recharges = results
+          $scope.rechargeModal.show()
+        })
+      }
+
+    $scope.getPayments = function(user){
+          console.log('openPayment')
+          $scope.user = user
+          MyObjects.getPayments(user)
+        .then(function(results){
+          $scope.payments = results
+          $scope.paymentsModal.show()
+        })
+      }
+
+      $scope.closePaymentModal = function(){
+        $scope.paymentsModal.hide()
+      }
+
+      $scope.closeRechargeModal = function(user){
+
+          MyObjects.findPlayersWithName($scope.userToSearch.nome)
+          .then(function(ret){
+            $scope.rechargeModal.hide()
+            $scope.myresults = ret
+            if (ret.length == 0)
+              $scope.message = "Nessun utente trovato..."
+          })
+          
+      }
+
+      $scope.addCharge = function(){
+        MyObjects.addCharge($scope.user,$scope.recharge.qty)
+        .then(function(ret){
+           return MyObjects.getRecharges($scope.user)
+          })
+          .then(function(results){
+            $scope.recharges = results
+        })
+      }
+
+      $scope.enabling = function(user){
+
+        console.log(user);
+        MyObjects.enabling(user)
+        .then(function(ret){
+          MyObjects.findPlayersWithName($scope.userToSearch.nome)
+        .then(function(ret){
+          $scope.myresults = ret
+          if (ret.length == 0)
+            $scope.message = "Nessun utente trovato..."
+        })
+        })
+
+      }
+
+      $scope.gotoAccount = function(){
+
+        $state.go ('tab.account')
+      }
+
+      $scope.getUsersToEnable = function(){
+
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+      MyObjects.getUsersToEnable()
+      .then(
+        function(results){
+          
+          $scope.myresults = results
+          if (results.length == 0)
+            $scope.message = "Nessun utente trovato..."
+          $ionicLoading.hide();
+
+      }, function(error){
+          console.log(error);
+          $ionicLoading.hide();
+      })
+      }
+  })
+    
 
 .controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state){
 
@@ -1151,6 +1308,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 .controller('courtsView', function($scope, MyObjects,$ionicModal, config,$ionicLoading,$stateParams,$rootScope, Utility, $state) {
 
+  var searchUser = {name: ""}
+  $scope.searchUser = searchUser
+
+
   $ionicModal.fromTemplateUrl('bookingDetail.html', {
     scope: $scope,
     animation: 'slide-in-up',
@@ -1159,27 +1320,81 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.modal = modal;
   })
 
+  $ionicModal.fromTemplateUrl('addPaymentTessera.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.addPaymentModal = modal;
+  })
+
+  $scope.openModal = function(booking) {
+
+    console.log(booking)
+    //*********************************Variabile usate per memorizzare la prenotazione selezionata********
+    $scope.bookingx = booking
+    $scope.bookingx.note = booking.get('note')
+    MyObjects.getPaymentsByBooking(booking).then(
+        function(results){
+            
+           $scope.payments = results
+           $scope.modal.show();
+    
+      }, function(error){
+        console.log(error);
+      })
+    
+    //$state.go('tab.account');
+  };
+
   $scope.closeModal = function() {
     $scope.modal.hide();
     //MyObjects.saveDashboardText($scope.index,edit.text)
-    
   };
 
-
-  $scope.openModal = function(bookingModal) {
-
-    console.log(bookingModal)
-    $scope.bookingx = bookingModal
-    $scope.bookingx.note = bookingModal.get('note')
-
-    $scope.modal.show();
+  $scope.openAddPaymentTesseraModal = function(booking) {
+    //console.log(booking)
+    $scope.paymentTessera = {"qty":1}
+    $scope.addPaymentModal.show();
     //$state.go('tab.account');
   };
+
+  $scope.closeAddPaymentTesseraModal = function() { 
+    MyObjects.getPaymentsByBooking($scope.bookingx).then(
+        function(results){
+           $scope.payments = results
+           $scope.addPaymentModal.hide();
+    
+      }, function(error){
+        console.log(error);
+      })
+  };
+
+  $scope.searchUserForAddingPayment = function(){
+    console.log('searchUserForAddingPayment');
+    $scope.messageModalTessera = ""
+
+    MyObjects.findPlayersWithName($scope.searchUser.name)
+      .then(
+        function(results){
+          console.log(results);
+          $scope.usersForAddingPayment = results
+          if (results.length == 0)
+            $scope.messageModalTessera = "Nessun utente trovato"
+          $scope.$apply()
+          
+
+      }, function(error){
+        console.log(error);
+      })
+
+  }
 
   var datex = $stateParams.datez
   var gameType = $stateParams.gameType
   $scope.datex = Utility.formatDate(new Date(datex))
 
+//******************************Variabile usata per creare nuova prenotazione******************
   var mybooking = {};
   mybooking.gameType = gameType;
   mybooking.callToAction = false;
@@ -1188,14 +1403,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   var selectedRanges = []
   
-
   var court = 0
   mybooking.court = court
 
   var message = ""
   $scope.message = message
   
-  //KKK: Sistemare il gameType...ora è cablato su paddle....
+
   var courtsNumber = $rootScope.gameTypes[gameType].courtsNumber
   $scope.courts = _.range(1,parseInt(courtsNumber) + 1)
 
@@ -1210,6 +1424,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $ionicLoading.hide()
   })
 
+  
+
    $scope.setRangeStatus = function(range,courtx){
     $scope.message = ""
     if (court != courtx)
@@ -1221,9 +1437,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     else {
       selectedRanges.push(range);
     }
-
     console.log(selectedRanges)
-
    }
 
    $scope.getRangeStatus = function(range,courtx){
@@ -1238,30 +1452,57 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.message = ""
   }
 
-  $scope.payment = function(booking,type,qty){
+  $scope.payQuota = function(booking,type,qty){
             
-      MyObjects.payment(booking,type,qty)
+      MyObjects.payBooking(booking,type,qty)
       //MyObjects.findBookings(2,2015)
 
     }
 
-    $scope.saveNote = function(booking){
-      console.log('saveNote...' + booking.note)
-      MyObjects.saveNote(booking)
-      //MyObjects.findBookings(2,2015)
+  $scope.payTessera = function(user){
+    try{
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
+        MyObjects.payTessera(user,$scope.bookingx,$scope.paymentTessera.qty)
+        .then(function(ret){
+          console.log('ok....')
+          $scope.messageModalTessera = "Pagamento effettuato con successo!"
+          $scope.usersForAddingPayment = []
+          $ionicLoading.hide()
+          //$scope.$apply()
+        }, function(error){
+                console.log(error)
+                $scope.messageModalTessera = error
+                $scope.usersForAddingPayment = []
+                $ionicLoading.hide()
+        })
+    }
+    catch(error){
+      console.log(error)
+      $scope.messageModalTessera = error
+      $scope.usersForAddingPayment = []
+      $ionicLoading.hide()
 
     }
+    
+  }
 
-    $scope.pay = function(booking){
+  $scope.saveNote = function(booking){
+    console.log('saveNote...' + booking.note)
+    MyObjects.saveNote(booking)
+    //MyObjects.findBookings(2,2015)
+  }
 
-    MyObjects.payBooking(booking)
+
+  $scope.setBookingPayed = function(booking){
+    MyObjects.setBookingPayed(booking)
     .then(
       function(obj){
         console.log('ok');
     }, function(error){
       console.log(error);
     })
-
   };
 
   $scope.delete = function(mybooking){
@@ -1302,7 +1543,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     mybooking.ranges = selectedRanges;
     mybooking.court = court
-    console.log(mybooking);
     MyObjects.createBooking(mybooking)
     .then(
       function(result){
@@ -1315,6 +1555,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
               return row.range == range
           })
           row.courts[parseInt(mybooking.court) - 1].push(result)
+          selectedRanges = []
           $scope.$apply()
 
       })
@@ -1329,9 +1570,39 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     
   }
 
+  $scope.deletePayment = function(payment){
+    MyObjects.deletePayment(payment)
+    .then(
+      function(obj){
+        return MyObjects.getPaymentsByBooking($scope.bookingx)
+      }, function(error){
+        console.log(error);
+      })
+    .then(
+      function(results){
+         $scope.payments = results
+         var x = $scope.bookingx.get('payments')
+         x['tessere'] = x['tessere'] - payment.get('qty')
+         $scope.bookingx.set('payments',x)
+      })
+    
+  };
 
   $scope.gotoAccount = function(){
     $state.go ('tab.account')
+  }
+
+  $scope.updateView = function(){
+        //console.log(datex)
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+      MyObjects.courtsView(new Date( datex), gameType)
+      .then(function(results){
+
+        $scope.myresults = results
+        $ionicLoading.hide()
+    })
   }
 
 
