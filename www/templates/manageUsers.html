@@ -1,58 +1,56 @@
-<ion-view view-title="Gestione Utenti">
+<ion-header-bar class="bar-positive ">
+<button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+<h1 class="title">Gestione Utenti</h1>
+ </ion-header-bar>
 
+ <div class="bar bar-header bar-subheader custom">
+        <ion-item> {{message}} </ion-item>
+   <div class="item item-input-inset ">
+    <label class="item-input-wrapper">
+      <input type="text" placeholder="nome " ng-model="userToSearch.nome" ng-change="clear()">
+    </label>
+    <button class="button button-positive" ng-click="findUsers()">
+      Cerca
+    </button>
+    
+    <button class="button button-assertive " ng-click="getUsersToEnable()">
+      Utenti da abilitare..
+    </button>
+  </div>
+ </div>
 
- <ion-header-bar class="bar bar-subheader custom">
-  <ion-item> {{message}} </ion-item>
-       <div class="item item-input-inset">
-        <label class="item-input-wrapper">
-          <input type="text" placeholder="nome " ng-model="userToSearch.nome" ng-change="clear()">
-        </label>
-        <button class="button button-small positive" ng-click="findUsers()">
-          Cerca
-        </button>
-        
-        <button class="button button-assertive " ng-click="getUsersToEnable()">
-          Utenti da abilitare..
-        </button>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="button button-positive " ng-click="gotoAccount()">
-          Chiudi..
-        </button>
-      </div>
+  
+  <ion-content class="has-header has-subheader-custom" scroll="true">
+
+  
+
+    <div class="row item courtsViewFont">
+      <div class="col"><i class="icon ion-search" ng-click=""></i> Nome</div>
       
-   
+      <div class="col">Telefono</div>
+      <div class="col">Data Iscriz.</div>
+      <div class="col">Livello</div>
+      <div class="col">Credito</div>
+      <div class="col">Abilitato</div>
+      <div class="col">Ricariche</div>
+      <div class="col">Pagamenti</div>
+    </div>
 
-    </ion-header-bar>
-
-    <ion-content class="has-subheader-custom">
-      <div class="row item courtsViewFont">
-        <div class="col"><i class="icon ion-search" ng-click=""></i> Nome</div>
+      <div class="row item courtsViewFont" ng-repeat="user in myresults">
+        <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.get('nome')}}</div>
         
-        <div class="col">Telefono</div>
-        <div class="col">Data Iscriz.</div>
-        <div class="col">Livello</div>
-        <div class="col">Credito</div>
-        <div class="col">Abilitato</div>
-        <div class="col">Ricariche</div>
-        <div class="col">Pagamenti</div>
+        <div class="col">{{user.get('phoneNumber')}}</div>
+        <div class="col">{{user.createdAt | date: 'dd/mm/yyyy'}}</div>
+        <div class="col">{{user.get('level')}}</div>
+        <div class="col">{{user.get('residualCredit')}}</div>
+        <div class="col"><i class="icon my-ion-checkmark-circled {{user.get('enabled') == true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
+        
+        <div class="col"><i class="icon ion-card my-ion-checkmark-circled" ng-click="getRecharges(user)"></i> </div>
+        <div class="col"><i class="icon ion-cash my-ion-checkmark-circled" ng-click="getPayments(user)"></i> </div>
+
       </div>
+  </ion-content>
 
-        <div class="row item courtsViewFont" ng-repeat="user in myresults">
-          <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.get('nome')}}</div>
-          
-          <div class="col">{{user.get('phoneNumber')}}</div>
-          <div class="col">{{user.createdAt | date: 'dd/mm/yyyy'}}</div>
-          <div class="col">{{user.get('level')}}</div>
-          <div class="col">{{user.get('residualCredit')}}</div>
-          <div class="col"><i class="icon my-ion-checkmark-circled {{user.get('enabled') == true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
-          
-          <div class="col"><i class="icon ion-card my-ion-checkmark-circled" ng-click="getRecharges(user)"></i> </div>
-          <div class="col"><i class="icon ion-cash my-ion-checkmark-circled" ng-click="getPayments(user)"></i> </div>
-
-        </div>
-    </ion-content>
-
-</ion-view>
 
 
 <script id="recharge.html" type="text/ng-template">

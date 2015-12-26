@@ -11,22 +11,7 @@
         <ion-list >
           <ion-item>email: {{currentUser.get('email')}}</ion-item>
           <ion-item>Crediti: {{currentUser.get('residualCredit')}}</ion-item>
-          <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; <button class="button  button-small button-outline button-positive" ng-click="changeLevel()">
-                Modifica</button></ion-item>
-          <ion-item>  <button class="button  button-outline button-positive" ng-click="resetPwd()">
-                Reset password</button>
-                      <button class="button  button-outline button-positive" ng-click="manageSubscriptions()">
-                       Circolo</button>
-          </ion-item>
-          <ion-item ng-show="userRole == 'admin' || userRole == 'segreteria'">
-
-                <button class="button button-outline button-assertive" ng-click="gotoStatistics()" >
-                    Prenotaz.
-                </button>
-
-                 <button class="button  button-outline button-assertive" ng-click="gotoUserMgmt()">
-                    Utenti
-                </button>
+          <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; 
 
 
           </ion-item>
@@ -110,83 +95,6 @@
     </div>
 
   </ion-content>
-
-
-
-  <script id="reset-pwd.html" type="text/ng-template">
-    <div class="modal">
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">Reset Password</h1>
-      </ion-header-bar>
-
-      <ion-content>
-      <div class="item item-text-wrap">
-          Invieremo una mail al tuo indirizzo per il reset pwd....
-            <button class="button button-outline button-small button-positive" ng-click="confirmResetPwd()">
-                Conferma!!!
-            </button>
-      </div>
-
-
-      </ion-content>
-
-    </div>
-  </script>
-
-
-  <script id="set-level.html" type="text/ng-template">
-    <div class="modal">
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">Livello</h1>
-      </ion-header-bar>
-
-      <ion-content>
-      <div class="list">
-
-
-      <!-- xx -->
-      <label class="item item-divider">
-
-        <div class="item-content" style="color:gray">
-          Seleziona il tuo livello di gioco
-        </div>
-
-      </label>
-
-      <ion-radio-fix ng-model="currentLevel.value" ng-value="1">
-        1 - Cosa è il Padel?
-      </ion-radio-fix>
-      <ion-radio-fix ng-model="currentLevel.value" ng-value="2">
-        2 - Appena capisco le sponde.....
-      </ion-radio-fix>
-      <ion-radio-fix ng-model="currentLevel.value" ng-value="3">
-        3 - Finalmente lo sport che fa per me
-      </ion-radio-fix>
-      <ion-radio-fix ng-model="currentLevel.value" ng-value="4">
-        4 - La bandeja non è più un mistero!
-      </ion-radio-fix>
-      <ion-radio-fix ng-model="currentLevel.value" ng-value="5">
-        5 - Me la gioco con tutti
-      </ion-radio-fix>
-      <ion-radio-fix ng-model="currentLevel.value" ng-value="6">
-        6 - Me la gioco con gli spagnoli!
-      </ion-radio-fix>
-
-
-
-      <!-- xx -->
-
-        <ion-item>
-        <button class="button button-outline button-small button-positive" ng-click="confirmChangeLevel()">
-            Conferma
-        </button>
-        </ion-item>
-      </div>
-      </ion-content>
-
-    </div>
-  </script>
-
 
 
 </ion-view>

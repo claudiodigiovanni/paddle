@@ -864,7 +864,7 @@ angular.module('starter.services', [])
           try{
                 var booking = invitation.get('booking')
                 var players = booking.get('players')
-                console.log(players)
+                //console.log(players)
                 var index = _.findIndex(players,function(p){
                   return p.id == Parse.User.current().id
                 })

@@ -248,37 +248,39 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     }
   })
 
-  .state('tab.statistics', {
+  .state('changeLevel', {
+    url: '/changeLevel',
+    cache: false,
+    templateUrl: 'templates/changeLevel.html',
+    controller: 'changeLevelCtrl'
+  })
+
+   .state('resetPwd', {
+    url: '/resetPwd',
+    cache: false,
+    templateUrl: 'templates/resetPwd.html',
+    controller: 'resetPwdCtrl'
+  })
+
+  .state('statistics', {
   url: '/statistics',
-  views: {
-    'tab-account': {
-      templateUrl: 'templates/bookingList.html',
-      controller: 'statistics'
-    }
-  }
-
+  templateUrl: 'templates/bookingList.html',
+  controller: 'statistics'
+  
 })
 
-.state('tab.userToEnable', {
-url: '/userToEnable',
-cache: false,
-views: {
-  'tab-account': {
-    templateUrl: 'templates/userToEnable.html',
-    controller: 'UserToEnable'
-  }
-}
+.state('userToEnable', {
+  url: '/userToEnable',
+  cache: false,
+  templateUrl: 'templates/userToEnable.html',
+  controller: 'UserToEnable'
 })
 
-.state('tab.courtsView', {
+.state('courtsView', {
 url: '/courtsView/:datez/:gameType',
 cache: false,
-views: {
-  'tab-account': {
-    templateUrl: 'templates/courtsView.html',
-    controller: 'courtsView'
-  }
-}
+templateUrl: 'templates/courtsView.html',
+controller: 'courtsView'
 })
 
 .state('tab.manageSubscriptions', {
@@ -319,16 +321,24 @@ views: {
 
 })
 
-.state('tab.manageUsers', {
+.state('manageUsers', {
 url: '/manageUsers',
 cache: false,
-views: {
-  'tab-account': {
-    templateUrl: 'templates/manageUsers.html',
-    controller: 'manageUsers'
-  }
-}
-});
+templateUrl: 'templates/manageUsers.html',
+controller: 'manageUsers'
+
+})
+
+.state('checkNewVersion', {
+url: '/checkNewVersion',
+cache: false,
+templateUrl: 'templates/checkNewVersion.html',
+controller: 'checkNewVersionCtrl'
+
+})
+
+
+;
 
 
   // if none of the above states are matched, use this as the fallback

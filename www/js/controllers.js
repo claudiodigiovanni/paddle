@@ -1,41 +1,55 @@
 
 angular.module('starter.controllers', []) 
 
-.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
+.controller('checkNewVersionCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
-
-//*********************INSTALL NEW UPDATE *************************************
+  //*********************INSTALL NEW UPDATE *************************************
 
     var deploy = new Ionic.Deploy();
+    var spinnerVisible = true
+    var message = ""
+    $scope.message = message
+    $scope.spinnerVisible = spinnerVisible
   
     // Update app code with new release from Ionic Deploy
     var doUpdate = function() { 
       deploy.update().then(function(res) {
-        alert('Ionic Deploy: Update Success! ', res);
+        $scope.message = "L'aggiornamento ha avuto successo!"
+        $scope.spinnerVisible = false
+        $scope.$apply()
       }, function(err) {
-        alert('Ionic Deploy: Update error! ', err);
+         $scope.message = "L'aggiornamento NON ha avuto successo!"
+         $scope.spinnerVisible = false
+         $scope.$apply()
       }, function(prog) {
-        console.log('Ionic Deploy: Progress... ', prog);
+         $scope.message = "Aggiornamento in corso...."
+         $scope.$apply()
       });
     };
 
-    $scope.doRefresh = function(){
-     // Check Ionic Deploy for new code
-      alert('Ionic Deploy: Checking for updates');
+     $scope.message = "Controllo l'esistenza di aggiornamenti"
       deploy.check().then(function(hasUpdate) {
-        alert('Ionic Deploy: Update available: ' + hasUpdate);
+        $scope.message = "Aggiornamento disponibile!"
         doUpdate();
+        $scope.$apply()
         
       }, function(err) {
-        alert('Ionic Deploy: Unable to check for updates...' + err);
+        $scope.message = "Opssss....si è verificato un errore...."
+        $scope.spinnerVisible = false
+        $scope.$apply()
       });
-      $scope.$broadcast('scroll.refreshComplete');
-      $scope.$apply()
-
-  }
+      
+      
    
 
 //*********************FINE NEW UPDATE *************************************
+
+})
+
+.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
+
+
+
 
   var edit = {text:"xxxx"}
   
@@ -785,34 +799,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate) {
+.controller('changeLevelCtrl',function($scope,$state,$rootScope){
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
-
-
-    $ionicModal.fromTemplateUrl('set-level.html', {
-      scope: $scope,
-      animation: 'slide-in-up',
-      backdropClickToClose:false
-    }).then(function(modal) {
-      $scope.setLevelModal = modal;
-
-    })
-
-    $ionicModal.fromTemplateUrl('reset-pwd.html', {
-      scope: $scope,
-      animation: 'slide-in-up',
-      backdropClickToClose:false
-    }).then(function(modal) {
-      $scope.resetPwdModal = modal;
-
-
-    })
-
-
-    $scope.changeLevel = function(){
-      $scope.setLevelModal.show();
-    }
 
     $scope.confirmChangeLevel = function(){
 
@@ -822,21 +811,18 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       .then(
         function(obj){
           console.log(obj);
+          $state.go('tab.account')
 
       }, function(error){
         console.log(error);
       })
 
-      $scope.setLevelModal.hide();
+      
 
     }
+})
 
-
-    $scope.resetPwd = function(){
-      console.log('ooo');
-      $scope.resetPwdModal.show();
-    }
-
+.controller('resetPwdCtrl',function($scope,$state,$rootScope){
     $scope.confirmResetPwd = function(){
       var email = Parse.User.current().get('email')
       Parse.User.requestPasswordReset(email, {
@@ -850,82 +836,96 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           }
         });
 
-      $scope.resetPwdModal.hide();
       $state.go('login')
     }
-
-
-  MyObjects.findMyBookings()
-  .then(
-    function(results){
-      //console.log(results)
-      $scope.bookings = results
-      //$scope.$apply()
-
-  }, function(error){
-    console.log(error);
-  })
-
-
-  MyObjects.findMyInvitations()
-  .then(
-    function(results){
-
-      //console.log(results);
-
-      $scope.invitations = results
-      //$scope.$apply()
-
-  }, function(error){
-    console.log(error);
-  })
-
- MyObjects.findMyGameNotPayed()
-  .then(
-    function(results){
-      $scope.gameNotPayed = _.flatten(results)
       
-      //$scope.$apply()
-  }, function(error){
-    console.log(error);
-  })
 
+    
+})
+
+  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading) {
+    var currentLevel = {value: $rootScope.currentUser.get('level')}
+    $scope.currentLevel = currentLevel
+
+
+    
+
+    var init = function(){
+
+        Parse.User.current().fetch()
+
+        MyObjects.findMyBookings()
+        .then(
+          function(results){
+            $scope.bookings = results
+        }, function(error){
+          console.log(error);
+          var alertPopup = $ionicPopup.alert({
+             title: 'Opsss!',
+             template: error 
+           });
+        })
+
+        MyObjects.findMyInvitations()
+        .then(
+          function(results){
+            $scope.invitations = results
+        }, function(error){
+          console.log(error);
+          var alertPopup = $ionicPopup.alert({
+             title: 'Opsss!',
+             template: error 
+           });
+        })
+
+       MyObjects.findMyGameNotPayed()
+        .then(
+          function(results){
+            $scope.gameNotPayed = _.flatten(results)
+        }, function(error){
+          console.log(error);
+          var alertPopup = $ionicPopup.alert({
+             title: 'Opsss!',
+             template: error 
+           });
+        })
+
+    }
+
+    //***************************************
+    init()
+    //***************************************
+    
   $scope.accept = function(invitation){
-
+    $ionicLoading.show({
+          template: 'Loading...'
+        });
     MyObjects.acceptInvitation(invitation)
     .then(
       function(obj){
-        return MyObjects.findMyInvitations()
+        init()
+        $ionicLoading.hide()
     }, function(error){
-      console.log(error);
-      throw error
+        console.log(error);
+        $ionicLoading.hide()
     })
-    .then(
-      function(results){
-        $scope.invitations = results
-        //$scope.$apply()
-        return MyObjects.findMyBookings()
-
-    }, function(error){
-      console.log(error);
-      throw error
-    })
-   .then(
-    function(results){
-      //console.log(results)
-      $scope.bookings = results
-      //$scope.$apply()
-
-  }, function(error){
-    console.log(error);
-    var alertPopup = $ionicPopup.alert({
-         title: 'Opsss!',
-         template: error 
-       });
-    //throw error
-  })
     
+  }
 
+  $scope.decline = function(invitation){
+    $ionicLoading.show({
+        template: 'Loading...'
+      });
+    MyObjects.declineInvitation(invitation)
+    .then(
+      function(obj){
+        init()
+        $ionicLoading.hide()
+    }, function(error){
+      console.log(error);
+      $ionicLoading.hide()
+    })
+    
   }
 
   $scope.info = function(){
@@ -942,71 +942,39 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
      });
   }
 
-  $scope.decline = function(invitation){
-
-    MyObjects.declineInvitation(invitation)
-    .then(
-      function(obj){
-        return MyObjects.findMyInvitations()
-    }, function(error){
-      console.log(error);
-    })
-    .then(
-      function(results){
-        $scope.invitations = results
-        //$scope.$apply()
-        return MyObjects.findMyBookings()
-
-    }, function(error){
-      console.log(error);
-    })
-    .then(
-    function(results){
-      //console.log(results)
-      $scope.bookings = results
-      //$scope.$apply()
-
-  }, function(error){
-    console.log(error);
-  })
-
-  }
+  
 
 
   $scope.delete = function(item){
-
-    console.log('delete');
-
+   $ionicLoading.show({
+          template: 'Loading...'
+        });
     MyObjects.deleteBooking(item)
     .then(function(){
-      return MyObjects.findMyBookings()
+      init()
+      $ionicLoading.hide()
     })
-    .then(
-      function(results){
-        $scope.bookings = results
-        //$scope.$apply()
-    }, function(error){
-      console.log(error);
-    })
-
   }
+
   $scope.payMyBooking = function(booking){
     //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
+   $ionicLoading.show({
+          template: 'Loading...'
+        });
     MyObjects.payMyBooking(booking).then(function(ret){
       $ionicListDelegate.closeOptionButtons()
+      $ionicLoading.hide()
 
-      //$state.go('tab.account')
     })
-    //booking.set('payed',true)
-    //$scope.$apply()
+    
   }
 
   $scope.gotoStatistics = function(){
-    $state.go('tab.statistics');
+    $state.go('statistics');
   }
   
   $scope.gotoUserToEnable = function(){
-    $state.go('tab.userToEnable');
+    $state.go('userToEnable');
   }
 
   $scope.manageSubscriptions = function(){
@@ -1015,30 +983,16 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.doRefresh = function(){
 
-    MyObjects.findMyInvitations()
-    .then(
-      function(results){
-        $scope.invitations = results
-        $scope.$broadcast('scroll.refreshComplete');
-        //$scope.$apply()
-         
-
-    })
-    MyObjects.findMyBookings()
-    .then(
-    function(results){
-      //console.log(results)
-      $scope.bookings = results
+    init();
+    $timeout(function() {
       $scope.$broadcast('scroll.refreshComplete');
-      //$scope.$apply()
-
-  })
+    }, 2000)
 }
 
 
   $scope.gotoUserMgmt = function(){
 
-    $state.go('tab.manageUsers')
+    $state.go('manageUsers')
   }
 
 
@@ -1174,7 +1128,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 .controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state){
 
 
-
   var today = new Date();
   today.setHours(0);
   today.setMinutes(0);
@@ -1268,7 +1221,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
     //console.log(datex)
 
-    $state.go('tab.courtsView',{'datez': datex, "gameType":$scope.gameType});
+    $state.go('courtsView',{'datez': datex, "gameType":$scope.gameType});
 
   }
 
@@ -1284,7 +1237,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
     //console.log(datex)
 
-    $state.go('tab.courtsView',{'datez': datex, "gameType":$scope.gameType});
+    $state.go('courtsView',{'datez': datex, "gameType":$scope.gameType});
 
   }
 
@@ -1821,56 +1774,6 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading,$ionicPopup) {
-
-  $ionicLoading.show({
-    template: 'Loading...'
-  });
-  MyObjects.getUsersToEnable()
-  .then(
-    function(results){
-      console.log(results);
-      $scope.users=results
-      //alert(results[0]);
-      //$scope.$apply();
-      $ionicLoading.hide();
-
-  }, function(error){
-      console.log(error);
-      $ionicLoading.hide();
-  })
-
-  $scope.enableUser = function(user){
-    console.log(user);
-    MyObjects.enableUser(user)
-    .then(
-      function(obj){
-        console.log('ok');
-        var index = _.findIndex($scope.users, function(item){
-          console.log(item);
-          return item.id == user.id
-        })
-        $scope.users.splice(index,1);
-        console.log($scope.users);
-        //$scope.users = users
-        //$state.go('tab.userToEnable')
-        $scope.$apply();
-        //console.log($scope.users);
-        var alertPopup = $ionicPopup.alert({
-           title: 'ok',
-           template: 'Utente abilitato....!'
-         });
-         alertPopup.then(function(res) {
-
-         });
-
-    }, function(error){
-      console.log(error);
-    })
-
-  }
-
-})
 
 .controller('manageSubscribtions',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$ionicPopup) {
 
@@ -1940,6 +1843,58 @@ $scope.subscribe = function(circolo){
 }
 
 
+
+})
+
+
+.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading,$ionicPopup) {
+
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
+  MyObjects.getUsersToEnable()
+  .then(
+    function(results){
+      console.log(results);
+      $scope.users=results
+      //alert(results[0]);
+      //$scope.$apply();
+      $ionicLoading.hide();
+
+  }, function(error){
+      console.log(error);
+      $ionicLoading.hide();
+  })
+
+  $scope.enableUser = function(user){
+    console.log(user);
+    MyObjects.enableUser(user)
+    .then(
+      function(obj){
+        console.log('ok');
+        var index = _.findIndex($scope.users, function(item){
+          console.log(item);
+          return item.id == user.id
+        })
+        $scope.users.splice(index,1);
+        console.log($scope.users);
+        //$scope.users = users
+        //$state.go('tab.userToEnable')
+        $scope.$apply();
+        //console.log($scope.users);
+        var alertPopup = $ionicPopup.alert({
+           title: 'ok',
+           template: 'Utente abilitato....!'
+         });
+         alertPopup.then(function(res) {
+
+         });
+
+    }, function(error){
+      console.log(error);
+    })
+
+  }
 
 })
 

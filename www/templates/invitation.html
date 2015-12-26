@@ -20,18 +20,11 @@
   <br>
 
   <div class="list">
-    <div class="item item-button-right" ng-repeat="p in players">
-      <h1><i class="icon ion-person"></i> {{p.get('nome')}}</h1>
 
-        <i class="icon ion-ios-speedometer-outline"></i> {{p.get('level')}}
-
-
-    <button class="button button-positive button-outline" ng-click="invite(p)">
-      <i class="icon ion-ios-plus-outline"></i>
-    </button>
-  </div>
-
-
+      <ion-item ng-repeat="p in players"><i class="icon ion-person"></i> {{p.get('nome')}}&nbsp;&nbsp;<i class="icon ion-ios-speedometer-outline"></i> {{p.get('level')}} &nbsp;&nbsp;&nbsp;&nbsp;
+          <i class="icon ion-ios-plus-outline my-ion-happy-outline positive" ng-click="invite(p)"></i>
+      </ion-item>
+   
   </div>
 
 
