@@ -85,10 +85,11 @@ color: #444;
 }
 
 .spinner svg {
-  width: 28px;
-  height: 28px;
+  width: 128px;
+  height: 128px;
   stroke: #444;
   fill: #444;
+  
 }
 
 </style>

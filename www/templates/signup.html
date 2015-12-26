@@ -80,10 +80,11 @@
                   </div>
               </div>
 
+      <ion-item class="item-text-wrap alert" ng-show="mymessage.text">
+       {{mymessage.text}}
+      </ion-item>
 
-      <div class="item alert" ng-show="mymessage.text">
-        {{mymessage.text}}
-      </div>
+      
       <button class="button button-full button-positive" ng-click="signUp()">
           Registrati
       </button>
