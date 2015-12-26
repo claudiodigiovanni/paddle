@@ -29,9 +29,18 @@ angular.module('starter.controllers', [])
 
      $scope.message = "Controllo l'esistenza di aggiornamenti"
       deploy.check().then(function(hasUpdate) {
-        $scope.message = "Aggiornamento disponibile!"
-        doUpdate();
-        $scope.$apply()
+        if (hasUpdate){
+          $scope.message = "Aggiornamento disponibile!"
+          doUpdate();
+          $scope.$apply()
+        }
+        else{
+          $scope.message = "Nessun aggiornamento disponibile!"
+          $scope.spinnerVisible = false
+          
+          $scope.$apply()
+        }
+        
         
       }, function(err) {
         $scope.message = "Opssss....si è verificato un errore...."
