@@ -17,15 +17,10 @@
     </div>
   </div>
 
-  <ion-toggle  ng-model="toggleCoach.value" ng-change="toggleCoach()">
-      Maestro
-  </ion-toggle>
-
   <div class="item item-text-wrap center" >
   <div class="row">
     <div class="col" ng-repeat="game in gameTypes">
       <i class="icon ion-checkmark-circled my-ion-checkmark-circled {{getGameType($index)}}"  ng-click="setGameType($index)"></i> {{game.name}}
-
     </div>
   </div>
 </div>
@@ -38,7 +33,9 @@
 
   <calendar coach-avalabilities='coachAvalabilities' coach="toggleCoach.value" selected-day="selectedDay" day-clicked='dayClicked(pos)' current-month="currentMonth" current-year="currentYear"></calendar>
 
-<br>
+<ion-toggle  ng-model="toggleCoach.value" ng-change="toggleCoach()">
+      Maestro
+</ion-toggle>
 
 </ion-content>
 

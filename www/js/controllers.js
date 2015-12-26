@@ -324,6 +324,11 @@ $scope.confirmResetPwd = function(){
   $scope.modal.show();
 }
 
+$scope.closeResetPwd = function(){
+  $scope.resetPwdModal.hide()
+  $scope.modal.show();
+}
+
 $scope.gotoSignUp = function(){
   $scope.modal.hide();
   $state.go('signUp');
@@ -373,14 +378,18 @@ $scope.setResponse= function(response){
 
 }
 
+$scope.closeSignupx = function(){
+    
+    $state.go('login');
+  }
+
 
 $scope.signUp = function() {
   $ionicLoading.show({
     template: 'Loading...'
   });
 
-
-
+  
 if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.captchaResponse == null){
   mymessage.text = "Occorre verificare correttamente il captcha..."
   $ionicLoading.hide();
@@ -1550,8 +1559,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     
   };
 
-  $scope.gotoAccount = function(){
-    $state.go ('tab.account')
+  $scope.gotoStatistics = function(){
+    $state.go ('statistics')
   }
 
   $scope.updateView = function(){
