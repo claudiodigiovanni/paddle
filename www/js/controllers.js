@@ -58,31 +58,10 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
 
-
-
   var edit = {text:"xxxx"}
-  
   $scope.edit = edit 
 
-     
-  
-  $ionicModal.fromTemplateUrl('edit.html', {
-    scope: $scope,
-    animation: 'slide-in-up',
-    backdropClickToClose:false
-  }).then(function(modal) {
-    $scope.modal = modal;
-
-  })
-  .then(
-    function(obj){
-
-      return MyObjects.getDashboardText()
-
-  }, function(error){
-    
-    console.log(error);
-  })
+  MyObjects.getDashboardText()
   .then(
     function(text){
 
@@ -93,6 +72,16 @@ angular.module('starter.controllers', [])
 
   }, function(error){
     console.log(error);
+  })
+
+     
+  
+  $ionicModal.fromTemplateUrl('edit.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
   })
 
 
@@ -678,10 +667,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.modal.show()
     }
     else{
-
-      console.log(booking.gameType)
-
-    
+ 
       //booking.gameType + di tipo string....
       MyObjects.findaAvalaibleRangesInDate(date, booking.gameType)
       .then(
@@ -740,17 +726,19 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date(d);
-
+    $ionicLoading.show({
+        template: 'Loading...'
+      });
     MyObjects.checkBeforeCreateBooking(date, selectedRanges, booking.gameType)
     .then(
       function(obj){
 
         $scope.avalaivableCourts = obj
-        console.log('avalaivableCourts');
-        console.log(obj);
+        $ionicLoading.hide()
 
     }, function(error){
       console.log(error);
+      $ionicLoading.hide()
 
       var alertPopup = $ionicPopup.alert({
          title: 'Opsss!',

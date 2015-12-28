@@ -173,10 +173,6 @@ angular.module('starter.services', [])
 
       checkBeforeCreateBooking: function(date,ranges,gameT){
 
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        console.log("gameType:" + gameT)
         var defer = $q.defer()
         var courtsAvalaivable = []
         var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
@@ -186,7 +182,7 @@ angular.module('starter.services', [])
         .then(
           function(bookings){
             courts.forEach(function(court){
-              console.log("court:" + court);
+              //console.log("court:" + court);
               var avalaible = true
               ranges.forEach(function(r){
                 var p = _.filter(bookings, function(item){
@@ -213,7 +209,6 @@ angular.module('starter.services', [])
             else {
               defer.reject("Campo non disponibile nella fascia oraria selezionata!")
             }
-            $ionicLoading.hide()
             return defer.promise;
 
         }, function(error){
@@ -260,17 +255,14 @@ angular.module('starter.services', [])
             var maestroId = obj.maestro != null ? obj.maestro.id : -1
 
 
-            console.log(maestroId);
+            //console.log(maestroId);
             if (maestroId != -1){
               var Maestro = Parse.Object.extend("Maestro");
               var maestro = new Maestro()
               maestro.id = maestroId
               book.set('maestro',maestro)
             }
-
-
             return book.save(null)
-
 
         }, function(error){
 
