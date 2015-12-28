@@ -862,11 +862,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
   .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading) {
+    
+    // Il ruolo admin o segreteria non vede la pagina account (inutile...)
+    if ($rootScope.currentUser.get('role') == 'admin' || $rootScope.currentUser.get('role') == 'segreteria')
+      $state.go("statistics") 
+
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
-
-
-    
 
     var init = function(){
 
@@ -1045,11 +1047,17 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     $scope.findUsers = function(){
         $scope.message = ""
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
         MyObjects.findPlayersWithName($scope.userToSearch.nome)
         .then(function(ret){
+          $ionicLoading.hide()
           $scope.myresults = ret
           if (ret.length == 0)
             $scope.message = "Nessun utente trovato..."
+        },function(error){
+          $ionicLoading.hide()
         })
 
     }
@@ -1080,9 +1088,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       }
 
       $scope.closeRechargeModal = function(user){
-
+        //$scope.rechargeModal.hide()
+          $ionicLoading.show({
+            template: 'Loading...'
+          });
           MyObjects.findPlayersWithName($scope.userToSearch.nome)
           .then(function(ret){
+            $ionicLoading.hide()
             $scope.rechargeModal.hide()
             $scope.myresults = ret
             if (ret.length == 0)
@@ -1103,12 +1115,17 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
       $scope.enabling = function(user){
 
-        console.log(user);
+        //console.log(user);
+        $ionicLoading.show({
+            template: 'Loading...'
+          });
         MyObjects.enabling(user)
         .then(function(ret){
           MyObjects.findPlayersWithName($scope.userToSearch.nome)
         .then(function(ret){
+          $ionicLoading.hide()
           $scope.myresults = ret
+          $scope.$apply()
           if (ret.length == 0)
             $scope.message = "Nessun utente trovato..."
         })
@@ -1196,6 +1213,21 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     })
 
   };
+
+    $scope.setBookingPayed = function(booking){
+
+    MyObjects.setBookingPayed(booking)
+    .then(
+      function(obj){
+        console.log('ok');
+    }, function(error){
+      console.log(error);
+    })
+
+  };
+
+
+  
 
   $scope.delete = function(item){
 
@@ -1344,19 +1376,22 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.searchUserForAddingPayment = function(){
     console.log('searchUserForAddingPayment');
     $scope.messageModalTessera = ""
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
 
     MyObjects.findPlayersWithName($scope.searchUser.name)
       .then(
         function(results){
-          console.log(results);
+          $ionicLoading.hide()
           $scope.usersForAddingPayment = results
           if (results.length == 0)
             $scope.messageModalTessera = "Nessun utente trovato"
           $scope.$apply()
           
-
       }, function(error){
         console.log(error);
+        $ionicLoading.hide()
       })
 
   }
@@ -1969,7 +2004,7 @@ $scope.ok = function(){
         function(results){
           console.log(results);
           $scope.players = results
-          $scope.$apply()
+          //$scope.$apply()
           $ionicLoading.hide()
 
       }, function(error){

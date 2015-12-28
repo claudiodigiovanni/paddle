@@ -57,7 +57,47 @@
       Templates are in the /templates folder (but you could also
       have templates inline in this html file if you'd like).
     -->
-    <ion-nav-view></ion-nav-view>
+    
+<ion-side-menus>
+
+    <ion-side-menu-content>
+        <!-- Main Content Here-->
+        <ion-nav-view></ion-nav-view>
+    </ion-side-menu-content>
+
+  <ion-side-menu side="left">
+    <header class="bar bar-header bar-stable">
+      <h1 class="title">Menu</h1>
+    </header>
+    <ion-content class="has-header">
+      <ion-list>
+      <ion-item nav-clear="" menu-close="" href="#/tab/dash">
+          Home
+        </ion-item>
+        <ion-item nav-clear="" menu-close="" href="#/changeLevel">
+          Modifica Livello
+        </ion-item>
+        <ion-item nav-clear="" menu-close="" href="#/resetPwd">
+          Reset Password / Esci
+        </ion-item>
+        <ion-item nav-clear="" menu-close="" href="#/checkNewVersion">
+          Aggiorna App
+        </ion-item>
+        <ion-item nav-clear="" menu-close="" href="#/userToEnable" ng-show="userRole == &apos;admin&apos; || userRole == &apos;segreteria&apos;">
+          Utenti da abilitare
+        </ion-item>
+        <ion-item nav-clear="" menu-close="" href="#/statistics" ng-show="userRole == &apos;admin&apos; || userRole == &apos;segreteria&apos;">
+          Gestione Prenotazioni
+        </ion-item>
+         <ion-item nav-clear="" menu-close="" href="#/manageUsers" ng-show="userRole == &apos;admin&apos; || userRole == &apos;segreteria&apos;">
+          Gestione Utenti
+        </ion-item>
+
+        
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>
 
 
 

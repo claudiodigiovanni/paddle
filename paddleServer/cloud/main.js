@@ -283,6 +283,7 @@ Parse.Cloud.define("signUp", function(request, response){
   user.set("password", request.params.password);
   user.set("level", request.params.level)
   user.set("enabled",false)
+  user.set("residualCredit",0)
   user.set("nome",request.params.nome.toLowerCase() )
   user.set("phoneNumber",request.params.phoneNumber)
   user.set("codfis",request.params.codfis)

@@ -25,7 +25,8 @@ angular.module('starter.directives', [])
       selectedays: '=',
       dayClicked:'&',
       currentMonth: "=",
-      currentYear: "="
+      currentYear: "=",
+      showAll: '@'
     },
     templateUrl: 'templates/ng-calendar-template.html',
     replace:true,
@@ -56,20 +57,30 @@ angular.module('starter.directives', [])
 
         var m = parseInt($scope.currentMonth) + 1
         var selectedDate = new Date( $scope.currentYear + "/" + m + "/" + day);
+        
+        if (day == '-')
+          return "disabled";
 
-        if (selectedDate < today || day == '-')
+        //Per segreteria e amministratore tutti i giorni sono disponibili per permettere di vedere
+        //le prenotazioni dei giorni recedenti
+        if ($scope.showAll)
+          return 'avalaible'; 
+
+        if (selectedDate < today )
           return "disabled";
 
         //Se non seleziono il maestro considero tutti i giorni disponibili
         if (!$scope.coach)
           return 'avalaible';
 
-        var e = _.find($scope.coachAvalabilities,function(obj){
-            return (obj.day == day );
-        });
         if ($scope.selectedDay == day){
           return "selected";
         }
+
+        var e = _.find($scope.coachAvalabilities,function(obj){
+            return (obj.day == day );
+        });
+        
         if ( e ){
           return 'avalaible';
         }

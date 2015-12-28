@@ -301,7 +301,7 @@ angular.module('starter.services', [])
         myContext.findBookingsToPayBeforeDate(today)
         .then(
           function(obj){
-
+            console.log(obj)
             ret.bookingsToPayBeforeToday = obj;
             $ionicLoading.hide();
         }, function(error){
@@ -367,10 +367,11 @@ angular.module('starter.services', [])
         return query.find()
       },
       findBookingsToPayBeforeDate: function(date){
-
+        console.log(date)
         var Booking = Parse.Object.extend("Booking");
         var query = new Parse.Query(Booking);
-        query.lessThan("date", date);
+        query.lessThanOrEqualTo("date", date);
+        query.ascending("date");
         query.equalTo("payed", false);
         var c = Parse.User.current().get('circolo')
         query.equalTo('circolo',c)
@@ -794,19 +795,13 @@ angular.module('starter.services', [])
         },
         findPlayersWithName:function(namex){
 
-          $ionicLoading.show({
-            template: 'Loading...'
-          });
+         
           var query = new Parse.Query(Parse.User);
           query.equalTo('circolo',Parse.User.current().get('circolo'))
           query.contains("nome", namex.toLowerCase());
           query.descending("date")
           query.limit(10)
           return query.find()
-          .then(function(results){
-            $ionicLoading.hide()
-            return results
-          })
 
         },
 
@@ -864,7 +859,7 @@ angular.module('starter.services', [])
           try{
                 var booking = invitation.get('booking')
                 var players = booking.get('players')
-                console.log(players)
+                //console.log(players)
                 var index = _.findIndex(players,function(p){
                   return p.id == Parse.User.current().id
                 })
@@ -992,9 +987,9 @@ angular.module('starter.services', [])
         },
 
         payBooking: function(booking,type,qty){
-          console.log(booking)
+          //console.log(booking)
           var ps = booking.get('payments')
-          console.log(booking)
+          //console.log(booking)
           //console.log(booking.get('payments')[type])
           var x = parseInt(booking.get('payments')[type]) + parseInt(qty)
           ps[type] = x
