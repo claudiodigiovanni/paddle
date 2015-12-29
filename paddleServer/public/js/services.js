@@ -409,7 +409,7 @@ angular.module('starter.services', [])
               return
 
           }, function(error){
-            
+            throw error
             console.log(error);
           })
 
@@ -423,7 +423,7 @@ angular.module('starter.services', [])
           var Booking = Parse.Object.extend("Booking");
           var b = new Booking();
           b.id = item.id
-          console.log(b);
+          //console.log(b);
           return b.destroy();  
         }
         var players = item.get('players')
@@ -489,15 +489,14 @@ angular.module('starter.services', [])
       },
       findaAvalaibleRangesInDate: function(date,gameT){
 
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+        
         var avalaibleRanges = [];
         return this.findBookingsInDate (date,gameT)
         .then(
           function(bookings){
 
             var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
+            var num = $rootScope.gameTypes[gameT].courtsNumber
 
             _.each(myranges, function(r){
               var px =  _.filter(bookings,function(item){
@@ -505,17 +504,15 @@ angular.module('starter.services', [])
                   if (item.get('ranges').indexOf(r) != -1 )
                       return item;
               });
-              var num = $rootScope.gameTypes[gameT].courtsNumber
-
+              
               if (px.length < num){
-
                   avalaibleRanges.push(r);
               }
             })
-            $ionicLoading.hide()
+            
             return avalaibleRanges;
         }, function(error){
-            $ionicLoading.hide()
+            
             console.log(error);
             Utility.handleParseError(error);
         })

@@ -58,7 +58,7 @@
       <span class="input-label">Utente</span>
       <input type="text" placeholder="Utente" ng-model="booking.note">
     </label>
-    <div class="row">
+    <div class="row" ng-hide="waiting">
       <div class="col">
       <button class="button button-block button-positive" ng-click="book()" ng-show="showAddButton">
         Prenota
@@ -74,7 +74,9 @@
         Call To Action!
     </ion-toggle>
 
-
+    <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+    </ion-item>
 
 
     <div class="card" style="text-align:center" ng-if="resolved">
@@ -85,25 +87,9 @@
     </div>
 
 
-
-
-
     <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'    ng-show="showAddButton"></hours-range>
 
-    <div class="list" ng-show="false">
-      <label class="item item-divider">
-        Scegli il campo che preferisci...
-      </label>
-
-
-      <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
-        Campo {{court | courtName:booking.gameType}}
-      </ion-radio-fix>
-
-
-    </div>
-
-
+ 
     </ion-content>
   </div>
 </script>

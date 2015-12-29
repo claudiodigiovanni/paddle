@@ -66,6 +66,7 @@ angular.module('starter.controllers', [])
     function(text){
 
         //$scope.text = text
+        console.log('getDashboardText ok...')
         $scope.text0 = text[0]
         $scope.text1 = text[1]
         $scope.text2 = text[2]
@@ -641,17 +642,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     if (day == "-")
       return;
 
-
-
-    console.log('dayClicked' + day);
-    
-    console.log(booking.gameType)
+    avalaibleRanges = []
     selectedRanges = [];
     $scope.resolved = null;
     $scope.avalaivableCourts = null
     $scope.showAddButton = false;
     $scope.selectedDay =  day;
-
 
 
     var m = parseInt($scope.currentMonth) +1 ;
@@ -674,7 +670,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       $scope.modal.show()
     }
     else{
- 
+      $scope.modal.show()
+      $scope.waiting = "....."
       //booking.gameType + di tipo string....
       MyObjects.findaAvalaibleRangesInDate(date, booking.gameType)
       .then(
@@ -682,12 +679,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           avalaibleRanges = ranges;
           console.log("avalaibleRanges length:" + avalaibleRanges.length)
           $scope.showAddButton = true;
-
-
-          $scope.modal.show()
+          $scope.waiting = null
+          $scope.$apply()
 
 
       }, function(error){
+        $scope.waiting = null
         console.log(error);
       })
     }
@@ -776,9 +773,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       return;
     }
 
-    $ionicLoading.show({
-          template: 'Please wait...'
-    });
+    $scope.waiting = "......."
 
     var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
@@ -791,7 +786,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     MyObjects.createBooking(booking)
     .then(
       function(result){
-      $ionicLoading.hide();
+      $scope.waiting = null
 
       $scope.modal.hide();
 
@@ -801,7 +796,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     }, function(error){
 
-      $ionicLoading.hide();
+      $scope.waiting = null
       console.log(error);
       $scope.resolved = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
 
@@ -867,44 +862,50 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.currentLevel = currentLevel
 
     var init = function(){
-
+        $scope.error = null
         Parse.User.current().fetch()
 
         MyObjects.findMyBookings()
         .then(
           function(results){
             $scope.bookings = results
+            $scope.waiting = null
         }, function(error){
-          console.log(error);
-          var alertPopup = $ionicPopup.alert({
-             title: 'Opsss!',
-             template: error 
-           });
-        })
+              console.log(error);
+              $scope.error = "ooooops.....errore di connessione"
+              //$scope.waiting = null
+              
+        }, function(progress){
+              $scope.waiting = "....."
+          })
 
         MyObjects.findMyInvitations()
         .then(
           function(results){
             $scope.invitations = results
+            $scope.waiting = null
         }, function(error){
           console.log(error);
-          var alertPopup = $ionicPopup.alert({
-             title: 'Opsss!',
-             template: error 
-           });
-        })
+          $scope.error = "ooooops.....errore di connessione"
+          //$scope.waiting = null
+          
+        }, function(progress){
+              $scope.waiting = "....."
+          })
 
        MyObjects.findMyGameNotPayed()
         .then(
           function(results){
+            $scope.waiting = null
             $scope.gameNotPayed = _.flatten(results)
         }, function(error){
           console.log(error);
-          var alertPopup = $ionicPopup.alert({
-             title: 'Opsss!',
-             template: error 
-           });
-        })
+          $scope.error = "ooooops.....errore di connessione"
+          //$scope.waiting = null
+          
+        }, function(progress){
+              $scope.waiting = "....."
+          })
 
     }
 
@@ -2076,19 +2077,20 @@ $scope.ok = function(){
 
     if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
 
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
+      $scope.waiting = "........"
       MyObjects.findPlayersWithName($scope.model.name)
       .then(
         function(results){
           console.log(results);
+          $scope.waiting = null
           $scope.players = results
-          //$scope.$apply()
-          $ionicLoading.hide()
+          $scope.$apply()
+          
 
       }, function(error){
         console.log(error);
+      }, function(progress){
+        $scope.waiting = "........"
       })
     }
   }
@@ -2099,6 +2101,7 @@ $scope.ok = function(){
 
   $scope.invite = function(user){
 
+    $scope.waiting = "........"
     model.name = ""
     $scope.players = null
     if ($scope.invitations.length >= parseInt(numPlayers)){
@@ -2109,10 +2112,7 @@ $scope.ok = function(){
        return
     }
 
-    $ionicLoading.show({
-      template: 'Loading...'
-    });
-    console.log('invitation');
+    
     MyObjects.invite(user.id,user.get('email'),$scope.bookingId)
     .then(
       function(obj){
@@ -2125,12 +2125,13 @@ $scope.ok = function(){
     .then(
       function(obj){
         console.log(obj);
+        $scope.waiting = null
         $scope.invitations = obj
 
-        $ionicLoading.hide()
+        
         //$scope.$apply()
     }, function(error){
-      $ionicLoading.hide()
+      $scope.waiting = null
       console.log(error);
       var alertPopup = $ionicPopup.alert({
          title: 'Opsss!',

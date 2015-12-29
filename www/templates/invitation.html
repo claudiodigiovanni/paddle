@@ -20,7 +20,9 @@
   <br>
 
   <div class="list">
-
+      <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      </ion-item>
       <ion-item ng-repeat="p in players"><i class="icon ion-person"></i> {{p.get('nome')}}&nbsp;&nbsp;<i class="icon ion-ios-speedometer-outline"></i> {{p.get('level')}} &nbsp;&nbsp;&nbsp;&nbsp;
           <i class="icon ion-ios-plus-outline my-ion-happy-outline positive" ng-click="invite(p)"></i>
       </ion-item>
