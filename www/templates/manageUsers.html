@@ -5,12 +5,15 @@
 
  <div class="bar bar-header bar-subheader custom">
         <ion-item> {{message}} </ion-item>
+        <div class="center">
+            <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
+        </div>
    <div class="item item-input-inset ">
     <label class="item-input-wrapper">
       <input type="text" placeholder="nome " ng-model="userToSearch.nome" ng-change="clear()">
     </label>
     <button class="button button-positive" ng-click="findUsers()">
-      Cerca
+      Cerca (max 20 record)
     </button>
     
     <button class="button button-assertive " ng-click="getUsersToEnable()">
@@ -27,21 +30,21 @@
     <div class="row item courtsViewFont">
       <div class="col"><i class="icon ion-search" ng-click=""></i> Nome</div>
       
-      <div class="col">Telefono</div>
-      <div class="col">Data Iscriz.</div>
-      <div class="col">Livello</div>
-      <div class="col">Credito</div>
-      <div class="col">Abilitato</div>
-      <div class="col">Ricariche</div>
-      <div class="col">Pagamenti</div>
+      <div class="col"><b>Telefono</b></div>
+      <div class="col"><b>Data Iscriz.</b></div>
+      <div class="col"><b>Livello</b></div>
+      <div class="col"><b>Credito</b></div>
+      <div class="col"><b>Abilitato</b></div>
+      <div class="col"><b>Ricariche</b></div>
+      <div class="col"><b>Pagamenti</b></div>
     </div>
 
       <div class="row item courtsViewFont" ng-repeat="user in myresults">
         <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.get('nome')}}</div>
         
         <div class="col">{{user.get('phoneNumber')}}</div>
-        <div class="col">{{user.createdAt | date: 'dd/mm/yyyy'}}</div>
-        <div class="col">{{user.get('level')}}</div>
+        <div class="col">{{user.createdAt | date: 'dd/MM/yyyy'}}</div>
+        <div class="col">{{user.get('level')}} <i class="icon ion-edit energized my-ion-checkmark-circled" ng-click="changeLevelOpen(user)"></i></div> 
         <div class="col">{{user.get('residualCredit')}}</div>
         <div class="col"><i class="icon my-ion-checkmark-circled {{user.get('enabled') == true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
         
@@ -77,7 +80,7 @@
    
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
       <div class="row item courtsViewFont" ng-repeat="charge in recharges">
-          <div class="col"><i class="icon ion-search" ng-click=""></i>  {{charge.createdAt | date: "dd/mm/yyyy"}}</div>
+          <div class="col"><i class="icon ion-search" ng-click=""></i>  {{charge.createdAt | date: "dd/MM/yyyy"}}</div>
           <div class="col">{{charge.get('qty')}}</div>
         </div>
 
@@ -103,7 +106,7 @@
    
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
       <div class="row item courtsViewFont" ng-repeat="p in payments">
-          <div class="col">{{p.createdAt | date: "dd/mm/yyyy"}}</div>
+          <div class="col">{{p.createdAt | date: "dd/MM/yyyy"}}</div>
           <div class="col">{{p.get('qty')}}</div>
           <div class="col">{{p.get('booking').get('date') | date: 'dd/MM/yyyy'}}</div>
         </div>
@@ -113,21 +116,52 @@
   </div>
 </script>
 
-<script id="userDetail.html" type="text/ng-template">
+<script id="changeLevel.html" type="text/ng-template">
   <div class="modal">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Info</h1>
-      <button class="button button-light" ng-click="closeModal()">close</button>
+      <h1 class="title">Dettagli</h1>
+      <button class="button button-light" ng-click="changeLevelClose()">close</button>
     </ion-header-bar>
     <ion-content>
-   
- <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+            
 
+      <!-- xx -->
+      <label class="item item-divider">
+        <div class="item-content" style="color:gray">
+          Modifica il livello di gioco
+        </div>
+      </label>
 
-<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+      <ion-radio-fix ng-model="userx.level" ng-value="1">
+        1 - Cosa è il Padel?
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="2">
+        2 - Appena capisco le sponde.....
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="3">
+        3 - Finalmente lo sport che fa per me
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="4">
+        4 - La bandeja non è più un mistero!
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level"ng-value="5">
+        5 - Me la gioco con tutti
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="6">
+        6 - Me la gioco con gli spagnoli!
+      </ion-radio-fix>
+
+      <!-- xx -->
+        <ion-item>
+        <button class="button button-outline button-small button-positive" ng-click="confirmChangeLevel(userx)">
+            Conferma
+        </button>
+        </ion-item>
+      </div>
     </ion-content>
   </div>
 </script>
+
 
 
 

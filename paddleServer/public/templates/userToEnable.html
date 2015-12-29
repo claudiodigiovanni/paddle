@@ -14,9 +14,13 @@
 
   <div class="card" ng-repeat="user in users">
     <div class="item item-text-wrap">
-      <b>Username:</b> {{user.get('username')}}<br>
-      <b>Nome:</b> {{user.get('nome')}}<br>
-      <b>email:</b> {{user.get('email')}}<br>
+      <b>Username:</b> {{user.get('username')}}<br><br>
+      <b>Nome:</b> {{user.get('nome')}}<br><br>
+      <b>email:</b> {{user.get('email')}}<br><br>
+      <b>Livello:</b> {{user.get('level')}} &nbsp;  
+      <button class="button button-small button-positive" ng-click="userDetailOpen(user)">
+          Modifica
+      </button><br><br>
       <b>Data Iscrizione:</b> {{user.createdAt | date:'dd/MM/yyyy'}}<br><br>
 
       <button class="button button-small button-positive" ng-click="enableUser(user)">
@@ -28,3 +32,49 @@
 </ion-content>
 
 </ion-view>
+
+<script id="userDetail.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Dettagli</h1>
+      <button class="button button-light" ng-click="userDetailClose()">close</button>
+    </ion-header-bar>
+    <ion-content>
+            
+
+      <!-- xx -->
+      <label class="item item-divider">
+        <div class="item-content" style="color:gray">
+          Modifica il livello di gioco
+        </div>
+      </label>
+
+      <ion-radio-fix ng-model="userx.level" ng-value="1">
+        1 - Cosa è il Padel?
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="2">
+        2 - Appena capisco le sponde.....
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="3">
+        3 - Finalmente lo sport che fa per me
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="4">
+        4 - La bandeja non è più un mistero!
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level"ng-value="5">
+        5 - Me la gioco con tutti
+      </ion-radio-fix>
+      <ion-radio-fix ng-model="userx.level" ng-value="6">
+        6 - Me la gioco con gli spagnoli!
+      </ion-radio-fix>
+
+      <!-- xx -->
+        <ion-item>
+        <button class="button button-outline button-small button-positive" ng-click="confirmChangeLevel(userx)">
+            Conferma
+        </button>
+        </ion-item>
+      </div>
+    </ion-content>
+  </div>
+</script>

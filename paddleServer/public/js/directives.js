@@ -232,7 +232,7 @@ angular.module('starter.directives', [])
             console.log(data);
             forecastDay = _.filter(data.list,function(f){
 
-              console.log(f.weather[0].icon);
+              //console.log(f.weather[0].icon);
 
               return (new Date(f.dt*1000).getDate() == $scope.date.getDate())
 

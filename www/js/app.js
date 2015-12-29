@@ -283,15 +283,12 @@ templateUrl: 'templates/courtsView.html',
 controller: 'courtsView'
 })
 
-.state('tab.manageSubscriptions', {
+.state('manageSubscriptions', {
 url: '/manageSubscriptions',
 cache: false,
-views: {
-  'tab-account': {
-    templateUrl: 'templates/manageSubscriptions.html',
-    controller: 'manageSubscribtions'
-  }
-}
+templateUrl: 'templates/manageSubscriptions.html',
+controller: 'manageSubscribtions'
+
 })
 
 .state('waitingToBeEnabled', {

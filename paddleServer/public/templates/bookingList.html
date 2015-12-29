@@ -31,9 +31,11 @@
 </div>
 
 <div class="item item-text-wrap">
-
+  <div class="center">
+     <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
+  </div>
   <!-- xxx -->
-  <show-bookings bookings="results.bookingsToPayBeforeToday" text="Prenotazioni precedenti da saldare" pay="setBookingPayed(b)" delete="delete(b)" showpay="true"></show-bookings>
+  <show-bookings bookings="results" text="Prenotazioni precedenti da saldare" pay="setBookingPayed(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
 
 </div>

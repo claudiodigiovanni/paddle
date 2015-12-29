@@ -9,7 +9,6 @@
 <ion-content class="has-header">
 
 
-
     <div class="list" ng-hide="registered">
       <label class="item item-input item-floating-label">
         <span class="input-label">email</span>
@@ -39,7 +38,8 @@
       <label class="item item-divider">
 
         <div class="item-content" style="color:gray">
-          Seleziona il tuo circolo
+          Seleziona il tuo circolo &nbsp;
+          <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
         </div>
       </label>
                 <ion-radio-fix ng-model="currentUser.circolo" ng-value="c.id" ng-repeat="c in circoli">

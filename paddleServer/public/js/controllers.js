@@ -296,19 +296,24 @@ $scope.resetPwd = function(){
 
 $scope.confirmResetPwd = function(){
   console.log($scope.resetPwd.email);
+  $ionicLoading.show({
+    template: 'Loading...'
+  });
   var email = $scope.resetPwd.email
   Parse.User.requestPasswordReset(email, {
       success: function() {
       // Password reset request was sent successfully
       Parse.User.logOut();
-
+      $ionicLoading.hide()
+      $scope.messagePwdReset = "Ok! Mail inviata. Leggila e ripristina la tua password. "
+      $scope.resetPwdModal.hide()
       },
       error: function(error) {
         // Show the error message somewhere
+        $ionicLoading.hide()
         alert("Error: " + error.code + " " + error.message);
       }
     });
-
 
   $scope.modal.show();
 }
@@ -338,9 +343,11 @@ var currentUser = {level:3}
 $scope.currentUser = currentUser;
 $scope.registered = false;
 
+$scope.waiting = "........"
 MyObjects.getCircoli()
 .then(
   function(obj){
+    $scope.waiting = null
     $scope.circoli = obj
     $scope.$apply()
 
@@ -699,6 +706,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
   $scope.setRangeStatus = function(pos){
+    $scope.resolved = null /*nascondo il messaggio*/
     $scope.avalaivableCourts=null;
     //alert('getRangeStatus' + pos);
     //console.log(avalaibleRanges);
@@ -723,7 +731,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
 
-    var m = parseInt($scope.currentMonth) +1 ;
+    /*var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date(d);
     $ionicLoading.show({
@@ -749,7 +757,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
          selectedRanges = [];
        });
 
-    })
+    })*/
 
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
 
@@ -795,7 +803,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
       $ionicLoading.hide();
       console.log(error);
-      $scope.resolved = "Oooops! L'orario non è più disponibile!"
+      $scope.resolved = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
 
     })
     selectedRanges = [];
@@ -810,20 +818,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.currentLevel = currentLevel
 
     $scope.confirmChangeLevel = function(){
-
+      //Utilizzato invece del ionicLoading per far vedere lo spinner in pagina...
+      $scope.waiting = "..."
       var currentUser = Parse.User.current();
       currentUser.set('level' , parseInt($scope.currentLevel.value));
       currentUser.save()
       .then(
         function(obj){
-          console.log(obj);
+          //console.log(obj);
+
           $state.go('tab.account')
 
       }, function(error){
         console.log(error);
       })
-
-      
 
     }
 })
@@ -905,33 +913,33 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     //***************************************
     
   $scope.accept = function(invitation){
-    $ionicLoading.show({
-          template: 'Loading...'
-        });
+    $scope.waiting = "......"
     MyObjects.acceptInvitation(invitation)
     .then(
       function(obj){
         init()
-        $ionicLoading.hide()
+        $scope.waiting = null
+        
     }, function(error){
+        $scope.waiting = null
         console.log(error);
-        $ionicLoading.hide()
+        
     })
     
   }
 
   $scope.decline = function(invitation){
-    $ionicLoading.show({
-        template: 'Loading...'
-      });
+    $scope.waiting = "......"
     MyObjects.declineInvitation(invitation)
     .then(
       function(obj){
         init()
-        $ionicLoading.hide()
+        $scope.waiting = null
+        
     }, function(error){
       console.log(error);
-      $ionicLoading.hide()
+      $scope.waiting = null
+      
     })
     
   }
@@ -954,24 +962,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
   $scope.delete = function(item){
-   $ionicLoading.show({
-          template: 'Loading...'
-        });
+   $scope.waiting = "......"
     MyObjects.deleteBooking(item)
     .then(function(){
       init()
-      $ionicLoading.hide()
+      $scope.waiting = null
     })
   }
 
   $scope.payMyBooking = function(booking){
     //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
-   $ionicLoading.show({
-          template: 'Loading...'
-        });
+   $scope.waiting = "......"
     MyObjects.payMyBooking(booking).then(function(ret){
       $ionicListDelegate.closeOptionButtons()
-      $ionicLoading.hide()
+      $scope.waiting = null
 
     })
     
@@ -1001,6 +1005,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.gotoUserMgmt = function(){
 
     $state.go('manageUsers')
+  }
+
+  $scope.changeMyLevel=function(){
+    $state.go('changeLevel')
   }
 
 
@@ -1033,6 +1041,41 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     })
 
+    $ionicModal.fromTemplateUrl('changeLevel.html', {
+      scope: $scope,
+      animation: 'slide-in-up',
+      backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.changeLevelModal = modal;
+
+    })
+
+    $scope.changeLevelOpen = function(user){
+         $scope.userx = user
+          $scope.userx.level = user.get('level')
+          $scope.changeLevelModal.show()
+    }
+
+    $scope.changeLevelClose = function(user){
+      $scope.changeLevelModal.hide()
+    }
+
+    $scope.confirmChangeLevel = function(user){
+      user.set('level',user.level)
+      MyObjects.changeUserLevel(user)
+      .then(
+        function(obj){
+          //console.log(obj);
+          $scope.changeLevelModal.hide()
+          //$state.go('tab.account')
+
+      }, function(error){
+        console.log(error);
+      })
+
+    }
+
+
     $scope.findUsers = function(){
         $scope.message = ""
         $ionicLoading.show({
@@ -1052,21 +1095,24 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   
     $scope.getRecharges = function(user){
-          console.log('openRecharge')
+          
+          $scope.waiting = "....."
           $scope.user = user
           MyObjects.getRecharges(user)
         .then(function(results){
           $scope.recharges = results
+          $scope.waiting = null
           $scope.rechargeModal.show()
         })
       }
 
     $scope.getPayments = function(user){
-          console.log('openPayment')
+          $scope.waiting = "....."
           $scope.user = user
           MyObjects.getPayments(user)
         .then(function(results){
           $scope.payments = results
+          $scope.waiting = null
           $scope.paymentsModal.show()
         })
       }
@@ -1144,7 +1190,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           console.log(error);
           $ionicLoading.hide();
       })
-      }
+    }
+      
   })
     
 
@@ -1168,9 +1215,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.currentMonth = currentMonth;
   $scope.currentYear = currentYear;
 
-  MyObjects.findBookingsForSegreteria(today)
+  $scope.waiting = "......"
+  MyObjects.findBookingsToPayBeforeDate(today)
   .then(
     function(results){
+       $scope.waiting = null
       $scope.results = results
 
   }, function(error){
@@ -1220,20 +1269,23 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.delete = function(item){
 
     console.log('delete');
+     $scope.waiting = "......"
     
     var m = parseInt($scope.currentMonth) + 1
     var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
 
     MyObjects.deleteBooking(item)
     .then(function(item){
-      return MyObjects.findBookingsForSegreteria(new Date(datex))
+      return MyObjects.findBookingsToPayBeforeDate(new Date(datex))
     })
     .then(
       function(results){
         $scope.results = results
+         $scope.waiting = null
         //$scope.$apply()
     }, function(error){
-      console.log(error);
+       $scope.waiting = null
+        console.log(error);
     })
 
   }
@@ -1246,7 +1298,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     var datex = $scope.currentYear + "/" + m + "/" + day
     $scope.date = Utility.formatDate(new Date(datex))
 
-    MyObjects.findBookingsForSegreteria(new Date(datex))
+    MyObjects.findBookingsToPayBeforeDate(new Date(datex))
     .then(
       function(results){
         $scope.results = results
@@ -1263,7 +1315,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   }
 
-  $scope.gotoCourtsView = function(){
+  /*$scope.gotoCourtsView = function(){
 
 
     if ($scope.selectedDay == null){
@@ -1277,7 +1329,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     $state.go('courtsView',{'datez': datex, "gameType":$scope.gameType});
 
-  }
+  }*/
 
   //default
   $scope.gameType = 0
@@ -1321,7 +1373,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.openModal = function(booking) {
 
-    console.log(booking)
+    //console.log(booking)
     //*********************************Variabile usate per memorizzare la prenotazione selezionata********
     $scope.bookingx = booking
     $scope.bookingx.note = booking.get('note')
@@ -1407,15 +1459,13 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   var courtsNumber = $rootScope.gameTypes[gameType].courtsNumber
   $scope.courts = _.range(1,parseInt(courtsNumber) + 1)
 
-  //console.log(datex)
-  $ionicLoading.show({
-    template: 'Loading...'
-  });
+  
+  $scope.waiting = "...."
   MyObjects.courtsView(new Date( datex), gameType)
   .then(function(results){
-
+    $scope.waiting = null
     $scope.myresults = results
-    $ionicLoading.hide()
+    
   })
 
   
@@ -1565,6 +1615,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
   $scope.deletePayment = function(payment){
+    $scope.waiting = "....."
     MyObjects.deletePayment(payment)
     .then(
       function(obj){
@@ -1574,6 +1625,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       })
     .then(
       function(results){
+        $scope.waiting = null
          $scope.payments = results
          var x = $scope.bookingx.get('payments')
          x['tessere'] = x['tessere'] - payment.get('qty')
@@ -1626,10 +1678,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.modal.remove();
   });
 
-
+  //Invece del loading....
+  $scope.waiting = "......"
   MyObjects.findCallToAction()
   .then(
     function(results){
+      $scope.waiting = null
       $scope.callToActionOpen = results
       $scope.$apply()
   }, function(error){
@@ -1639,20 +1693,23 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   $scope.add = function(cta){
 
-
+    $scope.waiting = "......"
     MyObjects.addCallToActionPlayer(cta)
     .then(
       function(obj){
+        $scope.waiting = null
         MyObjects.findCallToAction()
         .then(
           function(results){
             $scope.callToActionOpen = results
             $scope.$apply()
         }, function(error){
+          $scope.waiting = null
           console.log(error);
         })
 
     }, function(error){
+      $scope.waiting = null
       console.log(error);
       var alertPopup = $ionicPopup.alert({
          title: 'Opsss!',
@@ -1888,7 +1945,15 @@ $scope.subscribe = function(circolo){
 })
 
 
-.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading,$ionicPopup) {
+.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading,$ionicPopup,$ionicModal) {
+
+  $ionicModal.fromTemplateUrl('userDetail.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
+  })
 
   $ionicLoading.show({
     template: 'Loading...'
@@ -1906,6 +1971,17 @@ $scope.subscribe = function(circolo){
       console.log(error);
       $ionicLoading.hide();
   })
+
+  $scope.userDetailOpen = function(user){
+
+    $scope.userx = user
+    $scope.userx.level = user.get('level')
+    $scope.modal.show()
+  }
+
+  $scope.userDetailClose = function(){
+    $scope.modal.hide()
+  }
 
   $scope.enableUser = function(user){
     console.log(user);
@@ -1936,6 +2012,22 @@ $scope.subscribe = function(circolo){
     })
 
   }
+
+
+  $scope.confirmChangeLevel = function(user){
+      user.set('level',user.level)
+      MyObjects.changeUserLevel(user)
+      .then(
+        function(obj){
+          console.log(obj);
+          $scope.modal.hide()
+          //$state.go('tab.account')
+
+      }, function(error){
+        console.log(error);
+      })
+
+    }
 
 })
 

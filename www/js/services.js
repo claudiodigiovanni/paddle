@@ -13,10 +13,7 @@ angular.module('starter.services', [])
       },
 
       getCircoli: function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-
+        
         var Circolo = Parse.Object.extend("Circolo");
         var query = new Parse.Query(Circolo);
         return query.find()
@@ -32,13 +29,12 @@ angular.module('starter.services', [])
               item.manage = "subscribe"
             }
             })
-            $ionicLoading.hide()
+            
             return results
         }, function(error){
-          $ionicLoading.hide()
+          throw error
           console.log(error);
         })
-
 
       },
 
@@ -116,9 +112,7 @@ angular.module('starter.services', [])
       },
 
       getDashboardText : function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
+        
         var text = []
         var c = Parse.User.current().get('circolo');
         var Dashboard = Parse.Object.extend("Dashboard");
@@ -132,11 +126,11 @@ angular.module('starter.services', [])
             text.push(item.get('area1'))
             text.push(item.get('area2'))
             text.push(item.get('area3'))
-            $ionicLoading.hide()
+            //$ionicLoading.hide()
             return text;
 
         }, function(error){
-          $ionicLoading.hide()
+          
           Utility.handleParseError(error);
         })
       },
@@ -275,7 +269,7 @@ angular.module('starter.services', [])
         return booking.save();
 
       },
-      findBookingsForSegreteria: function(date){
+      /*findBookingsForSegreteria: function(date){
         $ionicLoading.show({
           template: 'Loading...'
         });
@@ -327,7 +321,7 @@ angular.module('starter.services', [])
 
 
 
-      },
+      },*/
       findBookings: function(month,year){
 
         var daysInMonth = Utility.getDaysInMonth(month,year);
@@ -374,10 +368,7 @@ angular.module('starter.services', [])
       //Se sono un maestro prende le prenotazioni che mi riguardano
       //altrimenti prende le prenotazione dell'utente in sessione
       findMyBookings: function(){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-
+        
         var promises = [];
 
         var Booking = Parse.Object.extend("Booking");
@@ -412,13 +403,13 @@ angular.module('starter.services', [])
 
         return $q.all(promises).then(
             function(results){
-              $ionicLoading.hide()
+              
               return _.flatten(results)
 
               return
 
           }, function(error){
-            $ionicLoading.hide()
+            
             console.log(error);
           })
 
@@ -714,9 +705,6 @@ angular.module('starter.services', [])
 
       addCallToActionPlayer: function(cta){
 
-        $ionicLoading.show({
-            template: 'Loading...'
-          });
 
           var defer = $q.defer()
           var user = Parse.User.current();
@@ -750,18 +738,16 @@ angular.module('starter.services', [])
                   defer.reject('Utente già inserito')
 
               }
-              $ionicLoading.hide();
+              
               return defer.promise
           }, function(error){
-            $ionicLoading.hide();
+            
             Utility.handleParseError(error);
 
           })
         },
         findCallToAction:function(){
-          $ionicLoading.show({
-            template: 'Loading...'
-          });
+          
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
           query.greaterThanOrEqualTo("date", new Date());
@@ -775,10 +761,10 @@ angular.module('starter.services', [])
           return query.find()
           .then(
             function(results){
-              $ionicLoading.hide()
+              
               return results
           }, function(error){
-            $ionicLoading.hide()
+            
             console.log(error);
           })
 
@@ -790,8 +776,8 @@ angular.module('starter.services', [])
           var query = new Parse.Query(Parse.User);
           query.equalTo('circolo',Parse.User.current().get('circolo'))
           query.contains("nome", namex.toLowerCase());
-          query.descending("date")
-          query.limit(10)
+          query.descending("createdAt")
+          query.limit(20)
           return query.find()
 
         },
@@ -1039,6 +1025,11 @@ angular.module('starter.services', [])
         enabling: function(user){
             var newEnableState = ! user.get("enabled") 
             return Parse.Cloud.run('changeUserField', {userId:user.id,field:"enabled",newValue:newEnableState})
+        },
+
+        changeUserLevel: function(user){
+            
+            return Parse.Cloud.run('changeUserField', {userId:user.id,field:"level",newValue:user.get('level')})
         },
 
         findMyGameNotPayed: function(){

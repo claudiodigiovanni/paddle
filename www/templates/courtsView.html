@@ -3,10 +3,10 @@
    <!-- Toggle left side menu -->
    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
   <h1 class="title">Vista Campi {{datex}}</h1>
-  
 </ion-header-bar>
 
 <div class="bar bar-header bar-subheader custom">
+<div class="center"><ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner></div>
 <h5>{{message}}</h5>
       <div class="item item-input-inset">
         <label class="item-input-wrapper">
@@ -40,7 +40,7 @@
         <div class="col" ng-repeat="court in row.courts"> 
         <i class="icon ion-checkmark-circled my-ion-checkmark-circled {{getRangeStatus(row.range,$index+1)}}" ng-show="court.length == 0" ng-click="setRangeStatus(row.range,$index+1)"></i>
           <span ng-repeat="booking in court">
-            {{booking.get('user').get('nome') + " " + booking.get('note')}} <i class="icon ion-information-circled {{booking.get('payed') == true ? 'balanced ' : 'assertive'}}" ng-click="openModal(booking)"></i>
+            {{booking.get('user').get('nome') + " " + booking.get('note')}} <i class="icon ion-information-circled my-ion-information-circled {{booking.get('payed') == true ? 'balanced ' : 'assertive'}}" ng-click="openModal(booking)"></i>
           </span>
         </div>
 
@@ -110,9 +110,12 @@
     </li>
     <li class="item" ng-show="payments.length > 0">
       <ion-item class="center">Dettaglio Tessere Paganti</ion-item>
+      <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      </ion-item>
       <ion-list >
         <ion-item ng-repeat="p in payments">
-            {{p.get('user').get('nome')}} - Data: {{p.createdAt | date: "dd/mm/yyyy"}} - Num.: {{p.get('qty')}}&nbsp;&nbsp;<i class="icon ion-close assertive" ng-click="deletePayment(p)"></i>
+            {{p.get('user').get('nome')}} - Data: {{p.createdAt | date: "dd/mm/yyyy"}} - Num.: {{p.get('qty')}}&nbsp;&nbsp;<i class="icon ion-close my-ion-information-circled assertive" ng-click="deletePayment(p)"></i>
         </ion-item>
       </ion-list>
       
