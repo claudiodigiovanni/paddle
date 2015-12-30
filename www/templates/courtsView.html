@@ -80,11 +80,11 @@
         <b>Quote:</b> 
       </div>
       <div class="col">
-        <button class="button  button-positive button-small" ng-click="payQuota(bookingx,'quote',-1)">
+        <button class="button  button-positive button-small" ng-click="payBooking(bookingx,'quote',-1)">
           -
         </button>&nbsp;&nbsp;
         {{bookingx.get("payments").quote}}&nbsp;&nbsp;
-        <button class="button button-positive button-small" ng-click="payQuota(bookingx,'quote',1)">
+        <button class="button button-positive button-small" ng-click="payBooking(bookingx,'quote',1)">
           +
         </button>
       </div>
@@ -96,11 +96,11 @@
           <b>Tessere:</b>
         </div>
         <div class="col">
-        <button class="button  button-positive button-small" ng-click="payQuota(bookingx,'tessere',-1)">
+        <button class="button  button-positive button-small" ng-click="payBooking(bookingx,'tessere',-1)">
           -
         </button>&nbsp;&nbsp;
         {{bookingx.get("payments").tessere}}&nbsp;&nbsp;
-        <button class="button button-positive button-small" ng-click="payQuota(bookingx,'tessere',1)">
+        <button class="button button-positive button-small" ng-click="payBooking(bookingx,'tessere',1)">
           +
         </button>
           &nbsp;&nbsp;&nbsp;&nbsp;<i class="icon ion-plus-circled my-ion-checkmark-circled balanced " ng-click="openAddPaymentTesseraModal(bookingx)"></i>&nbsp;

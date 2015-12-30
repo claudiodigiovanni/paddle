@@ -70,6 +70,7 @@ angular.module('starter.controllers', [])
         $scope.text0 = text[0]
         $scope.text1 = text[1]
         $scope.text2 = text[2]
+        $scope.$apply()
 
   }, function(error){
     console.log(error);
@@ -860,52 +861,49 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
-
+   
     var init = function(){
         $scope.error = null
         Parse.User.current().fetch()
+        $scope.waitingMyBookings = "....."
+        $scope.waitingMyInvitations = "....."
+        $scope.waitingMyGameNotPayed = "....."
 
         MyObjects.findMyBookings()
         .then(
           function(results){
             $scope.bookings = results
-            $scope.waiting = null
+            $scope.waitingMyBookings = null
         }, function(error){
               console.log(error);
               $scope.error = "ooooops.....errore di connessione"
               //$scope.waiting = null
               
-        }, function(progress){
-              $scope.waiting = "....."
-          })
+        })
 
         MyObjects.findMyInvitations()
         .then(
           function(results){
             $scope.invitations = results
-            $scope.waiting = null
+            $scope.waitingMyInvitations = null
         }, function(error){
           console.log(error);
           $scope.error = "ooooops.....errore di connessione"
           //$scope.waiting = null
           
-        }, function(progress){
-              $scope.waiting = "....."
-          })
+        })
 
        MyObjects.findMyGameNotPayed()
         .then(
           function(results){
-            $scope.waiting = null
+            $scope.waitingMyGameNotPayed = null
             $scope.gameNotPayed = _.flatten(results)
         }, function(error){
           console.log(error);
           $scope.error = "ooooops.....errore di connessione"
           //$scope.waiting = null
           
-        }, function(progress){
-              $scope.waiting = "....."
-          })
+        })
 
     }
 
@@ -914,15 +912,15 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     //***************************************
     
   $scope.accept = function(invitation){
-    $scope.waiting = "......"
+    $scope.waitingMyInvitations = "......"
     MyObjects.acceptInvitation(invitation)
     .then(
       function(obj){
         init()
-        $scope.waiting = null
+        $scope.waitingMyInvitations = null
         
     }, function(error){
-        $scope.waiting = null
+        $scope.waitingMyInvitations = null
         console.log(error);
         
     })
@@ -930,16 +928,16 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
   $scope.decline = function(invitation){
-    $scope.waiting = "......"
+    $scope.waitingMyInvitations = "......"
     MyObjects.declineInvitation(invitation)
     .then(
       function(obj){
         init()
-        $scope.waiting = null
+        $scope.waitingMyInvitations = null
         
     }, function(error){
       console.log(error);
-      $scope.waiting = null
+      $scope.waitingMyInvitations = null
       
     })
     
@@ -963,20 +961,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
   $scope.delete = function(item){
-   $scope.waiting = "......"
+   $scope.waitingMyBookings = "......"
     MyObjects.deleteBooking(item)
     .then(function(){
       init()
-      $scope.waiting = null
+      $scope.waitingMyBookings = null
     })
   }
 
   $scope.payMyBooking = function(booking){
     //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
-   $scope.waiting = "......"
+   $scope.waitingMyBookings = "......"
     MyObjects.payMyBooking(booking).then(function(ret){
       $ionicListDelegate.closeOptionButtons()
-      $scope.waiting = null
+      $scope.waitingMyBookings = null
 
     })
     

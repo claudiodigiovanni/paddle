@@ -27,8 +27,8 @@
     <ion-item class="item-text-wrap center"><b><i class="icon ion-ios-loop-strong energized my-ion-checkmark-circled"></i>&nbsp;&nbsp;Trascina in  basso per aggiornare...</b><small>{{error}}</small></ion-item>
 
     <div class="item item-text-wrap" >
-      <ion-item class="center" ng-show="waiting">
-        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      <ion-item class="center" ng-show="waitingMyBookings">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyBookings"></ion-spinner>
       </ion-item>
       <!-- xxx -->
       <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" showpay="false"></show-bookings>
@@ -37,8 +37,8 @@
 
     <div class="item item-text-wrap" >
       <ion-list >
-        <ion-item ng-show="waiting">
-          <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+        <ion-item ng-show="waitingMyInvitations">
+          <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyInvitations"></ion-spinner>
         </ion-item>
         <ion-item><b>Inviti Ricevuti <i class="icon ion-information-circled positive" ng-click="info()"></i></b></ion-item>
         <ion-item ng-repeat="i in invitations">
@@ -77,8 +77,8 @@
     <div class="item item-text-wrap">
       <ion-list >
         <ion-item><b>Partite da saldare <i class="icon ion-information-circled positive" ng-click="infoPayment()"></i></b></ion-item>
-        <ion-item ng-show="waiting">
-          <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+        <ion-item ng-show="waitingMyGameNotPayed">
+          <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyGameNotPayed"></ion-spinner>
         </ion-item>
         <ion-item ng-repeat="booking in gameNotPayed">
 
