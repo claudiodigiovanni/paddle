@@ -21,6 +21,7 @@
         <button class="button button-positive " ng-click="gotoStatistics()">
           Indietro
         </button>&nbsp;&nbsp;
+        
       </div>
       <div class=" item item-input-inset">
         <div class="col">Orario</div>
@@ -74,52 +75,29 @@
     <li class="item">
       <b><i class="icon ion-person"></i></b>&nbsp;{{bookingx.get("user").get("nome")}} &nbsp;
     </li>
-    <li class="item">
-    <div class="row">
-      <div class="col-25">
-        <b>Quote:</b> 
-      </div>
-      <div class="col">
-        <button class="button  button-positive button-small" ng-click="payBooking(bookingx,'quote',-1)">
-          -
+    <li class="item center">
+        <button class="button  button-positive button-small" ng-click="payQuota(bookingx)">
+          Aggiungi Quota
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="button  button-positive button-small" ng-click="payTessera(bookingx)">
+          Aggiungi Tessera
         </button>&nbsp;&nbsp;
-        {{bookingx.get("payments").quote}}&nbsp;&nbsp;
-        <button class="button button-positive button-small" ng-click="payBooking(bookingx,'quote',1)">
-          +
-        </button>
-      </div>
-      </div>
+    
     </li>
     <li class="item">
-    <div class="row">
-        <div class="col-25">
-          <b>Tessere:</b>
-        </div>
-        <div class="col">
-        <button class="button  button-positive button-small" ng-click="payBooking(bookingx,'tessere',-1)">
-          -
-        </button>&nbsp;&nbsp;
-        {{bookingx.get("payments").tessere}}&nbsp;&nbsp;
-        <button class="button button-positive button-small" ng-click="payBooking(bookingx,'tessere',1)">
-          +
-        </button>
-          &nbsp;&nbsp;&nbsp;&nbsp;<i class="icon ion-plus-circled my-ion-checkmark-circled balanced " ng-click="openAddPaymentTesseraModal(bookingx)"></i>&nbsp;
-          
-          </div>
-      </div>
-    </li>
-    <li class="item" ng-show="payments.length > 0">
-      <ion-item class="center">Dettaglio Tessere Paganti</ion-item>
+      <ion-item class="center">Dettaglio</ion-item>
       <ion-item class="center" ng-show="waiting">
         <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
       </ion-item>
       <ion-list >
         <ion-item ng-repeat="p in payments">
-            {{p.get('user').get('nome')}} - Data: {{p.createdAt | date: "dd/mm/yyyy"}} - Num.: {{p.get('qty')}}&nbsp;&nbsp;<i class="icon ion-close my-ion-information-circled assertive" ng-click="deletePayment(p)"></i>
+            {{p.get('type')}} - 
+            <span ng-show="p.get('user')"> {{p.get('user').get('nome')}} - </span> Data: {{p.createdAt | date: "dd/MM/yyyy HH.mm.ss"}} &nbsp;&nbsp;<i class="icon ion-close my-ion-information-circled assertive" ng-click="deletePayment(p)"></i>
         </ion-item>
       </ion-list>
-      
     </li>
+
+        
     <li class="item" ng-show="bookingx.get('players') != null">
       <i class="icon ion-person-stalker" ></i>&nbsp;
       <ion-list >
@@ -177,6 +155,9 @@
       <button class="button button-light" ng-click="closeAddPaymentTesseraModal()">close</button>
     </ion-header-bar>
     <ion-content>
+    <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      </ion-item>
     <div class="item center"> {{messageModalTessera}}</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     <div class="item item-input-inset">
@@ -188,25 +169,26 @@
           cerca..
         </button>
     </div>
-    <ion-item class="center" ng-show="usersForAddingPayment.length > 0"> Registra pagamento</ion-item>
-    <div class="row item" ng-repeat="user in usersForAddingPayment">
-          <div class="col">
-              <div class="item item-input-inset">
-                {{user.get('nome')}} &nbsp;&nbsp;&nbsp;&nbsp;
-                <label class="item-input-wrapper">
-                  <input type="number" placeholder="num crediti " ng-model="paymentTessera.qty">
-                </label>
-                <button class="button button-small" ng-click="payTessera(user)">
-                  salva
-                </button>
-              </div>
-              
-          </div>
+    <ion-item class="center" ng-show="usersForAddingPayment.length > 0"> <b>Registra pagamento</b></ion-item>
+    <ion-item ng-repeat="user in usersForAddingPayment"> 
+    <div class="row">
+        <div class="col">
+        {{user.get('nome')}}
         </div>
+         <div class="col">
+         <button class="button button-small button-positive" ng-click="payTessera(user)">
+          Registra
+        </button>
+        </div>
+      </div>
+    </ion-item>
+    
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>
 </script>
+
+
 
 
 

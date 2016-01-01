@@ -4,7 +4,7 @@
 
     <div class="card">
       <div class="item item-divider">
-        Dettagli
+        Dettagli.
       </div>
       <div class="item item-text-wrap">
         <!-- xxx -->
@@ -12,29 +12,65 @@
           <ion-item>email: {{currentUser.get('email')}}</ion-item>
           <ion-item>Crediti: {{currentUser.get('residualCredit')}}</ion-item>
           <ion-item>livello: {{currentUser.get('level')}} &nbsp;&nbsp; <i class="icon ion-edit energized my-ion-checkmark-circled" ng-click="changeMyLevel()"></i>
-
-
           </ion-item>
+
+          <a class="item item-icon-right" ng-click="openProssimiImpegniModal()">
+            <i class="icon ion-chevron-right"></i>
+            Prossimi Impegni
+          </a>
+
+           <a class="item item-icon-right" ng-click="openInvitiModal()">
+            <i class="icon ion-chevron-right"></i>
+            Inviti
+          </a>
+
+           <a class="item item-icon-right" ng-click="openSaldareModal()">
+            <i class="icon ion-chevron-right"></i>
+            Partite da saldare
+          </a>
+
         </ion-list >
         <!-- xxx -->
-
       </div>
-
     </div>
 
-    
 
-    <ion-item class="item-text-wrap center"><b><i class="icon ion-ios-loop-strong energized my-ion-checkmark-circled"></i>&nbsp;&nbsp;Trascina in  basso per aggiornare...</b><small>{{error}}</small></ion-item>
+    <ion-item class="item-text-wrap center"><b><i class="icon ion-ios-loop-strong energized my-ion-checkmark-circled"></i>&nbsp;&nbsp;Trascina in  basso per aggiornare...</b></ion-item>
 
-    <div class="item item-text-wrap" >
+  </ion-content>
+
+  <script id="prossimiImpegni.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Prossimi Impegni</h1>
+      <button class="button button-light" ng-click="closeProssimiImpegniModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+     <div class="item item-text-wrap" >
       <ion-item class="center" ng-show="waitingMyBookings">
         <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyBookings"></ion-spinner>
       </ion-item>
       <!-- xxx -->
-      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" showpay="false"></show-bookings>
+      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" invitation="invitation(b)"showpay="false"></show-bookings>
       <!-- xxx -->
     </div>
+    
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
 
+ <script id="inviti.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Inviti</h1>
+      <button class="button button-light" ng-click="closeInvitiModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     <div class="item item-text-wrap" >
       <ion-list >
         <ion-item ng-show="waitingMyInvitations">
@@ -73,7 +109,21 @@
         </ion-item>
 
     </div>
+    
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
 
+ <script id="saldare.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Partite da saldare</h1>
+      <button class="button button-light" ng-click="closeSaldareModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     <div class="item item-text-wrap">
       <ion-list >
         <ion-item><b>Partite da saldare <i class="icon ion-information-circled positive" ng-click="infoPayment()"></i></b></ion-item>
@@ -96,16 +146,14 @@
               {{player.get('nome')}} - Livello: {{player.get('level')}}
           </ion-item>
         </ion-list>
-        <ion-option-button class="button-balanced" 
-                           ng-click="payMyBooking(booking)">
-          Paga la tua quota
-        </ion-option-button>
         
         </ion-item>
 
     </div>
-
-  </ion-content>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
 
 
 </ion-view>

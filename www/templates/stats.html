@@ -1,0 +1,67 @@
+
+<ion-header-bar align-title="left" class="bar-positive">
+   <!-- Toggle left side menu -->
+   <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  <h1 class="title">Statistiche {{month}}/{{year}}</h1>
+  <button class="button button-clear " ng-click="goBack()">
+          Indietro
+    </button>&nbsp;&nbsp;
+</ion-header-bar>
+
+<ion-content class="has-header">
+
+  <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+    </ion-item>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    
+    <div class="row">
+        <div class="col">
+        Numero Prenotazioni del Mese:
+        </div>
+         <div class="col">
+         {{statsByBookingAndMonth}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+        Numero Quote del Mese:
+        </div>
+         <div class="col">
+         {{statsByPaymentsAndMonth_quote}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+        Numero Tessere del Mese:
+        </div>
+         <div class="col">
+         {{statsByPaymentsAndMonth_tessere}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+        Numero Utenti:
+        </div>
+         <div class="col">
+         {{stats_usersNumber}}
+        </div>
+      </div>
+
+      <canvas id="bar1" class="chart chart-bar"
+        chart-data="data1" chart-labels="labels1" chart-legend="true" chart-series="series1" >
+      </canvas
+      <br>
+      <br>
+
+    <canvas id="bar2" class="chart chart-bar"
+        chart-data="data2" chart-labels="labels2" chart-legend="true" chart-series="series2" chart-colours="['#FF5252', '#FF8A80']">
+      </canvas
+
+     
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->      
+
+</ion-content>
+
+  
+  

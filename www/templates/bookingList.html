@@ -29,16 +29,42 @@
     </div>
   </div>
 </div>
+  <ion-list>
 
-<div class="item item-text-wrap">
+    <a class="item item-icon-right" ng-click="openSaldareModal()">
+            <i class="icon ion-chevron-right"></i>
+            Partite da saldare
+    </a>
+
+    <a class="item item-icon-right" ng-click="gotoStats()" ng-show="userRole == 'admin'">
+            <i class="icon ion-chevron-right"></i>
+            Stats
+    </a>
+
+  </ion-list>
+</ion-content>
+
+<script id="saldare.html" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Prenotazioni da saldare</h1>
+      <button class="button button-light" ng-click="closeSaldareModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+  <small>{{error}}</small>
+  <div class="item item-text-wrap">
   <div class="center">
-     <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
+     <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
   </div>
   <!-- xxx -->
   <show-bookings bookings="results" text="Prenotazioni precedenti da saldare" pay="setBookingPayed(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
 
 </div>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+ </ion-modal-view>
+</script>
 
 
-</ion-content>

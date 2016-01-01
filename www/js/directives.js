@@ -151,6 +151,7 @@ angular.module('starter.directives', [])
           bookings: '=' ,
           pay: '&',
           delete: '&',
+          invitation: '&',
           date: '=',
           text: '@',
           showpay: '@'
@@ -163,7 +164,7 @@ angular.module('starter.directives', [])
 
 
 
-          $scope.payment = function(booking,type,qty){
+          /*$scope.payment = function(booking,type,qty){
             
             MyObjects.payment(booking,type,qty)
             //MyObjects.findBookings(2,2015)
@@ -179,7 +180,7 @@ angular.module('starter.directives', [])
 
           $scope.gotoInvitation = function(booking){
             $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
-          }
+          }*/
 
           $scope.info = function(){
             $ionicPopup.alert({

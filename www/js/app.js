@@ -12,9 +12,6 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 .run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading) {
 
 
-
-
-
   $ionicPlatform.ready(function() {
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
@@ -22,10 +19,6 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $cordovaSplashscreen.hide()
         }, 100)
     }
-
-
-
-    console.log('ok init.....');
 
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -40,13 +33,9 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
       StatusBar.styleLightContent();
     }
 
-
-
   });
 
     Parse.initialize("MteACDZVcFz7FCTlvjp1x5DXIaLlmEQxqtIayE7o","kCH6rpFSzc4PUR3g6NvWnHKLHcmcpzrJbTdnteVc");
-
-
 
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
@@ -333,6 +322,17 @@ templateUrl: 'templates/checkNewVersion.html',
 controller: 'checkNewVersionCtrl'
 
 })
+
+.state('stats', {
+url: '/stats/:month/:year',
+cache: false,
+templateUrl: 'templates/stats.html',
+controller: 'statsController'
+
+})
+
+
+
 
 
 ;
