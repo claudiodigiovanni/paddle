@@ -242,8 +242,8 @@ angular.module('starter.services', [])
             book.set("payed",false);
             book.set("playersNumber",obj.playersNumber)
 
-            var ps = {quote:0,tessere:0}
-            book.set("payments",ps)
+            /*var ps = {quote:0,tessere:0}
+            book.set("payments",ps)*/
 
             var maestroId = obj.maestro != null ? obj.maestro.id : -1
 
@@ -705,6 +705,36 @@ angular.module('starter.services', [])
 
           var defer = $q.defer()
           var user = Parse.User.current();
+          var numPlayers = cta.get('playersNumber')
+          if (cta.get("players").length == numPlayers ){
+            defer.reject('Partita già al completo!')
+          }
+          else{
+            var players = cta.get('players')
+            if (! _.find(players,{id:user.id})){
+              cta.add('players',user);
+              cta.save()
+              .then(
+                function(obj){
+                  defer.resolve(obj)
+              }, function(error){
+                defer.reject(error)
+                console.log(error);
+              })
+            }else
+              defer.reject('Utente già inserito')
+
+          }
+              
+              return defer.promise
+         
+        },
+
+      /*addCallToActionPlayer: function(cta){
+
+
+          var defer = $q.defer()
+          var user = Parse.User.current();
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
 
@@ -742,12 +772,18 @@ angular.module('starter.services', [])
             Utility.handleParseError(error);
 
           })
-        },
+        },*/
         findCallToAction:function(){
+
+          var today = new Date();
+          today.setHours(0);
+          today.setMinutes(0);
+          today.setSeconds(0);
+          today.setMilliseconds(0);
           
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
-          query.greaterThanOrEqualTo("date", new Date());
+          query.greaterThanOrEqualTo("date", today);
           query.equalTo("callToAction", true)
           var c = Parse.User.current().get('circolo')
           query.equalTo('circolo',c)
@@ -825,6 +861,13 @@ angular.module('starter.services', [])
 
 
 
+        },
+
+        countMyInvitations: function(){
+          var InvitationRequest = Parse.Object.extend("InvitationRequest");
+          var query = new Parse.Query(InvitationRequest)
+          query.equalTo('user',Parse.User.current())
+          return query.count()
         },
 
         acceptInvitation: function(invitation){
@@ -945,7 +988,7 @@ angular.module('starter.services', [])
             query.equalTo("user", user)
             query.include("booking")
             query.descending("createdAt")
-            query.limit(30);
+            //query.limit(30);
             return query.find()
         },
 
@@ -960,7 +1003,7 @@ angular.module('starter.services', [])
             return query.find()
         },
 
-        payBooking: function(booking,type,qty){
+        /*payBooking: function(booking,type,qty){
           //console.log(booking)
           var ps = booking.get('payments')
           //console.log(booking)
@@ -971,11 +1014,31 @@ angular.module('starter.services', [])
           booking.set('payments',ps);
           return booking.save();
           //console.log("payment")
+        },*/
+
+        payQuota : function(booking){
+          var Payment = Parse.Object.extend("Payment");
+          var pay = new Payment();
+          pay.set("booking", booking)
+          pay.set("type", "quota")
+          pay.set("qty",1)
+          var c = Parse.User.current().get('circolo')
+          pay.set('circolo',c)
+          return pay.save()
         },
 
 
         payTessera: function(user,booking,qty){
 
+          /*KKK Scommentare quando verrà abilitato pagamento tessere
+          ed inserire questo option button nella pagina tab account (modal saldare.html):
+          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+          <ion-option-button class="button-balanced" 
+                           ng-click="payMyBooking(booking)">
+          Paga la tua quota
+          </ion-option-button> 
+          
+          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
           if (! this.checkCreditAvalability(user,qty))
             throw "Credito Insufficiente...."
 
@@ -985,11 +1048,21 @@ angular.module('starter.services', [])
           pay.set("user", user)
           pay.set("booking", booking)
           pay.set("qty",qty)
+          pay.set("type", "tessera")
+          var c = user.get('circolo')
+          pay.set('circolo',c)
           promises.push(pay.save())
-          promises.push(this.payBooking(booking,"tessere",qty))
           var nrc = parseInt(user.get('residualCredit')) - parseInt(qty)
           promises.push(Parse.Cloud.run('changeUserField', {userId:user.id,field:"residualCredit",newValue:nrc}))
-          return $q.all(promises)
+          return $q.all(promises)*/
+          var Payment = Parse.Object.extend("Payment");
+          var pay = new Payment();
+          pay.set("booking", booking)
+          pay.set("qty",qty)
+          pay.set("type", "tessera")
+          var c = Parse.User.current().get('circolo')
+          pay.set('circolo',c)
+          return pay.save()
 
         },
 
@@ -1006,15 +1079,16 @@ angular.module('starter.services', [])
         },
 
         deletePayment: function(payment){
-          console.log(payment)
+          //console.log(payment)
           var promises = []
           var user = payment.get('user')
           var qty = payment.get('qty')
           var booking = payment.get('booking')
           promises.push(payment.destroy())
-          promises.push(this.payBooking(booking,"tessere",-qty))
+          if (user != null){
           var nrc = parseInt(user.get('residualCredit')) + parseInt(qty)
           promises.push(Parse.Cloud.run('changeUserField', {userId:user.id,field:"residualCredit",newValue:nrc}))
+          }
           return $q.all(promises)
            
         },
@@ -1071,11 +1145,101 @@ angular.module('starter.services', [])
             function(ret){
               return Parse.User.current().fetch()
           })
+        },
+
+        statsByBookingAndMonth:function(month,year){
+          //console.log(month)
+          var daysInMonth = Utility.getDaysInMonth(month,year);
+          var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
+          var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
+          endDate.setHours(23)
+          endDate.setMinutes(59)
+          
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+          query.greaterThanOrEqualTo("date", startDate);
+          query.lessThanOrEqualTo("date", endDate);
+          var c = Parse.User.current().get('circolo')
+          query.equalTo('circolo',c)
+        
+          return query.count()
+        },
+        statsByBookingAndYear:function(year){
+
+          var myContext = this
+          var promises = []
+          var ranges = _.range(0, 12);
+          _.each(ranges, function(r){
+
+            promises.push(myContext.statsByBookingAndMonth(r,year))
+
+          })
+        
+          return $q.all(promises)
+        },
+
+        statsByPaymentsAndMonth:function(month,year,type){
+          var daysInMonth = Utility.getDaysInMonth(month,year);
+
+          var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
+          var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
+          endDate.setHours(23)
+          endDate.setMinutes(59)
+          var Payment = Parse.Object.extend("Payment");
+          var query = new Parse.Query(Payment);
+          query.greaterThanOrEqualTo("createdAt", startDate);
+          query.lessThanOrEqualTo("createdAt", endDate);
+          query.equalTo("type", type);
+          var c = Parse.User.current().get('circolo')
+          query.equalTo('circolo',c)
+        
+          return query.count()
+        },
+
+        statsByPaymentAndYear:function(year){
+
+          var myContext = this
+          var promises = []
+          
+          
+          var ranges = _.range(0, 12);
+          _.each(ranges, function(r){
+            
+            promises.push(myContext.statsByPaymentsAndMonth(r,year,'quota'))
+
+          })
+          _.each(ranges, function(r){
+            
+            promises.push(myContext.statsByPaymentsAndMonth(r,year,'tessera'))
+
+          })
+        
+          return $q.all(promises)
+        },
+
+        statsByUser:function(){
+         
+          var query = new Parse.Query(Parse.User);
+          //query.equalTo('enabled',false)
+          var c = Parse.User.current().get('circolo')
+          query.equalTo('circolo',c)
+          return query.count()
+        
+        },
+
+        deleteParseObjectFromCollection: function(item, collection){
+          _.remove(collection, function(object){
+              return object.id == item.id
+          })
+        },
+
+        setCallToAction : function(booking){
+            booking.set("callToAction",true);
+            return booking.save()
         }
 
-
-
     }
+
   })
 
 .factory('Utility',function($state,$ionicLoading){

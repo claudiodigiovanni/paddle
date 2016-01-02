@@ -29,10 +29,15 @@ color: #444;
 
 }
 
-
+/*
 .badge{ position: relative !important;
   top:0 !important;
   right: 0 !important;
+}*/
+
+.header-badge{
+  top: -37px !important;
+  left: -20px !important;
 }
 
 i.ion-ios-tennisball-outline {

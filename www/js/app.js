@@ -9,7 +9,7 @@
 
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects) {
 
 
   $ionicPlatform.ready(function() {
@@ -59,6 +59,13 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
               $rootScope.gameTypes = JSON.parse(window.localStorage['gameTypes'])
 
             }
+
+            MyObjects.countMyInvitations().then(function(count){
+              if (count > 0 ) 
+                $rootScope.invitationCount = count 
+              else 
+                $rootScope.invitationCount = null
+            })
 
             
   

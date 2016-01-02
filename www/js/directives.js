@@ -152,6 +152,7 @@ angular.module('starter.directives', [])
           pay: '&',
           delete: '&',
           invitation: '&',
+          call: '&',
           date: '=',
           text: '@',
           showpay: '@'
@@ -185,7 +186,7 @@ angular.module('starter.directives', [])
           $scope.info = function(){
             $ionicPopup.alert({
                title: 'Info',
-               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili." 
+               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili. L'opzione <em>Call To Action</em> permette agli altri giocatori interessati di unirsi al match (se hanno un livello di gioco simile al tuo ovviamente...)" 
              });
           }
 

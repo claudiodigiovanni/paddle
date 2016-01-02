@@ -705,6 +705,36 @@ angular.module('starter.services', [])
 
           var defer = $q.defer()
           var user = Parse.User.current();
+          var numPlayers = cta.get('playersNumber')
+          if (cta.get("players").length == numPlayers ){
+            defer.reject('Partita già al completo!')
+          }
+          else{
+            var players = cta.get('players')
+            if (! _.find(players,{id:user.id})){
+              cta.add('players',user);
+              cta.save()
+              .then(
+                function(obj){
+                  defer.resolve(obj)
+              }, function(error){
+                defer.reject(error)
+                console.log(error);
+              })
+            }else
+              defer.reject('Utente già inserito')
+
+          }
+              
+              return defer.promise
+         
+        },
+
+      /*addCallToActionPlayer: function(cta){
+
+
+          var defer = $q.defer()
+          var user = Parse.User.current();
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
 
@@ -742,12 +772,18 @@ angular.module('starter.services', [])
             Utility.handleParseError(error);
 
           })
-        },
+        },*/
         findCallToAction:function(){
+
+          var today = new Date();
+          today.setHours(0);
+          today.setMinutes(0);
+          today.setSeconds(0);
+          today.setMilliseconds(0);
           
           var Booking = Parse.Object.extend("Booking");
           var query = new Parse.Query(Booking);
-          query.greaterThanOrEqualTo("date", new Date());
+          query.greaterThanOrEqualTo("date", today);
           query.equalTo("callToAction", true)
           var c = Parse.User.current().get('circolo')
           query.equalTo('circolo',c)
@@ -825,6 +861,13 @@ angular.module('starter.services', [])
 
 
 
+        },
+
+        countMyInvitations: function(){
+          var InvitationRequest = Parse.Object.extend("InvitationRequest");
+          var query = new Parse.Query(InvitationRequest)
+          query.equalTo('user',Parse.User.current())
+          return query.count()
         },
 
         acceptInvitation: function(invitation){
@@ -1188,7 +1231,13 @@ angular.module('starter.services', [])
           _.remove(collection, function(object){
               return object.id == item.id
           })
+        },
+
+        setCallToAction : function(booking){
+            booking.set("callToAction",true);
+            return booking.save()
         }
+
     }
 
   })

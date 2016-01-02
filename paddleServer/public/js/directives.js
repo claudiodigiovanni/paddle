@@ -151,6 +151,8 @@ angular.module('starter.directives', [])
           bookings: '=' ,
           pay: '&',
           delete: '&',
+          invitation: '&',
+          call: '&',
           date: '=',
           text: '@',
           showpay: '@'
@@ -163,7 +165,7 @@ angular.module('starter.directives', [])
 
 
 
-          $scope.payment = function(booking,type,qty){
+          /*$scope.payment = function(booking,type,qty){
             
             MyObjects.payment(booking,type,qty)
             //MyObjects.findBookings(2,2015)
@@ -179,12 +181,12 @@ angular.module('starter.directives', [])
 
           $scope.gotoInvitation = function(booking){
             $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
-          }
+          }*/
 
           $scope.info = function(){
             $ionicPopup.alert({
                title: 'Info',
-               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili." 
+               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili. L'opzione <em>Call To Action</em> permette agli altri giocatori interessati di unirsi al match (se hanno un livello di gioco simile al tuo ovviamente...)" 
              });
           }
 

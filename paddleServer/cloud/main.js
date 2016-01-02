@@ -39,47 +39,103 @@ var sendEmail = function(toAddress,subjectx,textx){
   });
 
 }
-
 Parse.Cloud.define("hello", function(request, response) {
+
   response.success("Hello world from your Parse Server....!");
   console.log('log server...');
+});
+
+
+var addUserToRoleNamed = function(user, roleName) {
+    var query = new Parse.Query(Parse.Role);
+    query.equalTo("name", roleName);
+    return query.first().then(function(role) {
+        var relation = role.relation("users");
+        
+        relation.add(user);
+        return role.save();
+       
+    }, function(error){
+      console.log(error)
+    });
+}
+
+Parse.Cloud.define("addUsertoRole", function(request, response) {
+
+  var promises = []
+  var usernames = ['admin','segreteria']
+  var role = 'admin'
+  var query = new Parse.Query(Parse.User);
+  _.each(usernames,function(uname){
+      query.equalTo("username", uname);  
+      var p = query.first().then(function(user) {
+         return addUserToRoleNamed(user, role)
+           
+      },function(error){
+        console.log(error)
+      })
+      promises.push(p)
+      
+  })
+
+  Parse.Promise.when(promises).then(function() {
+    response.success("All worked");
+  }, function(err) {
+      console.log(err)
+      response.error(err);
+  });
+
+
+  
+
 });
 
 Parse.Cloud.beforeSave(Parse.Object.extend("Booking"), function(request, response) {
   
   var mybooking = request.object
-  var ranges = mybooking.get('ranges')
+  var query = new Parse.Query(Parse.Role);
+  query.equalTo("name", "admin");
+  query.equalTo("users", Parse.User.current());
+  query.first().then(function(adminRole) {
+        if (! adminRole && mybooking.get('payed') == true) {
+            response.error('operazione non permessa')
+            return
+        }
+        //****************SOLO gli utenti con ruolo ADMIN posso settare il campo payed a true*****************
+        var ranges = mybooking.get('ranges')
+        
+        //Se la prenotazione non è stata appena creata non c'è problema
+        if (mybooking.createdAt != null )
+          response.success()
+        else{
+              var Booking = Parse.Object.extend("Booking");
+              var query = new Parse.Query(Booking);
+              query.equalTo("date", mybooking.get('date'));
+              query.equalTo("gameType",mybooking.get('gameType'));
+              var c = Parse.User.current().get('circolo')
+              query.equalTo('circolo',c)
+              query.equalTo('court',mybooking.get('court'))
+              query.find().then(
+                function(results){
+                  var tmp = []
+                  _.each(results, function (item){
+                      tmp.push(item.get('ranges'))
+                  })
+
+                  var otherGamesRanges = _.flatten(tmp)
+                  
+                  var intersection = _.intersection(ranges,otherGamesRanges)
+                  if (intersection.length > 0)
+                    response.error('Ooooops!!! Prenotazione non disponibile!!!')
+
+                  else
+                   response.success()
+                  
+                })
+            }
+  //*******************************************************************************************************  
+  }) 
   
-  //Se la prenotazione è stata appena creata...
-  if (mybooking.createdAt != null )
-    response.success()
-  else{
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        query.equalTo("date", mybooking.get('date'));
-        query.equalTo("gameType",mybooking.get('gameType'));
-        var c = Parse.User.current().get('circolo')
-        query.equalTo('circolo',c)
-        query.equalTo('court',mybooking.get('court'))
-        query.find().then(
-          function(results){
-            var tmp = []
-            _.each(results, function (item){
-                tmp.push(item.get('ranges'))
-            })
-
-            var otherGamesRanges = _.flatten(tmp)
-            
-            var intersection = _.intersection(ranges,otherGamesRanges)
-            if (intersection.length > 0)
-              response.error('Ooooops!!! Prenotazione non disponibile!!!')
-
-            else
-             response.success()
-            
-          })
-  }
-
 });
 
 Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response) {
@@ -498,7 +554,7 @@ var InvitationRequestFollowUp = function(response,user,mail,booking){
 })
 
 //******************************************************************************************
-Parse.Cloud.define("changeUserField", function(request, response){
+/*Parse.Cloud.define("changeUserField", function(request, response){
   Parse.Cloud.useMasterKey();
 
   var userId = request.params.userId
@@ -518,7 +574,7 @@ Parse.Cloud.define("changeUserField", function(request, response){
   })
 
 
-});
+});*/
 
 Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response) {
   //moment.locale('it');
@@ -538,4 +594,47 @@ Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response
  
   
 })
+
+//Solo che ha Role (Classe nativa Parse) può modificare i campi di un altro user
+//Al ruolo admin appaartengono utenti tipo admin e segreteria
+//Il ruolo admin è protetto in scrittura 
+Parse.Cloud.define("changeUserField", function(request, response){
+  Parse.Cloud.useMasterKey();
+  var query = new Parse.Query(Parse.Role);
+  query.equalTo("name", "admin");
+  query.equalTo("users", Parse.User.current());
+  query.first().then(function(adminRole) {
+      if (adminRole) {
+          console.log("user is an admin");
+          //*****************************
+            var userId = request.params.userId
+            var field = request.params.field
+            var newValue = request.params.newValue
+            var query = new Parse.Query(Parse.User);
+            query.get(userId)
+            .then(
+              function(user){
+                    user.set(field,newValue)
+                    user.save().then(function(user){
+                      response.success("campo " + field + " modificato con successo...")
+                    },function(error){
+                      response.error(error);
+                      console.log(error)})
+                    
+                
+            }, function(error){
+              console.log(error);
+              response.error(error);
+          })
+          //*****************************
+      } else {
+          console.log("user is not an admin");
+          response.error("Utente non abilitato");
+      }
+  });
+
+ 
+  
+
+});
 //******************************************************************************************

@@ -72,16 +72,16 @@ angular.module('starter.controllers', ['chart.js'])
         $scope.text2 = text[2]
         $scope.$apply()
 
-        /*var Test = Parse.Object.extend("Test");
-          var query = new Parse.Query(Test)
-          return query.find().then(
-              function(obj){
-          
-                console.log(obj)
-          
-            }, function(error){
-              console.log(error);
-            })*/
+        /*
+
+        Parse.Cloud.run('addUsertoRole')
+        .then(
+          function(response){
+            console.log(response)
+        }, function(error){
+          console.log(error)
+        })*/
+
 
   }, function(error){
     console.log(error);
@@ -906,6 +906,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
             $scope.bookings = results
             $scope.waitingMyBookings = null
+            //$scope.$apply()
         }, function(error){
               console.log(error);
               $scope.error = "ooooops.....errore di connessione"
@@ -924,6 +925,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           function(results){
             $scope.invitations = results
             $scope.waitingMyInvitations = null
+            $scope.$apply()
         }, function(error){
           console.log(error);
           $scope.error = "ooooops.....errore di connessione"
@@ -942,6 +944,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           function(results){
             $scope.waitingMyGameNotPayed = null
             $scope.gameNotPayed = _.flatten(results)
+            //$scope.$apply()
         }, function(error){
           console.log(error);
           $scope.error = "ooooops.....errore di connessione"
@@ -1026,6 +1029,11 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     console.log('gotoInvitation')
      $scope.prossimiImpegniModal.hide()
      $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
+  }
+  $scope.setCallToAction = function(booking){
+    console.log('calltoaction')
+    MyObjects.setCallToAction(booking)
+    $scope.message = "Fatto!"
   }
 
   $scope.payMyBooking = function(booking){
