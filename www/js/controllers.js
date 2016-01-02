@@ -1904,6 +1904,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   MyObjects.findCallToAction()
   .then(
     function(results){
+      console.log(results)
       $scope.waiting = null
       $scope.callToActionOpen = results
       $scope.$apply()

@@ -8,9 +8,10 @@
  <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
  </div>
 
-
+<p class="center" ng-show="callToActionOpen.length == 0"><br><br><i class="icon ion-information positive"></i> Ancora nessuna partita aperta......</p>
   
   <div class="list">
+  
 
     <a class="item" ng-repeat="cta in callToActionOpen" >
       <div class="row">
@@ -19,7 +20,7 @@
       </div>
       <div class="col"><h2><i class="icon ion-calendar"></i> {{cta.get('date') | date:'dd/MM/yyyy'}} &nbsp;<i class="icon ion-clock"></i>{{cta.get('ranges') | range}}</h2>
       <p>Organizzatore:{{cta.get('user').get('nome')}}</p>
-      <i class="icon ion-android-pin"></i> {{cta.get('court') | courtName:cta.get('gameType')}} &nbsp;</div></div>
+       {{cta.get('court') | courtName:cta.get('gameType')}} &nbsp;</div></div>
 
 
       <div class="list list-inset">
