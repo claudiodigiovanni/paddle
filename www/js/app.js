@@ -42,7 +42,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
         var currentUser = Parse.User.current();
         $rootScope.platform = ionic.Platform.platform()
 
-        if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled') {
+        if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled' || next.name == 'privacy') {
 
            console.log('verso login...');
 
@@ -336,6 +336,12 @@ cache: false,
 templateUrl: 'templates/stats.html',
 controller: 'statsController'
 
+})
+
+.state('privacy', {
+url: '/privacy',
+cache: true,
+templateUrl: 'templates/privacy.html'
 })
 
 

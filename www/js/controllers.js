@@ -356,6 +356,12 @@ var currentUser = {level:3}
 $scope.currentUser = currentUser;
 $scope.registered = false;
 
+$scope.privacy = false
+
+$scope.setPrivacy = function(){
+  $scope.privacy = ! $scope.privacy 
+}
+
 $scope.waiting = "........"
 MyObjects.getCircoli()
 .then(
@@ -405,9 +411,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   return
 }
 
-  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === undefined){
+  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === undefined){
     console.log(currentUser.email);
-    mymessage.text = "Occorre inserire email, username, password e circolo..."
+    mymessage.text = "Occorre inserire email, username, password, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
     $ionicLoading.hide();
     return
   }

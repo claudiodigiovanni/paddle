@@ -17,29 +17,33 @@
           <span class="input-label">password</span>
           <input type="password" placeholder="password" ng-model="currentUser.password">
         </label>
+     </div>
+
         <button class="button button-full button-positive" ng-click="login()">
             entra
         </button>
         <div class="item alert" ng-show="mymessage.text">
           {{mymessage.text}}
         </div>
+        
         <ion-item>
         Non sei ancora registrato? <button class="button button-outline button-small button-positive" ng-click="gotoSignUp()">
             Registrati!
         </button>
-
         </ion-item>
+
         <ion-item>
           <button class="button button-outline button-positive button-small" ng-click="resetPwd()">
             Ho dimenticato la password...
           </button>
         </ion-item>
+
         <ion-item class="item-text-wrap alert" ng-show="messagePwdReset">
           {{messagePwdReset}}
         </ion-item>
 
         
-      </div>
+     
       </ion-content>
 
     </div>

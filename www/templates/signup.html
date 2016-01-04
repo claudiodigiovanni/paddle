@@ -74,10 +74,11 @@
                   6 - Me la gioco con gli spagnoli!
                 </ion-radio-fix>
 
-
+<br>
               <div ng-hide="platform == 'ios' || platform == 'android'">
                   <div vc-recaptcha
                   key="'6Lc5tw4TAAAAAM3BaRQP0tK_Lxo1Ox_VRRCibheg'"
+                  theme="light"
                   on-success="setResponse(response)">
                   </div>
               </div>
@@ -85,6 +86,11 @@
       <ion-item class="item-text-wrap alert" ng-show="mymessage.text">
        {{mymessage.text}}
       </ion-item>
+
+<br>
+<p class="center">
+&nbsp;&nbsp;<i class="icon {{privacy == false ? 'ion-android-checkbox-outline-blank' : 'ion-android-checkbox-outline positive' }} my-ion-checkmark-circled" ng-click="setPrivacy()"></i>&nbsp;&nbsp;Accetto termini e condizioni e Informativa sulla <a ui-sref="privacy">privacy</a>
+</p>
 
       
       <button class="button button-full button-positive" ng-click="signUp()">
