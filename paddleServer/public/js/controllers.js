@@ -1,5 +1,5 @@
 
-angular.module('starter.controllers', ['chart.js']) 
+angular.module('starter.controllers', ['chart.js','ngCordova']) 
 
 .controller('checkNewVersionCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
 
@@ -356,6 +356,12 @@ var currentUser = {level:3}
 $scope.currentUser = currentUser;
 $scope.registered = false;
 
+$scope.privacy = false
+
+$scope.setPrivacy = function(){
+  $scope.privacy = ! $scope.privacy 
+}
+
 $scope.waiting = "........"
 MyObjects.getCircoli()
 .then(
@@ -405,9 +411,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   return
 }
 
-  if ( currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === undefined){
+  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === undefined){
     console.log(currentUser.email);
-    mymessage.text = "Occorre inserire email, username, password e circolo..."
+    mymessage.text = "Occorre inserire email, username, password, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
     $ionicLoading.hide();
     return
   }
@@ -446,7 +452,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading) {
+.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading, $cordovaCalendar) {
+    
+   
+    
 
   var toggleCoach = {value:false}
   $scope.toggleCoach = toggleCoach
@@ -563,6 +572,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.openModal = function() {
     selectedRanges = [];
     $scope.modal.show()
+   
+    
   }
 
   $scope.closeModal = function() {
@@ -683,6 +694,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
     else{
       $scope.modal.show()
+      
+      //**************************
+      var alertPopup = $ionicPopup.alert({
+         
+         template: "Attiva l'opzione <b>Call To Action</b> se cerchi compagni di gioco con livello simile al tuo."
+       });
+      //**************************
+       
       $scope.waiting = "....."
       //booking.gameType + di tipo string....
       MyObjects.findaAvalaibleRangesInDate(date, booking.gameType)
@@ -693,6 +712,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           $scope.showAddButton = true;
           $scope.waiting = null
           $scope.$apply()
+          
+          
 
 
       }, function(error){
@@ -799,6 +820,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     .then(
       function(result){
       $scope.waiting = null
+      console.log(result)
 
       $scope.modal.hide();
 
@@ -817,6 +839,43 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
   }
 
+  $scope.addEventToCalendar = function(){
+
+      var startSlot = $scope.booking.get('ranges')[0]
+     var endSlot = $scope.booking.get('ranges')[$scope.booking.get('ranges').length - 1]
+
+      var startHM = Utility.getHourMinuteFromSlot(startSlot)
+      var endHM = Utility.getHourMinuteFromSlot(endSlot)
+    
+      var sdate = $scope.booking.get('date')
+      sdate.setHours(startHM[0])
+      sdate.setMinutes(startHM[1])
+    
+     var edate = new Date(sdate.valueOf())
+     edate.setHours(endHM[0])
+     edate.setMinutes(endHM[1] + 30)
+
+    $cordovaCalendar.createEvent({
+          title: 'Partita',
+          notes: 'Tennis-Paddle',
+          startDate : sdate,
+          endDate : edate
+        }).then(function (result) {
+          var alertPopup = $ionicPopup.alert({
+           title: 'ok!',
+           template: 'Evento creato con successo nel tuo calendario!'
+          });
+          
+        }, function (err) {
+          var alertPopup = $ionicPopup.alert({
+           title: 'oops!',
+           template: 'La prenotazione è andata a buon fine ma non sono riuscito ad aggiornare il tuo calendario! Cambiare telefono????'
+          });
+        });
+}
+
+    
+ 
 
 })
 

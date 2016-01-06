@@ -222,7 +222,7 @@ angular.module('starter.services', [])
             book.set("user", Parse.User.current());
             book.set("circolo", Parse.User.current().get('circolo'));
             book.set("date", obj.date);
-            book.set("ranges", obj.ranges);
+            book.set("ranges", _.sortBy(obj.ranges));
             if (obj.court != null){
                 book.set("court",obj.court.toString())
             }
@@ -1310,6 +1310,35 @@ angular.module('starter.services', [])
         ret += "  " + start + "-" + end;
   
       return ret;
+    },
+
+    getHourMinuteFromSlot : function(r){
+      //[hh,mm]
+      var ret = [];
+      
+        console.log(r)
+        r  = r - 0.5
+        console.log(r)
+        if (parseInt(r) % 2 === 0 ){
+          ret.push(parseInt(r) / 2)
+          ret.push(0)
+        }
+        else{
+            ret.push(parseInt(r / 2))
+            ret.push(30)
+        }
+       
+        
+        
+      return ret;
+    },
+
+    getCourtNameByIndex: function(index,gameType ){
+      
+    var game = $rootScope.gameTypes[parseInt(gameType)]
+    //console.log(gameType);
+    return game.courtsNames[parseInt(court)-1]
+
     },
 
     formatDate: function formatDate(d) {

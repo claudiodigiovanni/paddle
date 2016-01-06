@@ -9,16 +9,19 @@
 
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility) {
 
 
   $ionicPlatform.ready(function() {
+
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
       $timeout(function() {
             $cordovaSplashscreen.hide()
         }, 100)
     }
+
+  
 
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -36,8 +39,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   });
 
     Parse.initialize("MteACDZVcFz7FCTlvjp1x5DXIaLlmEQxqtIayE7o","kCH6rpFSzc4PUR3g6NvWnHKLHcmcpzrJbTdnteVc");
-
-
+    
+   
     $rootScope.$on('$stateChangeStart', function (event, next) {
         var currentUser = Parse.User.current();
         $rootScope.platform = ionic.Platform.platform()

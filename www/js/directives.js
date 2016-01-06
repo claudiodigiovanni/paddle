@@ -61,8 +61,13 @@ angular.module('starter.directives', [])
         if (day == '-')
           return "disabled";
 
+        
+        if (selectedDate.getTime()=== today.getTime())
+          return "today"
+
+
         //Per segreteria e amministratore tutti i giorni sono disponibili per permettere di vedere
-        //le prenotazioni dei giorni recedenti
+        //le prenotazioni dei giorni precedenti
         if ($scope.showAll)
           return 'avalaible'; 
 
@@ -73,9 +78,11 @@ angular.module('starter.directives', [])
         if (!$scope.coach)
           return 'avalaible';
 
-        if ($scope.selectedDay == day){
+        //Controllo inutile perchè al click vado sempre su una modale diversa e quindi non vedo il giorno selezionato....
+        //e poi dava fastidio all'inserimento disponibilità maestro.
+        /*if ($scope.selectedDay == day){
           return "selected";
-        }
+        }*/
 
         var e = _.find($scope.coachAvalabilities,function(obj){
             return (obj.day == day );
@@ -87,9 +94,6 @@ angular.module('starter.directives', [])
         if ($scope.selectedays && $scope.selectedays.indexOf(day) != -1){
           return 'multiple-select';
         }
-        if (selectedDate.getTime()=== today.getTime())
-          return "today"
-
         else {
           return 'na'
         }
