@@ -112,4 +112,8 @@ color: #444;
   
 }
 
+* {
+    box-shadow: none !important;
+}
+
 </style>
