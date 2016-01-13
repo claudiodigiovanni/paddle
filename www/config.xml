@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget
     id="com.cdigiovanni.magicbooking2"
-    version="1.0.1"
+    version="1.0.3"
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:gap="http://phonegap.com/ns/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -46,6 +46,10 @@
 
     
     <plugin name="cordova-plugin-calendar" />
+    
+    <plugin name="cordova-plugin-camera" />
+    
+    
 
     <plugin name="cordova-plugin-splashscreen"/>
     <plugin name="cordova-plugin-device">
@@ -55,6 +59,12 @@
 
     <plugin name="ionic-plugin-deploy"/>
     <plugin name="cordova-plugin-whitelist"/>
+    
+    
+    
+    <plugin name="phonegap-plugin-push" source="npm" />
+    
+    
     
 
    

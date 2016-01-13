@@ -637,4 +637,59 @@ Parse.Cloud.define("changeUserField", function(request, response){
   
 
 });
+
+
+
+Parse.Cloud.define("createInstallationObject", function(request, response){
+ 
+var token = request.params.token;
+var platform = request.params.platform;
+var user = request.user;
+ 
+  // Need the Master Key to update Installations
+  Parse.Cloud.useMasterKey();
+
+  // A user might have more than one Installation
+  var installation = new Parse.Installation;
+  installation.set('deviceToken',token)
+  installation.set('deviceType',platform)
+  installation.set('user',user)
+  installation.save()
+});
+
+
+Parse.Cloud.define("sendPush", function(request, response){
+ 
+    var message = request.params.message;
+    var userId = request.params.userId;
+    sendPush(userId,message)
+});
+
+var sendPush = function(userId,message){
+  
+     // Create a Pointer to this user based on their object id
+      var user = new Parse.User();
+      user.id = userId;
+
+    
+    // Find devices associated with these users
+    var pushQuery = new Parse.Query(Parse.Installation);
+    pushQuery.equalTo('user', user);
+
+    // Send push notification to query
+    Parse.Push.send({
+        where: pushQuery,
+        data: {
+            alert: message
+        }
+    }, {
+        success: function() {
+            console.log("Push Ok!!!")
+        },
+        error: function(error) {
+            console.log(error)
+        }
+    });
+}
+
 //******************************************************************************************

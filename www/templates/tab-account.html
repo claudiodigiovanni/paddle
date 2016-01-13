@@ -10,6 +10,13 @@
             <i class="icon ion-email"></i>
              {{currentUser.get('email')}}
           </a>
+        
+          <a class="item item-icon-left item-icon-right" ng-click="openCameraModal()">
+            <i class="icon ion-camera"></i>
+             (foto)
+            <i class="icon ion-chevron-right"></i>
+          </a>
+            
           <a class="item item-icon-left" >
             <i class="icon ion-social-euro"></i><small>(crediti)</small>
             {{currentUser.get('residualCredit')}}
@@ -46,6 +53,27 @@
     <ion-item class="item-text-wrap center"><b><i class="icon ion-ios-loop-strong energized my-ion-checkmark-circled"></i>&nbsp;&nbsp;Trascina in  basso per aggiornare...</b></ion-item>
 
   </ion-content>
+    
+    <script id="camera.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Foto</h1>
+      <button class="button button-light" ng-click="closeCameraModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    <div class="item item-text-wrap">
+      <button class="button button-positive button-block" ng-click="takePicture()">Scatta Foto</button><br>
+        <div class="center">
+            <img src="{{currentUser.get('image').url()}}">
+        </div>
+        
+    </div>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
 
     <script id="prossimiImpegni.html" type="text/ng-template">
   <div class="modal"> 
@@ -160,6 +188,7 @@
             
         
         </ion-item>
+        </ion-list >
 
     </div>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->

@@ -1,0 +1,201 @@
+<ion-view view-title="Disponibilità Campi">
+<div class="bar bar-header bar-subheader custom2">
+        <button class="button button-balanced button-block" ng-click="book()">
+          Prenota {{gameTypes[currentGameType.value].name}}
+        </button>   
+</div>
+
+<ion-content class="has-header has-subheader2-custom" scroll="true">
+
+  <div class="card" style="text-align:center" ng-if="message">
+    <small>
+      <i class="icon ion-checkmark-circled energized"></i>
+      {{message}}
+    </small>
+  </div>
+
+    <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+    <br>
+    <ion-list>
+      
+        <ion-item>
+            
+            
+            <i class="icon ion-calendar my-ionicons-big"></i>&nbsp;&nbsp;
+            <ionic-datepicker input-obj="datepickerObject">
+              <button class="button button-small button-positive button-outline"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
+            </ionic-datepicker>
+            
+            <ionic-timepicker input-obj="timePickerObject">
+                <button class="button button-small button-positive button-outline overflowShow"> 
+                <standard-time-no-meridian etime='timePickerObject.inputEpochTime'></standard-time-no-meridian>
+            </button>
+            </ionic-timepicker>
+        </ion-item> 
+        
+        <ion-item ng-hide="showRanges"> 
+            
+             <i class="icon ion-clock my-ionicons-big"></i>&nbsp;&nbsp;
+            <button class="button button-positive button-small {{getDuration()== 2 ? 'button-energized' : ''}}" ng-click="setDuration(2)"> 1 ora</button>
+            <button class="button button-positive button-small {{getDuration()== 3  ? 'button-energized' : ''}}" ng-click="setDuration(3)"> 1,5 ore</button>
+            <button class="button button-positive button-small {{getDuration()== 4  ? 'button-energized' : ''}}" ng-click="setDuration(4)"> 2 ore</button>
+        </ion-item>
+        
+        
+        <div class="item item-text-wrap center" ng-show="showRanges">
+            <small>Fasce orarie disponibili</small>
+             <hours-range set-range-status='setRangeStatus(pos)' get-range-status='getRangeStatus(pos)'></hours-range>
+        </div>
+    
+        <ion-item ng-show="userRole == 'segreteria' || userRole == 'maestro'">
+         
+          <label class="item item-input">
+             <i class="icon ion-ios-personadd-outline"></i>
+            <input type="text" placeholder="Utente" ng-model="booking.note">
+          </label>
+        </ion-item>
+    
+        
+        <div class="item item-icon-left item-icon-right" ng-click="getAvalaivableCourts()">
+            <i class="icon ion-ios-location my-ionicons-big"></i>
+            Campo
+            <i class="icon ion-chevron-right"></i>
+            
+        </div>
+        
+        <div class="item item-icon-left item-icon-right" ng-click="getMeteo()">
+            <i class="icon ion-thermometer my-ionicons-big"></i>
+            Meteo
+            <i class="icon ion-chevron-right"></i>
+            
+        </div>
+    
+       
+        <ion-toggle  ng-model="booking.callToAction" ng-hide="toggleCoach.value">
+            <i class="icon ion-speakerphone my-ionicons-big"></i>&nbsp;&nbsp;Call To Action!
+        </ion-toggle>
+        
+        <ion-toggle  ng-model="toggleCoach.value" ng-change="toggleCoach()">
+              <i class="icon ion-person my-ionicons-big"></i>&nbsp;&nbsp;Maestro
+        </ion-toggle>
+
+        
+
+    </ion-list>
+
+        
+</ion-content>
+
+<script id="courts.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Campo</h1>
+      <button class="button button-light" ng-click="closeModalCourts()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      </ion-item>
+    <div class="item center"> {{message}}</div>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+
+     <div class="list">
+              
+              <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
+                Campo {{court | courtName:booking.gameType}}
+              </ion-radio-fix>
+    </div>
+    
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+    
+<script id="meteo.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Meteo</h1>
+      <button class="button button-light" ng-click="closeModalMeteo()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    <ion-item class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      </ion-item>
+    <div class="item center"> {{message}}</div>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+      <ion-item >
+             <weather date="datepickerObject.inputDate"></weather>
+     </ion-item>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+
+<script id="ok-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Confermato!</h1>
+      <button class="button button-outline button-positive" ng-click="closeModalok()" >Chiudi</button>
+    </ion-header-bar>
+    <ion-content>
+<span class="item item-text-wrap">
+   
+    <b><i class="icon ion-calendar my-ion-checkmark-circled"></i></b> {{booking.get('date') | date:'dd/MM/yyyy'}}&nbsp;<br><br>
+    <b><i class="icon ion-clock my-ion-checkmark-circled"></i></b> {{booking.get('ranges') | range}}&nbsp;&nbsp;<br><br>
+    <b><i class="icon ion-android-pin my-ion-checkmark-circled"></i></b> {{booking.get("court") | courtName:booking.get('gameType') }} &nbsp;
+</span>
+
+
+<div class="row" ng-hide="waiting">
+      <div class="col">
+       <button class="button  button-block button-positive" ng-click="gotoInvitation()">
+         <i class="icon ion-at" ></i> <small>Invita amici</small>
+      </button>
+      </div>
+      <div class="col">
+      <button class="button  button-block button-balanced" ng-click="addEventToCalendar()">
+           <i class="icon ion-calendar " ></i> <small>Save the Date</small>
+      </button>
+      </div>
+</div>
+    
+    </ion-content>
+  </div>
+</script>
+
+<script id="coaches-modal.html" type="text/ng-template">
+  <div class="modal">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Seleziona il maestro</h1>
+      <button class="button button-light" ng-click="closeCoachesModal()">close</button>
+
+    </ion-header-bar>
+    <ion-content>
+
+      <div class="list card">
+
+        <span ng-show="coaches.length == 0">
+          Opssss...nessun maestro disponibile. Ma che circolo frequenti???
+        </span>
+
+        <span class="item item-icon-right item-text-wrap item-avatar " ng-repeat="coach in coaches" ng-click="selectCoach(coach)">
+          <img src="{{coach.get('img').url()}}">
+          <h2>{{coach.get('nome')}}</h2>
+
+          <p>
+            {{coach.get('descrizione')}}
+          </p>
+
+
+        </span>
+
+      </div>
+
+    </ion-content>
+  </div>
+</script>
+
+
+
+
+</ion-view>

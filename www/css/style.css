@@ -63,6 +63,19 @@ i.ion-social-pinterest-outline {
     top: 165px !important;
 }
 
+
+.bar-subheader.custom2
+{
+  height: 34px !important;
+  border: none;
+}
+
+.has-subheader2-custom {
+    top: 100px !important;
+}
+
+
+
 .courtsViewFont{
 
   
@@ -84,6 +97,11 @@ color: #444;
 .my-ion-sad-outline{
   font-size: 30px !important;
   cursor: pointer !important;
+}
+
+.my-ionicons-big{
+  font-size: 30px !important;
+  
 }
 
 .my-ion-checkmark-circled{
@@ -112,8 +130,5 @@ color: #444;
   
 }
 
-* {
-    box-shadow: none !important;
-}
 
 </style>

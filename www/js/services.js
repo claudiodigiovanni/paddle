@@ -166,6 +166,8 @@ angular.module('starter.services', [])
 
 
       checkBeforeCreateBooking: function(date,ranges,gameT){
+        
+        console.log(ranges)
 
         var defer = $q.defer()
         var courtsAvalaivable = []
@@ -214,6 +216,7 @@ angular.module('starter.services', [])
       },
 
       createBooking:function(obj){
+        console.log(obj)
         return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
         .then(
           function(courtsAvalaivable){
@@ -1236,6 +1239,18 @@ angular.module('starter.services', [])
         setCallToAction : function(booking){
             booking.set("callToAction",true);
             return booking.save()
+        },
+        
+        createInstallationObject(){
+            var push = new Ionic.Push({
+              "debug": false
+            });
+
+            push.register(function(token) {
+            console.log("Device token:",token.token);
+            Parse.Cloud.run('createInstallationObject', {token:token.token,platform:$rootScope.platform})
+            });
+      
         }
 
     }
@@ -1300,6 +1315,11 @@ angular.module('starter.services', [])
       })
       return ret;
     },
+      getRangeFromHour: function(hour, minute){
+        if (minute != '0')
+            return ((hour * 2)  + 2)
+        return ((hour * 2) + 1)
+      },
 
     getHourFromSlot : function(r){
       var ret = "";
@@ -1373,7 +1393,7 @@ angular.module('starter.services', [])
             deferred.resolve(data);
           })
           .error(function(err){
-            console.log('Error retrieving markets');
+            console.log('Error retrieving meteo!!!');
             deferred.reject(err);
           });
         return deferred.promise;
