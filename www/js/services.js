@@ -1251,7 +1251,43 @@ angular.module('starter.services', [])
             Parse.Cloud.run('createInstallationObject', {token:token.token,platform:$rootScope.platform})
             });
       
-        }
+        },
+        setPreferred(user){
+                if (!this.isPreferred(user)){
+                    Parse.User.current().add('preferences',user)
+                    return Parse.User.current().save()    
+                }
+                Parse.User.current().remove('preferences',user)
+                return Parse.User.current().save()
+                
+            
+        },
+        isPreferred(user){
+            var preferences = Parse.User.current().get('preferences')
+            var index = _.findIndex(preferences,function(p){
+                return p.id == user.id
+            })
+            return (index != -1)
+      
+        },
+        getPreferred(){
+            
+            var query = new Parse.Query(Parse.User)
+            query.equalTo('objectId',Parse.User.current().id)
+            query.include('preferences')
+            return query.find().then(function (success){
+                return success[0].get('preferences')
+            })
+            
+            
+        },
+        setStatus(message){
+                console.log(message)
+                Parse.User.current().set('status',message)
+                return Parse.User.current().save()
+                
+            
+        },
 
     }
 

@@ -114,6 +114,10 @@ color: #444;
   cursor: pointer !important;
 }
 
+.mycursor{
+  cursor: pointer !important;
+}
+
 .spinner svg {
   width: 128px;
   height: 128px;

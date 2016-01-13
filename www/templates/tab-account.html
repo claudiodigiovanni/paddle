@@ -17,6 +17,12 @@
             <i class="icon ion-chevron-right"></i>
           </a>
             
+            <a class="item item-icon-left item-icon-right" ng-click="openStatusModal()">
+            <i class="icon ion-chatbubble-working"></i>
+             (status)
+            <i class="icon ion-chevron-right"></i>
+          </a>
+            
           <a class="item item-icon-left" >
             <i class="icon ion-social-euro"></i><small>(crediti)</small>
             {{currentUser.get('residualCredit')}}
@@ -54,28 +60,28 @@
 
   </ion-content>
     
-    <script id="camera.html" type="text/ng-template">
+<script id="camera.html" type="text/ng-template">
   <div class="modal"> 
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Foto</h1>
+      <h1 class="title">Foto Attuale</h1>
       <button class="button button-light" ng-click="closeCameraModal()">close</button>
     </ion-header-bar>
   <ion-content>
     <small>{{error}}</small>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     <div class="item item-text-wrap">
-      <button class="button button-positive button-block" ng-click="takePicture()">Scatta Foto</button><br>
+      
         <div class="center">
             <img src="{{currentUser.get('image').url()}}">
         </div>
-        
+        <button class="button button-positive button-block" ng-click="takePicture()">Scatta Foto</button>
     </div>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>
 </script>
 
-    <script id="prossimiImpegni.html" type="text/ng-template">
+<script id="prossimiImpegni.html" type="text/ng-template">
   <div class="modal"> 
     <ion-header-bar class="bar-stable">
       <h1 class="title">Prossimi Impegni</h1>
@@ -98,7 +104,7 @@
   </div>
 </script>
 
-    <script id="inviti.html" type="text/ng-template">
+<script id="inviti.html" type="text/ng-template">
   <div class="modal"> 
     <ion-header-bar class="bar-stable">
       <h1 class="title">Inviti</h1>
@@ -152,7 +158,7 @@
   </div>
 </script>
 
-    <script id="saldare.html" type="text/ng-template">
+<script id="saldare.html" type="text/ng-template">
   <div class="modal"> 
     <ion-header-bar class="bar-stable">
       <h1 class="title">Partite da saldare</h1>
@@ -191,6 +197,26 @@
         </ion-list >
 
     </div>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+    
+<script id="status.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Imposta il tuo stato</h1>
+      <button class="button button-light" ng-click="closeStatusModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+     <div class="list list-inset">
+      <label class="item item-input">
+        <input type="text" placeholder="status" ng-model="status.value">
+      </label>
+    </div>
+      <button class="button button-positive button-block" ng-click="setStatus()">Conferma</button>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>

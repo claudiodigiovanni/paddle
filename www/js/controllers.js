@@ -1400,13 +1400,29 @@ $scope.closeModalok = function() {
     }).then(function(modal) {
       $scope.cameraModal = modal;
     })
+     $ionicModal.fromTemplateUrl('status.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.statusModal = modal;
+    })
 
     $scope.openCameraModal = function(){
+        
         $scope.cameraModal.show()
     }
     
     $scope.closeCameraModal = function(){
         $scope.cameraModal.hide()
+    }
+    $scope.openStatusModal = function(){
+        $scope.status = {value: Parse.User.current().get('status')}
+        $scope.statusModal.show()
+    }
+    
+    $scope.closeStatusModal = function(){
+        $scope.statusModal.hide()
     }
     
     
@@ -1647,6 +1663,11 @@ $scope.closeModalok = function() {
 
   $scope.changeMyLevel=function(){
     $state.go('changeLevel')
+  }
+  
+  $scope.setStatus = function(){
+      console.log('nnn' + $scope.status.value)
+      MyObjects.setStatus($scope.status.value)
   }
 
 
@@ -2886,6 +2907,11 @@ $scope.ok = function(){
     }
     
     $scope.openPreferitiModal = function(){
+        MyObjects.getPreferred().then(function(results){
+            console.log(results)
+            $scope.preferences = results
+            $scope.$apply()
+        })
         $scope.preferitiModal.show()
     }
     
@@ -2896,6 +2922,15 @@ $scope.ok = function(){
     $scope.closePreferitiModal = function(){
         $scope.preferitiModal.hide()
     }
+    
+    
+    //*******INIT*******************
+    MyObjects.findInvitationAlredySentForBooking($scope.bookingId).then(
+    function(results){
+        $scope.waiting = null
+        $scope.invitations = results
+    })
+    //******************************
 
 
   $scope.search = function(){
@@ -2966,6 +3001,8 @@ $scope.ok = function(){
     })
 
   }
+  
+
 
 })
 

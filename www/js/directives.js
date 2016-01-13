@@ -1,5 +1,38 @@
 angular.module('starter.directives', [])
 
+.directive('preferred', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      user: '=',
+    },
+    template: '<i class="icon  {{val}}" ng-click="setPreferred(user)"></i>',
+    link: function(scope, elem, attrs) {
+
+    },
+    controller: ['$scope', 'MyObjects',  function($scope, MyObjects) {
+        
+        $scope.val = 'ion-ios-star-outline'
+        if( MyObjects.isPreferred($scope.user)){
+            $scope.val = 'ion-ios-star energized'
+        }
+        
+        $scope.setPreferred = function(user){
+            
+            MyObjects.setPreferred(user).then(function(success){
+                $scope.val = 'ion-ios-star-outline'
+                if( MyObjects.isPreferred($scope.user)){
+                    $scope.val = 'ion-ios-star energized' 
+                }
+                $scope.$apply()
+            })
+        }
+            
+    }]
+}
+})
+
 .directive('standardTimeNoMeridian', function() {
   return {
     restrict: 'AE',
