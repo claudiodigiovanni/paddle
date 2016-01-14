@@ -383,10 +383,10 @@ angular.module('starter.services', [])
         today.setMilliseconds(0);
         query1.greaterThanOrEqualTo("date", today);
         var user = Parse.User.current()
-        if (user.get('maestro') != null){
+        /*if (user.get('maestro') != null){
           query1.equalTo("maestro", user.get('maestro'));
-        }
-        else query1.equalTo("user", user );
+        }*/
+        query1.equalTo("user", user );
         //query1.equalTo('callToAction', false);
         query1.ascending("date");
         query1.include('players');
@@ -535,7 +535,7 @@ angular.module('starter.services', [])
             .then(
                 function(results){
 
-                  //[{day:d, avalaibleRanges: []}]
+                  //formato: [{day:d, avalaibleRanges: []}]
                   courtsAvalabilities = results
                   //console.log(results);
 
@@ -554,8 +554,8 @@ angular.module('starter.services', [])
             .then(
               function(disponibilitaCoach){
 
-                //console.log(disponibilitaCoach);
-                //console.log(courtsAvalabilities);
+                console.log(disponibilitaCoach);
+                console.log(courtsAvalabilities);
 
                 _.each(disponibilitaCoach,function (d){
                   _.each(d.get('ranges'),function(r){
@@ -1248,7 +1248,11 @@ angular.module('starter.services', [])
 
             push.register(function(token) {
             console.log("Device token:",token.token);
-            Parse.Cloud.run('createInstallationObject', {token:token.token,platform:$rootScope.platform})
+            Parse.Cloud.run('createInstallationObject', {token:token.token,platform:$rootScope.platform}).then(function(success){
+                console.log('okkkkkkk createInstallationObject')
+            },function(error){
+                console.log(error)
+            })
             });
       
         },

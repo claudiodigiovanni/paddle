@@ -120,7 +120,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log, MyObjects) {
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -274,6 +274,7 @@ $scope.login = function(){
                 gameTypes.push(obj.get('gameType3'))
                 window.localStorage['gameTypes'] = JSON.stringify(gameTypes)
                 window.localStorage['circolo'] = obj.get('nome')
+                MyObjects.createInstallationObject()
 
 
           }, function(error){
@@ -895,9 +896,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           } else {
             console.log('Selected date is : ' + val)
             $scope.datepickerObject.inputDate=val
-            
-            avalaibleRanges = []
-            selectedRanges = [];
+             $scope.coachAvalabilities = []
+             avalaibleRanges = [];
+             selectedRanges = [];
+             $scope.showRanges = false
+             $scope.toggleCoach.value = false
+             $scope.avalaivableCourts = []
           }
     };
 
@@ -917,7 +921,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
           modalHeaderColor: 'bar-positive', //Optional
           modalFooterColor: 'bar-positive', //Optional
           from: new Date(), //Optional
-          to: new Date(2018, 8, 25),  //Optional
+         //from: new Date(2012, 8, 25) ,
+         to: new Date(2018, 8, 25),  //Optional
           callback: function (val) {  //Mandatory
             datePickerCallback(val);
           },
@@ -1075,7 +1080,8 @@ $scope.closeModalok = function() {
 
   $scope.gotoInvitation = function(){
     
-    //$scope.modalok.hide();
+    $scope.modalok.hide();
+    console.log ('invitation....')
     $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
   }
 
@@ -1123,12 +1129,14 @@ $scope.closeModalok = function() {
   $scope.toggleCoach = function(){
 
     $scope.showRanges = false
-    $scope.coachesModal.show();
+    $scope.waiting = "........"
 
     if ($scope.toggleCoach.value == true){
-
+      $scope.coachesModal.show();
       MyObjects.getCoaches().then(function(results){
         $scope.coaches = results
+        $scope.waiting = null
+        
         $scope.$apply()
         
       },function(error){
@@ -1151,22 +1159,21 @@ $scope.closeModalok = function() {
     booking.maestro = coach
     $scope.coachesModal.hide();
     $scope.showRanges = true
-
-    // coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
-      
+  
     var date = $scope.datepickerObject.inputDate;
     MyObjects.getCoachAvalabilitiesFilteredByBookings(date.getMonth(),date.getFullYear(),coach.id, booking.gameType )
     .then(
       function(results){
         $scope.coachAvalabilities = results
-                
+        console.log(results)
+        
+        // Formato coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
         var x = _.filter($scope.coachAvalabilities, function(item){
-          if (item.day == day ){
+          if (item.day == date.getDate() ){
             return item
           }
         })
         avalaibleRanges = _.pluck(x,'range')
-
         $scope.$apply()
     }, function(error){
       console.log(error);
@@ -1215,10 +1222,10 @@ $scope.closeModalok = function() {
   
     console.log(booking.date)
     
-    if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
+    /*if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
       $scope.message = "Inserire il nome del giocatore."
       return;
-    }
+    }*/
 
     $scope.waiting = "......."
 
@@ -1269,7 +1276,7 @@ $scope.closeModalok = function() {
   $scope.addEventToCalendar = function(){
 
       var startSlot = $scope.booking.get('ranges')[0]
-     var endSlot = $scope.booking.get('ranges')[$scope.booking.get('ranges').length - 1]
+      var endSlot = $scope.booking.get('ranges')[$scope.booking.get('ranges').length - 1]
 
       var startHM = Utility.getHourMinuteFromSlot(startSlot)
       var endHM = Utility.getHourMinuteFromSlot(endSlot)
@@ -2883,6 +2890,10 @@ $scope.ok = function(){
   $scope.invitations = []
   var actualGame = $rootScope.gameTypes[$stateParams.gameType]
   var  numPlayers = parseInt(actualGame.numberPlayers) -1
+  
+  
+  //
+  
 
 
   $scope.bookingId = $stateParams.bookingId
@@ -2907,9 +2918,12 @@ $scope.ok = function(){
     }
     
     $scope.openPreferitiModal = function(){
+        $scope.players = []
+        $scope.waiting = "....."
         MyObjects.getPreferred().then(function(results){
             console.log(results)
             $scope.preferences = results
+            $scope.waiting = null
             $scope.$apply()
         })
         $scope.preferitiModal.show()
@@ -2939,6 +2953,7 @@ $scope.ok = function(){
     if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
 
       $scope.waiting = "........"
+      $scope.preferences = []
       MyObjects.findPlayersWithName($scope.model.name)
       .then(
         function(results){

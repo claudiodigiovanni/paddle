@@ -7,26 +7,20 @@ angular.module('starter.directives', [])
     scope: {
       user: '=',
     },
-    template: '<i class="icon  {{val}}" ng-click="setPreferred(user)"></i>',
+    template: '<i class="icon  {{isPreferred ? \'ion-ios-star energized\' : \'ion-ios-star-outline\'}}" ng-click="setPreferred(user)"></i>',
     link: function(scope, elem, attrs) {
 
     },
     controller: ['$scope', 'MyObjects',  function($scope, MyObjects) {
         
-        $scope.val = 'ion-ios-star-outline'
+        $scope.isPreferred = false
         if( MyObjects.isPreferred($scope.user)){
-            $scope.val = 'ion-ios-star energized'
+            $scope.isPreferred = true
         }
         
         $scope.setPreferred = function(user){
-            
-            MyObjects.setPreferred(user).then(function(success){
-                $scope.val = 'ion-ios-star-outline'
-                if( MyObjects.isPreferred($scope.user)){
-                    $scope.val = 'ion-ios-star energized' 
-                }
-                $scope.$apply()
-            })
+            $scope.isPreferred = ! $scope.isPreferred
+            MyObjects.setPreferred(user)
         }
             
     }]

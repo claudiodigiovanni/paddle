@@ -24,7 +24,7 @@
             <i class="icon ion-calendar my-ionicons-big"></i>&nbsp;&nbsp;
             <ionic-datepicker input-obj="datepickerObject">
               <button class="button button-small button-positive button-outline"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
-            </ionic-datepicker>
+            </ionic-datepicker>&nbsp;&nbsp;
             
             <ionic-timepicker input-obj="timePickerObject">
                 <button class="button button-small button-positive button-outline overflowShow"> 
@@ -36,9 +36,9 @@
         <ion-item ng-hide="showRanges"> 
             
              <i class="icon ion-clock my-ionicons-big"></i>&nbsp;&nbsp;
-            <button class="button button-positive button-small {{getDuration()== 2 ? 'button-energized' : ''}}" ng-click="setDuration(2)"> 1 ora</button>
-            <button class="button button-positive button-small {{getDuration()== 3  ? 'button-energized' : ''}}" ng-click="setDuration(3)"> 1,5 ore</button>
-            <button class="button button-positive button-small {{getDuration()== 4  ? 'button-energized' : ''}}" ng-click="setDuration(4)"> 2 ore</button>
+            <button class="button button-positive button-small {{getDuration()== 2 ? 'button-energized' : ''}}" ng-click="setDuration(2)"> 1 ora&nbsp;</button>&nbsp;&nbsp;
+            <button class="button button-positive button-small {{getDuration()== 3  ? 'button-energized' : ''}}" ng-click="setDuration(3)"> 1,5 ore</button>&nbsp;&nbsp;
+            <button class="button button-positive button-small {{getDuration()== 4  ? 'button-energized' : ''}}" ng-click="setDuration(4)"> 2 ore&nbsp;</button>
         </ion-item>
         
         
@@ -93,9 +93,9 @@
       <button class="button button-light" ng-click="closeModalCourts()">close</button>
     </ion-header-bar>
     <ion-content>
-    <ion-item class="center" ng-show="waiting">
+    <div class="center" ng-show="waiting">
         <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
-      </ion-item>
+    </div>
     <div class="item center"> {{message}}</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
@@ -171,6 +171,9 @@
 
     </ion-header-bar>
     <ion-content>
+    <div class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+    </div>
 
       <div class="list card">
 

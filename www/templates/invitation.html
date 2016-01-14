@@ -34,7 +34,7 @@
         <a class="item item-avatar item-icon-right" href="#" ng-repeat="i in invitations">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
           <h2>{{i.get('user').get('nome')}} - Liv. {{i.get('user').get('level')}}</h2>
-          <p>Back off, man. I'm a scientist.</p>
+          <p>{{i.get('user').get('status') ? i.get('user').get('status') : "Back off, man. I'm a scientist."}}</p>
         </a>
     </div>
     
@@ -70,7 +70,7 @@
         <a class="item item-avatar item-icon-right"  ng-repeat="p in players">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
           <h2>{{p.get('nome')}} <b>(Livello {{p.get('level')}})</b></h2>
-          <p>Back off, man. I'm a scientist.</p>
+          <p>{{p.get('status') ? p.get('status') : "Back off, man. I'm a scientist."}}</p>
             <u><small class="positive mycursor" ng-click="invite(p)">+ invita</small></u>
             <preferred user="p"></preferred>
         </a>
@@ -103,7 +103,8 @@
         <a class="item item-avatar item-icon-right" ng-repeat="p in preferences">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
           <h2>{{p.get('nome')}} <b>(Livello {{p.get('level')}})</b></h2>
-          <p>Back off, man. I'm a scientist.</p>
+          <p>{{p.get('status') ? p.get('status') : "Back off, man. I'm a scientist."}}</p>
+            <u><small class="positive mycursor" ng-click="invite(p)">+ invita</small></u>
            <preferred user="p"></preferred>
         </a>
     </div>

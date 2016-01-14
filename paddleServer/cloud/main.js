@@ -490,7 +490,8 @@ var InvitationRequestFollowUp = function(response,user,mail,booking){
   .then(
     function(obj){
       
-      sendEmail(mail,"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire chi è il mittente!! ")
+      //sendEmail(mail,"Invito Utente","Sei stato inviato ad una partita! Collegati a Magic Booking per scoprire chi è il mittente!! ")
+      sendPush (user.id,'Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per scoprire chi è il mittente!')
       response.success('ok')
   }, function(error){
     console.log(error);
@@ -654,7 +655,17 @@ var user = request.user;
   installation.set('deviceToken',token)
   installation.set('deviceType',platform)
   installation.set('user',user)
-  installation.save()
+  
+  var channels = ['mb']
+  installation.set('channels',channels)
+  installation.save().then(function(success){
+        
+        response.success("ok createInstallationObject " )
+    }, function(error){
+        
+        response.error(error);
+        
+    })
 });
 
 
@@ -662,7 +673,15 @@ Parse.Cloud.define("sendPush", function(request, response){
  
     var message = request.params.message;
     var userId = request.params.userId;
-    sendPush(userId,message)
+    sendPush(userId,message).then(function(success){
+        console.log('push ok')
+        response.success("ok push " )
+    }, function(error){
+        console.log(error)
+        response.error(error);
+        
+    })
+    
 });
 
 var sendPush = function(userId,message){
@@ -677,8 +696,9 @@ var sendPush = function(userId,message){
     pushQuery.equalTo('user', user);
 
     // Send push notification to query
-    Parse.Push.send({
-        where: pushQuery,
+    return Parse.Push.send({
+        //where: pushQuery,
+        channels:['mb'],
         data: {
             alert: message
         }
