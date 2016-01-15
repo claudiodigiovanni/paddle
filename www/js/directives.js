@@ -224,6 +224,7 @@ angular.module('starter.directives', [])
           delete: '&',
           invitation: '&',
           call: '&',
+          message: '&',
           date: '=',
           text: '@',
           showpay: '@'
@@ -253,13 +254,6 @@ angular.module('starter.directives', [])
           $scope.gotoInvitation = function(booking){
             $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
           }*/
-
-          $scope.info = function(){
-            $ionicPopup.alert({
-               title: 'Info',
-               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili. L'opzione <em>Call To Action</em> permette agli altri giocatori interessati di unirsi al match (se hanno un livello di gioco simile al tuo ovviamente...)" 
-             });
-          }
 
 
         }]
@@ -313,7 +307,7 @@ angular.module('starter.directives', [])
               //http://openweathermap.org/img/w/10d.png
             })
 
-            console.log(forecastDay);
+            //console.log(forecastDay);
             })
             .then(
             function(obj){
@@ -337,10 +331,10 @@ angular.module('starter.directives', [])
 
               //dataChart = {hour:h,temp:t,rain:r,wind:w, icon:i}
               dataChart = {hour:h,icon:i}
-              console.log(dataChart);
+              //console.log(dataChart);
               $scope.dataChart = dataChart
 
-              console.log($scope.day);
+              //console.log($scope.day);
             //-----------FINE WATCH------------
 
 

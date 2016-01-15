@@ -697,8 +697,8 @@ var sendPush = function(userId,message){
 
     // Send push notification to query
     return Parse.Push.send({
-        //where: pushQuery,
-        channels:['mb'],
+        where: pushQuery,
+        //channels:['mb'],
         data: {
             alert: message
         }

@@ -1,5 +1,5 @@
 <ion-list >
-  <ion-item><b>{{text}} {{date}} <i class="icon ion-information-circled positive" ng-click="info()"></i></b></ion-item>
+  
   <ion-item ng-repeat="booking in bookings">
 
     <b><i class="icon ion-android-done"></i></b> <small>(id:{{booking.id}})</small> &nbsp; {{booking.get('gameType') | gameName}}&nbsp;<b><i class="icon ion-speakerphone" ng-show="booking.get('callToAction') == true"></i></b><br>
@@ -9,14 +9,14 @@
 
     <b><i class="icon ion-android-pin"></i></b> {{booking.get("court") | courtName:booking.get('gameType') }} <br>
     <b><i class="icon ion-person"></i></b>&nbsp;{{booking.get("user").get("nome")}} <br>
-    <b ng-show="booking.get('note') != null"><i class="icon ion-compose"></i>&nbsp;{{booking.get("note")}} </b><br>
+    <b ng-show="booking.get('note') != null"><i class="icon ion-compose"></i>&nbsp;{{booking.get("note")}} </b>
       
     <div ng-show="booking.get('players').length > 0 ">
         <i class="icon ion-person-stalker" ></i><br>
         <small ng-repeat="player in booking.get('players')">
         - {{player.get('nome')}} (Livello: {{player.get('level')}}) <br>
         </small>
-    </div><br>
+    </div>
 
     <div ng-show="showpay == 'true'">
         <div class="item-icon-right" ng-show="booking.get('payed') == true">
@@ -27,20 +27,21 @@
         <i class="icon ion-sad-outline assertive"></i>
         </div>
     </div>
-
-
-      <ion-option-button class="button-assertive"
-                     ng-click="delete({b:booking})">
-        Cancella
-    </ion-option-button>
-    <ion-option-button class="button-positive"
-                     ng-click="invitation({b:booking})">
-        Invita
-    </ion-option-button>
-    <ion-option-button class="button-energized"
-                     ng-click="call({b:booking})">
-    Call To Action
-    </ion-option-button>
-
+      
+      <div class="row">
+          <div class="col">
+              <i class="icon ion-trash-a assertive my-ionicons-big" ng-click="delete({b:booking})"></i>
+          </div>
+          <div class="col">
+              <i class="icon ion-ios-personadd-outline positive my-ionicons-big" ng-click="invitation({b:booking})"></i>
+          </div>
+          <div class="col">
+              <i class="icon ion-speakerphone energized my-ionicons-big" ng-click="call({b:booking})"></i>
+          </div>
+          <div class="col">
+              <i class="icon ion-ios-email-outline royal my-ionicons-big" ng-click="message({b:booking})"></i>
+          </div>
+      </div>
+      
   </ion-item>
 </ion-list>

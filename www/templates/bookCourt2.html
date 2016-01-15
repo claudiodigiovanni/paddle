@@ -1,32 +1,31 @@
 <ion-view view-title="Disponibilità Campi">
 <div class="bar bar-header bar-subheader custom2">
-        <button class="button button-balanced button-block" ng-click="book()">
-          Prenota {{gameTypes[currentGameType.value].name}}
-        </button>   
+        <button class="button button-balanced button-block" ng-click="book()" ng-hide="waiting">
+          <b>Prenota {{gameTypes[currentGameType.value].name}}</b>
+        </button>   <br><br>     
 </div>
 
 <ion-content class="has-header has-subheader2-custom" scroll="true">
 
-  <div class="card" style="text-align:center" ng-if="message">
-    <small>
+  
+    <div class="item item-text-wrap alert" ng-if="message">
       <i class="icon ion-checkmark-circled energized"></i>
       {{message}}
-    </small>
-  </div>
-
-    <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
-    <br>
-    <ion-list>
-      
+        <br>
+    </div>
+    
+    <div class="item center" ng-show="waiting">
+       <ion-spinner class="spinnerx" icon="dots" ></ion-spinner>
+    </div>
+    
+    <ion-list>  
         <ion-item>
-            
-            
             <i class="icon ion-calendar my-ionicons-big"></i>&nbsp;&nbsp;
             <ionic-datepicker input-obj="datepickerObject">
               <button class="button button-small button-positive button-outline"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
             </ionic-datepicker>&nbsp;&nbsp;
             
-            <ionic-timepicker input-obj="timePickerObject">
+            <ionic-timepicker input-obj="timePickerObject" ng-hide="showRanges">
                 <button class="button button-small button-positive button-outline overflowShow"> 
                 <standard-time-no-meridian etime='timePickerObject.inputEpochTime'></standard-time-no-meridian>
             </button>
@@ -198,7 +197,30 @@
   </div>
 </script>
 
+<script id="courts.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Campo</h1>
+      <button class="button button-light" ng-click="closeModalCourts()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    <div class="center" ng-show="waiting">
+        <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+    </div>
+    <div class="item center"> {{message}}</div>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
-
+     <div class="list">
+              
+              <ion-radio-fix ng-model="booking.court" ng-value="{{court}}" ng-repeat="court in avalaivableCourts">
+                Campo {{court | courtName:booking.gameType}}
+              </ion-radio-fix>
+    </div>
+    
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+    
 
 </ion-view>

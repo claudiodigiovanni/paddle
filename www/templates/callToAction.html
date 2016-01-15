@@ -8,33 +8,29 @@
  <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
  </div>
 
-<p class="center" ng-show="callToActionOpen.length == 0"><br><br><i class="icon ion-information positive"></i> Ancora nessuna partita aperta......</p>
+<p class="center" ng-show="callToActionOpen.length == 0"><br><br>
+    <i class="icon ion-information positive"></i> Ancora nessuna partita aperta......
+</p>
   
   <div class="list">
   
 
-    <a class="item" ng-repeat="cta in callToActionOpen" >
-      <div class="row">
-      <div class="col-25">
-        <i class="icon ion-ios-tennisball-outline"></i>
-      </div>
-      <div class="col"><h2><i class="icon ion-calendar"></i> {{cta.get('date') | date:'dd/MM/yyyy'}} &nbsp;<i class="icon ion-clock"></i>{{cta.get('ranges') | range}}</h2>
-      <p>Organizzatore:{{cta.get('user').get('nome')}}</p>
-       {{cta.get('court') | courtName:cta.get('gameType')}} &nbsp;</div></div>
+    <a class="item call" ng-repeat="cta in callToActionOpen" >
+       <i class="icon ion-android-done"></i> {{cta.get('gameType') | gameName}}&nbsp;<i class="icon ion-speakerphone" ng-show="cta.get('callToAction') == true"></i><br>
 
+    <b><i class="icon ion-calendar"></i></b> {{cta.get('date') | date:'dd/MM/yyyy'}}<br>
+    <b><i class="icon ion-clock"></b></i> {{cta.get('ranges') | range}}<br>
 
-      <div class="list list-inset">
-        <div class="item">
-          <b>Partecipanti </b>
-        </div>
-        <div class="item" ng-show="cta.get('players').length == 0">
-          Ehiii! Ancora nessun iscritto!
-        </div>
-        <div class="item" ng-repeat="player in cta.get('players')">
-
-          <b>Username:</b> {{player.get('username')}} - <b>Livello:</b> {{player.get('level')}}
-        </div>
-      </div>
+    <b><i class="icon ion-android-pin"></i></b> {{cta.get("court") | courtName:cta.get('gameType') }} <br>
+    <b><i class="icon ion-person"></i></b>&nbsp;{{cta.get("user").get("nome")}} <br>
+    <b ng-show="cta.get('note') != null"><i class="icon ion-compose"></i>&nbsp;{{cta.get("note")}} </b>
+      
+    <div ng-show="cta.get('players').length > 0 ">
+        <i class="icon ion-person-stalker" ></i><br>
+        <small ng-repeat="player in cta.get('players')">
+        - {{player.get('nome')}} (Livello: {{player.get('level')}}) <br>
+        </small>
+    </div>
 
       <button class="button button-positive button-full" ng-click="add(cta)" ng-show="mayIJoin(cta)">
          Unisciti!

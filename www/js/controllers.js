@@ -988,6 +988,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.meteoModal = modal;
   })
   
+  
   $scope.getMeteo = function(){
       $scope.meteoModal.show()
   }
@@ -1011,7 +1012,7 @@ $scope.closeModalok = function() {
     $scope.modalok.hide();
     $state.go('tab.account');
   };
-    
+
     
 
   $scope.$on('$destroy', function() {
@@ -1039,7 +1040,7 @@ $scope.closeModalok = function() {
   
 
   $scope.getDuration = function(){
-    console.log($scope.booking.duration)
+    //console.log($scope.booking.duration)
     return $scope.booking.duration
   }
 
@@ -1209,7 +1210,8 @@ $scope.closeModalok = function() {
           
   }
 
-
+  
+   
   $scope.book = function(){
 
     var date = $scope.datepickerObject.inputDate;
@@ -1222,14 +1224,14 @@ $scope.closeModalok = function() {
   
     console.log(booking.date)
     
-    /*if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
-      $scope.message = "Inserire il nome del giocatore."
+    if ($scope.showRanges && selectedRanges.length == 0){
+      $scope.message = "Occorre selezionare almeno una fascia oraria."
       return;
-    }*/
-
-    $scope.waiting = "......."
+    }
 
     
+
+    $scope.waiting = "......."
    
     booking.ranges = getRanges();
 
@@ -1414,6 +1416,15 @@ $scope.closeModalok = function() {
     }).then(function(modal) {
       $scope.statusModal = modal;
     })
+     $ionicModal.fromTemplateUrl('message.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.messageModal = modal;
+  })
+  
+  
 
     $scope.openCameraModal = function(){
         
@@ -1432,7 +1443,18 @@ $scope.closeModalok = function() {
         $scope.statusModal.hide()
     }
     
+    $scope.closeMessageModal = function() {
+        $scope.message = null
+        //$scope.$apply()
+        $scope.messageModal.hide();
+        //$state.go('tab.account');
+    };
     
+    $scope.gotoMessage = function(booking){
+     $scope.bookingMessage = booking
+     $scope.messageToSend = {value:""}
+     $scope.messageModal.show()
+    }
     //*********************************************
   var vm = $scope;
   var imageData;
@@ -1461,6 +1483,7 @@ $scope.closeModalok = function() {
     $cordovaCamera.getPicture(cameraOptions).then(function(returnedImageData) {
     imageData = returnedImageData;
     submitObject(imageData)
+    $scope.cameraModal.hide()
         
  
     }, function(err) {
@@ -1567,7 +1590,7 @@ $scope.closeModalok = function() {
       function(obj){
         MyObjects.deleteParseObjectFromCollection(invitation,$scope.invitations)
         $scope.waitingMyInvitations = null
-        $scope.$apply()
+        //$scope.$apply()
         
     }, function(error){
         $scope.waitingMyInvitations = null
@@ -1607,6 +1630,13 @@ $scope.closeModalok = function() {
        template: "Trascina verso destra l'elemento per visualizzare le opzioni disponibili. Anche se hai pagato la tua quota potresti continuare a vedere la prenotazione in quest'area perchè la segreteria non ha ricevuto tutte le restanti quote." 
      });
   }
+  
+    $scope.infoProssimiImpegni = function(){
+            $ionicPopup.alert({
+               title: 'Info',
+               template: "Le icone hanno, nell'ordine, il seguente significato: cancella, invita, trasforma in una Call To Action, invia un messaggio ai giocatori della partita." 
+             });
+          }
 
   
   $scope.delete = function(item){
@@ -1673,10 +1703,18 @@ $scope.closeModalok = function() {
   }
   
   $scope.setStatus = function(){
-      console.log('nnn' + $scope.status.value)
+      
       MyObjects.setStatus($scope.status.value)
+      $scope.statusModal.hide()
   }
-
+  
+  $scope.sendMessage=function(){
+      
+      MyObjects.sendMessageBookingUsers($scope.bookingMessage,$scope.messageToSend.value)
+      $scope.messageModal.hide()
+      $scope.message = "Messaggio inviato!"
+      
+  }
 
 })
 
@@ -2993,6 +3031,7 @@ $scope.ok = function(){
     .then(
       function(obj){
         console.log('ok');
+        $scope.message = "Utente invitato!"
         return MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
     }, function(error){
       console.log(error);

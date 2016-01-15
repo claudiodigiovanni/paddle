@@ -434,7 +434,7 @@ angular.module('starter.services', [])
         if (item.get('user').id == Parse.User.current().id){
           var b = new Booking();
           b.id = item.id
-          console.log(b);
+          //console.log(b);
           return b.destroy();  
         }
         else{
@@ -875,45 +875,43 @@ angular.module('starter.services', [])
 
         acceptInvitation: function(invitation){
 
-          var defer = $q.defer()
-          try{
-                var booking = invitation.get('booking')
-                var players = booking.get('players')
-                //console.log(players)
-                var index = _.findIndex(players,function(p){
-                  return p.id == Parse.User.current().id
-                })
-                console.log(index)
-                if (index != -1){
-                  throw "Utente già iscritto alla partita..."
-                }
+            var defer = $q.defer()
+            var booking = invitation.get('booking')
+            var players = booking.get('players')
+            //console.log(players)
+            var index = _.findIndex(players,function(p){
+              return p.id == Parse.User.current().id
+            })
+            console.log(index)
+            if (index != -1){
+              defer.reject("Utente già iscritto alla partita...")
+            }
+            else{
                 booking.add('players',Parse.User.current())
-                return booking.save()
-                .then(
-                  function(obj){
-                    var InvitationRequest = Parse.Object.extend("InvitationRequest");
-                    var ir = new InvitationRequest();
-                    ir.id = invitation.id
-                    ir.destroy()
-                }, function(error){
-                  console.log(error);
-                })
-              }
-              catch(error){
-                console.log(error)
-                defer.reject(error)
-                return defer.promise;
-              }
-
+                booking.save()
+                invitation.destroy()
+                Parse.Cloud.run('sendPush', {userId:booking.get('user').id,message:"Il tuo invito è stato accettato!"})
+                defer.resolve("ok acceptInvitation");
+            }
+            return defer.promise; 
         },
 
         declineInvitation: function(invitation){
-
-          var InvitationRequest = Parse.Object.extend("InvitationRequest");
-          var ir = new InvitationRequest();
-          ir.id = invitation.id
-          return ir.destroy()
-
+            if (invitation.get('booking'))
+                Parse.Cloud.run('sendPush', {userId:invitation.get('booking').get('user').id,message:"Opsss....Il tuo invito è stato rifiutato!"})
+            return invitation.destroy()
+        },
+        
+        sendMessageBookingUsers: function(booking,messagex){
+            var players = booking.get('players')
+            _.each(players,function(p){
+                console.log("sending Message....")
+                Parse.Cloud.run('sendPush', {userId:p.id,message:messagex}).then(function(success){
+                    console.log("message ok")
+                },function(error){
+                    console.log(error)
+                })
+            })
         },
 
         courtsView: function(datex,gameType){

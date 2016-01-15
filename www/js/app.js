@@ -339,6 +339,7 @@ controller: 'manageSubscribtions'
 .state('invitation', {
   url: '/invitation/:bookingId/:gameType',
   templateUrl: 'templates/invitation.html',
+  cache: false,
   controller: 'InvitationCtrl'
 
 })

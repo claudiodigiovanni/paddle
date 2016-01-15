@@ -84,18 +84,18 @@
 <script id="prossimiImpegni.html" type="text/ng-template">
   <div class="modal"> 
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Prossimi Impegni</h1>
+      <h1 class="title">Prossimi Impegni&nbsp;<i class="icon ion-information-circled positive" ng-click="infoProssimiImpegni()"></i></h1>
       <button class="button button-light" ng-click="closeProssimiImpegniModal()">close</button>
     </ion-header-bar>
   <ion-content>
-    <small>{{error}}</small>
+    <div class="center mymessage">{{message}}</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
      <div class="item item-text-wrap" >
       <p class="center" ng-show="waitingMyBookings">
         <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyBookings"></ion-spinner>
       </p>
       <!-- xxx -->
-      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" invitation="invitation(b)" showpay="false" call="setCallToAction(b)"></show-bookings>
+      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" invitation="invitation(b)" showpay="false" call="setCallToAction(b)" message="gotoMessage(b)"></show-bookings>
       <!-- xxx -->
     </div>
     
@@ -107,7 +107,7 @@
 <script id="inviti.html" type="text/ng-template">
   <div class="modal"> 
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Inviti</h1>
+      <h1 class="title">Inviti Ricevuti</h1>
       <button class="button button-light" ng-click="closeInvitiModal()">close</button>
     </ion-header-bar>
   <ion-content>
@@ -117,29 +117,35 @@
         <p ng-show="waitingMyInvitations" class="center">
           <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyInvitations"></ion-spinner>
         </p>
+        
+        <p class="center" ng-show="invitations.length == 0">
+            <i class="icon ion-information positive"></i> Non hai nessun invito....
+        </p>
+        
+        <p class="center" ng-show="invitations.length != 0" >
+            (Trascina gli elementi verso destra)
+        </p>
+        
       <ion-list >
         
-        <ion-item><b>Inviti Ricevuti <i class="icon ion-information-circled positive" ng-click="info()"></i></b></ion-item>
+        
         <ion-item ng-repeat="i in invitations">
 
-          <b><i class="icon ion-person"></i></b> {{i.get('booking').get('user').get('nome')}}&nbsp;
-          <b><i class="icon ion-android-done"></i></b> {{i.get('booking').get('gameType') | gameName}}&nbsp;
+          <b><i class="icon ion-android-done"></i></b> {{i.get('booking').get('gameType') | gameName}}<br>
+          <b><i class="icon ion-person"></i></b> {{i.get('booking').get('user').get('nome')}}<br>
+          
 
-          <b><i class="icon ion-calendar"></i></b> {{i.get('booking').get('date') | date:'dd/MM/yyyy'}}&nbsp;
-          <b><i class="icon ion-clock"></b></i> {{i.get('booking').get('ranges') | range}}&nbsp;&nbsp;
+          <b><i class="icon ion-calendar"></i></b> {{i.get('booking').get('date') | date:'dd/MM/yyyy'}}<br>
+          <b><i class="icon ion-clock"></b></i> {{i.get('booking').get('ranges') | range}}<br>
+          <b><i class="icon ion-android-pin"></i></b> {{i.get('booking').get("court") | courtName:i.get('booking').get('gameType') }}<br>
 
-
-          &nbsp;&nbsp;
-          <b><i class="icon ion-android-pin"></i></b> {{i.get('booking').get("court") | courtName:i.get('booking').get('gameType') }} &nbsp;
-
-        <i class="icon ion-person-stalker" ></i>&nbsp;
-        <ion-list >
-          <ion-item ng-repeat="player in i.get('booking').get('players') track by $index">
-              {{player.get('nome')}} - Livello: {{player.get('level')}}
-          </ion-item>
-        </ion-list>
-
-
+        <div ng-show="booking.get('players').length > 0 ">
+            <i class="icon ion-person-stalker" ></i><br>
+            <small ng-repeat="player in i.get('booking').get('players') track by $index">
+            - {{player.get('nome')}} (Livello: {{player.get('level')}}) <br>
+            </small>
+        </div>
+       
           <ion-option-button class="button-balanced"
                            ng-click="accept(i)">
           Accetta
@@ -217,6 +223,30 @@
       </label>
     </div>
       <button class="button button-positive button-block" ng-click="setStatus()">Conferma</button>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+
+<script id="message.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Invia Messaggio</h1>
+      <button class="button button-light" ng-click="closeMessageModal()">close</button>
+    </ion-header-bar>
+    <ion-content>
+    
+    <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
+      
+    <div class="item center"> {{message}}</div>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+       <div class="list list-inset">
+          <label class="item item-input">
+            <i class="icon ion-ios-email-outline placeholder-icon"></i>
+            <input type="text" placeholder="messaggio" ng-model="messageToSend.value">
+          </label>
+        </div>
+        <button class="button button-positive button-block" ng-click="sendMessage()">invia</button>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>
