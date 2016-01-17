@@ -1,13 +1,9 @@
-<ion-view view-title="Disponibilità Campi">
-<div class="bar bar-header bar-subheader custom2">
-        <button class="button button-balanced button-block" ng-click="book()" ng-hide="waiting">
+<ion-view view-title='Prenotazione'>
+
+<ion-content scroll="true">
+    <button class="button button-balanced button-block" ng-click="book()" ng-hide="waiting">
           <b>Prenota {{gameTypes[currentGameType.value].name}}</b>
-        </button>   <br><br>     
-</div>
-
-<ion-content class="has-header has-subheader2-custom" scroll="true">
-
-  
+    </button>   
     <div class="item item-text-wrap alert" ng-if="message">
       <i class="icon ion-checkmark-circled energized"></i>
       {{message}}
@@ -20,21 +16,43 @@
     
     <ion-list>  
         <ion-item>
-            <i class="icon ion-calendar my-ionicons-big"></i>&nbsp;&nbsp;
-            <ionic-datepicker input-obj="datepickerObject">
-              <button class="button button-small button-positive button-outline"> {{datepickerObject.inputDate | date:'dd - MMMM - yyyy'}}</button>
-            </ionic-datepicker>&nbsp;&nbsp;
+            <div class="row">
+                <div class="col-10">
+                 <i class="icon ion-ios-calendar-outline  my-ionicons-big"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+                <div class="col">
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                      Giorno
+                    </div>
+                    <select ng-options="item.value as item.label for item in weekDays" ng-model="selectedDate" ng-change="dateCallback(selectedDate)">
+                    </select>
+                  </label>
+                </div>
+            </div>
+             </ion-item>
+         <ion-item ng-hide="showRanges">
+             <div class="row">
+                <div class="col-10">
+                 <i class="icon ion-clock my-ionicons-big"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+                <div class="col">
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                      Ora
+                    </div>
+                    <select ng-options="item.value as item.label for item in hours" ng-model="selectedRange" ng-change="timeCallback(selectedRange)">
+                    </select>
+                  </label>
+                </div>
+            </div>
             
-            <ionic-timepicker input-obj="timePickerObject" ng-hide="showRanges">
-                <button class="button button-small button-positive button-outline overflowShow"> 
-                <standard-time-no-meridian etime='timePickerObject.inputEpochTime'></standard-time-no-meridian>
-            </button>
-            </ionic-timepicker>
-        </ion-item> 
+        </ion-item>
+        
         
         <ion-item ng-hide="showRanges"> 
             
-             <i class="icon ion-clock my-ionicons-big"></i>&nbsp;&nbsp;
+             <i class="icon ion-ios-timer-outline my-ionicons-big"></i>&nbsp;&nbsp;
             <button class="button button-positive button-small {{getDuration()== 2 ? 'button-energized' : ''}}" ng-click="setDuration(2)"> 1 ora&nbsp;</button>&nbsp;&nbsp;
             <button class="button button-positive button-small {{getDuration()== 3  ? 'button-energized' : ''}}" ng-click="setDuration(3)"> 1,5 ore</button>&nbsp;&nbsp;
             <button class="button button-positive button-small {{getDuration()== 4  ? 'button-energized' : ''}}" ng-click="setDuration(4)"> 2 ore&nbsp;</button>
@@ -78,10 +96,16 @@
               <i class="icon ion-person my-ionicons-big"></i>&nbsp;&nbsp;Maestro
         </ion-toggle>
 
-        
-
     </ion-list>
+    
+    <div class="item center" ng-show="waiting">
+       <ion-spinner class="spinnerx" icon="dots" ></ion-spinner>
+    </div>
 
+    <br>
+    <button class="button button-balanced button-block" ng-click="book()" ng-hide="waiting">
+          <b>Prenota {{gameTypes[currentGameType.value].name}}</b>
+    </button>   
         
 </ion-content>
 
@@ -123,7 +147,7 @@
     <div class="item center"> {{message}}</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
       <ion-item >
-             <weather date="datepickerObject.inputDate"></weather>
+             <weather date="selectedDate.toDate()"></weather>
      </ion-item>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>

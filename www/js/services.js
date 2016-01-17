@@ -818,7 +818,7 @@ angular.module('starter.services', [])
 
         },
 
-        invite:function(userIdToInvite,email, bookingIdCalled){
+        /*invite:function(userIdToInvite,email, bookingIdCalled){
           console.log('invite service');
           var defer = $q.defer()
 
@@ -837,7 +837,41 @@ angular.module('starter.services', [])
           })
           return defer.promise
 
+        },*/
+        invite:function(userIdToInvite,email, bookingIdCalled){
+            var promises = []
+            console.log('invite service');
+            var user = new Parse.User()
+            user.id = userIdToInvite
+            var Booking = Parse.Object.extend("Booking");
+            var booking = new Booking()
+            booking.id = bookingIdCalled
+            var query1 = new Parse.Query(Booking)
+            query1.equalTo('objectId',bookingIdCalled)
+            query1.equalTo('players',user)
+            promises.push(query1.find())
+            
+            var InvitationRequest = Parse.Object.extend("InvitationRequest");
+            var query2 = new Parse.Query(InvitationRequest)
+            query2.equalTo('user',user)
+            query2.equalTo('booking',booking)
+            promises.push(query2.find())
+            $q.all(promises).then(function(results){
+                    
+                if (results[0].length == 0 && results[1].length == 0){
+                      var InvitationRequest = Parse.Object.extend("InvitationRequest");
+                      var ir = new InvitationRequest()
+                      ir.set('user',user)
+                      ir.set('booking',booking)
+                      ir.save()
+                      Parse.Cloud.run('sendPush', {userId:userIdToInvite,message:"Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per scoprire chi è il mittente!"})
+                }
+                else
+                    console.log("L'utente è gia della partita! oppure è già stato invitato....")
+                            
+            })
         },
+        
         findInvitationAlredySentForBooking: function(bookingId){
 
           var Booking = Parse.Object.extend("Booking");
@@ -873,7 +907,7 @@ angular.module('starter.services', [])
           return query.count()
         },
 
-        acceptInvitation: function(invitation){
+            acceptInvitation: function(invitation){
 
             var defer = $q.defer()
             var booking = invitation.get('booking')
@@ -1239,7 +1273,7 @@ angular.module('starter.services', [])
             return booking.save()
         },
         
-        createInstallationObject(){
+        createInstallationObject: function(){
             var push = new Ionic.Push({
               "debug": false
             });
@@ -1254,7 +1288,7 @@ angular.module('starter.services', [])
             });
       
         },
-        setPreferred(user){
+        setPreferred: function(user){
                 if (!this.isPreferred(user)){
                     Parse.User.current().add('preferences',user)
                     return Parse.User.current().save()    
@@ -1264,7 +1298,7 @@ angular.module('starter.services', [])
                 
             
         },
-        isPreferred(user){
+        isPreferred: function(user){
             var preferences = Parse.User.current().get('preferences')
             var index = _.findIndex(preferences,function(p){
                 return p.id == user.id
@@ -1272,7 +1306,7 @@ angular.module('starter.services', [])
             return (index != -1)
       
         },
-        getPreferred(){
+        getPreferred:function(){
             
             var query = new Parse.Query(Parse.User)
             query.equalTo('objectId',Parse.User.current().id)
@@ -1283,13 +1317,20 @@ angular.module('starter.services', [])
             
             
         },
-        setStatus(message){
+        setStatus:function(message){
                 console.log(message)
                 Parse.User.current().set('status',message)
                 return Parse.User.current().save()
                 
             
         },
+        getPlayersByLevel: function(){
+             var query = new Parse.Query(Parse.User)
+            query.equalTo('level',Parse.User.current().get('level'))
+            query.equalTo('circolo',Parse.User.current().get('circolo'))
+            return query.find()
+            
+        }
 
     }
 
@@ -1343,6 +1384,18 @@ angular.module('starter.services', [])
       return weeks;
 
     },
+    getWeekdayFromToday: function(){
+      
+      var ret = []
+      moment.locale('it');
+      for (i=0; i <= 7 ; i++) {
+          var day = {value:moment().add(i, 'days'),label:moment().add(i, 'days').format('dd DD/MM/GG')}
+          ret.push(day)
+     };
+        return ret
+    },
+      
+     
     getHoursFromRanges: function(ranges){
       var ret = "";
       _.each(ranges,function(r){
@@ -1353,6 +1406,16 @@ angular.module('starter.services', [])
       })
       return ret;
     },
+    getHours:function(){
+        var ranges = []
+        for (i = 15 ; i <=47 ; i++){
+            var hm = this.getHourMinuteFromSlot(i)[0] + ":" + this.getHourMinuteFromSlot(i)[1]
+            ranges.push({value:i, label:hm})
+        }      
+        return ranges 
+    
+    },
+      
       getRangeFromHour: function(hour, minute){
         if (minute != '0')
             return ((hour * 2)  + 2)
@@ -1374,9 +1437,9 @@ angular.module('starter.services', [])
       //[hh,mm]
       var ret = [];
       
-        console.log(r)
+        //console.log(r)
         r  = r - 0.5
-        console.log(r)
+        //console.log(r)
         if (parseInt(r) % 2 === 0 ){
           ret.push(parseInt(r) / 2)
           ret.push(0)

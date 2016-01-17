@@ -880,81 +880,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-.controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading, $cordovaCalendar) {
+.controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading,$cordovaCalendar,$ionicPopup) {
+    
+    
+    
     
     //*************************SEZIONE MODAL*******************************************************
-     var disabledDates = [ 
-      new Date(2016, 0, 12), //months are 0-based, this is August, 10th!
-    ];
-    
-    var weekDaysList = ["D", "L", "M", "M", "G", "V", "S"];
-    var monthList = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-
-    var datePickerCallback = function (val) {
-          if (typeof(val) === 'undefined') {
-            console.log('No date selected');
-          } else {
-            console.log('Selected date is : ' + val)
-            $scope.datepickerObject.inputDate=val
-             $scope.coachAvalabilities = []
-             avalaibleRanges = [];
-             selectedRanges = [];
-             $scope.showRanges = false
-             $scope.toggleCoach.value = false
-             $scope.avalaivableCourts = []
-          }
-    };
-
-     $scope.datepickerObject = {
-          titleLabel: 'Data',  //Optional
-          todayLabel: 'Oggi',  //Optional
-          closeLabel: 'Chiudi',  //Optional
-          setLabel: 'Scegli',  //Optional
-          
-          inputDate: new Date(),  //Optional
-          mondayFirst: true,  //Optional
-          disabledDates: disabledDates, //Optional
-          weekDaysList: weekDaysList, //Optional
-          monthList: monthList, //Optional
-          templateType: 'popup', //Optional
-          showTodayButton: 'true', //Optional
-          modalHeaderColor: 'bar-positive', //Optional
-          modalFooterColor: 'bar-positive', //Optional
-          from: new Date(), //Optional
-         //from: new Date(2012, 8, 25) ,
-         to: new Date(2018, 8, 25),  //Optional
-          callback: function (val) {  //Mandatory
-            datePickerCallback(val);
-          },
-          dateFormat: 'dd-MM-yyyy', //Optional
-          closeOnSelect: true, //Optional
-        };
-    
-    
-    function timePickerCallback(val) {
-          if (typeof (val) === 'undefined') {
-            console.log('Time not selected');
-          } else {
-                var selectedTime = new Date(val * 1000);
-                $scope.timePickerObject.inputEpochTime = val
-                console.log('Selected epoch is : ', val, 'and the time is ', selectedTime.getUTCHours(), ':', selectedTime.getUTCMinutes(), 'in UTC');
-          }
-    }
-    
- $scope.timePickerObject = {
-      inputEpochTime: ((new Date()).getHours() * 60 * 60),  //Optional
-      step: 30,  //Optional
-      format: 24,  //Optional
-      titleLabel: '24-hour Format',  //Optional
-      setLabel: 'Set',  //Optional
-      closeLabel: 'Close',  //Optional
-      setButtonType: 'button-positive',  //Optional
-      closeButtonType: 'button-stable',  //Optional
-      callback: function (val) {    //Mandatory
-        timePickerCallback(val);
-      }
-};
-
 
   $ionicModal.fromTemplateUrl('coaches-modal.html', {
     scope: $scope,
@@ -1020,6 +951,38 @@ $scope.closeModalok = function() {
   });
 
 //***************************FINE SEZIONE MODAL*****************************************************
+
+ $scope.weekDays = Utility.getWeekdayFromToday()
+ $scope.selectedDate = $scope.weekDays[0].value
+ 
+ $scope.hours = Utility.getHours()
+ $scope.selectedRange = 25
+ 
+ $scope.dateCallback = function(item){
+     console.log(item) 
+     $scope.selectedDate=item
+     $scope.coachAvalabilities = []
+     avalaibleRanges = [];
+     selectedRanges = [];
+     $scope.showRanges = false
+     $scope.toggleCoach.value = false
+     $scope.avalaivableCourts = []
+     $scope.message = null
+     
+ }
+  $scope.timeCallback = function(item){
+     console.log(item)
+     $scope.selectedRange = item
+     $scope.coachAvalabilities = []
+     avalaibleRanges = [];
+     selectedRanges = [];
+     $scope.showRanges = false
+     $scope.toggleCoach.value = false
+     $scope.avalaivableCourts = []
+     $scope.message = null
+     
+ }
+ 
   var toggleCoach = {value:false}
   $scope.toggleCoach = toggleCoach
 
@@ -1032,7 +995,7 @@ $scope.closeModalok = function() {
   var booking = {};
   booking.gameType = $rootScope.currentGameType.value;
   booking.callToAction = false;
-  booking.date = $scope.datepickerObject.inputDate;
+  booking.date = $scope.selectedDate.toDate();
   booking.duration = 3
   $scope.booking = booking;
   
@@ -1053,7 +1016,7 @@ $scope.closeModalok = function() {
       $scope.waiting = "....."
       $scope.courtsModal.show()
       var ranges = getRanges()
-      var date = $scope.datepickerObject.inputDate;
+      var date = $scope.selectedDate.toDate()
       date.setHours(0);
       date.setMinutes(0);
       date.setSeconds(0);
@@ -1069,9 +1032,27 @@ $scope.closeModalok = function() {
         
 
     }, function(error){
-        $scope.waiting = null
+      $scope.waiting = null
       console.log(error);
-      $scope.message = "Nessun campo disponibile nelle fascie orarie selezionate..."
+      $scope.courtsModal.hide()
+      //$scope.message = "Nessun campo disponibile nelle fascie orarie selezionate..."
+      $ionicPopup.alert({
+        title: 'Oops!',
+        template: 'Nessun campo disponibile nelle fascie orarie selezionate...Ecco gli orari disponibili.'
+       });
+      $scope.showRanges = true
+       MyObjects.findaAvalaibleRangesInDate(booking.date, booking.gameType)
+      .then(
+        function(ranges){
+          avalaibleRanges = ranges;
+          console.log(ranges)
+          $scope.waiting = null
+          $scope.$apply()
+
+      }, function(error){
+        $scope.waiting = null
+        console.log(error);
+      })
 
     })
   }
@@ -1150,6 +1131,8 @@ $scope.closeModalok = function() {
       booking.maestro = null
       $scope.coachAvalabilities = []
       avalaibleRanges = []
+      $scope.waiting = null
+      $scope.message = null
     }
   }
 
@@ -1161,7 +1144,7 @@ $scope.closeModalok = function() {
     $scope.coachesModal.hide();
     $scope.showRanges = true
   
-    var date = $scope.datepickerObject.inputDate;
+    var date = $scope.selectedDate.toDate();
     MyObjects.getCoachAvalabilitiesFilteredByBookings(date.getMonth(),date.getFullYear(),coach.id, booking.gameType )
     .then(
       function(results){
@@ -1198,8 +1181,7 @@ $scope.closeModalok = function() {
 
   var getRanges = function(){
       if (selectedRanges.length == 0){
-        var selectedTime = new Date($scope.timePickerObject.inputEpochTime * 1000);
-        var startSlot =  Utility.getRangeFromHour(selectedTime.getUTCHours(), selectedTime.getUTCMinutes())
+        var startSlot =  $scope.selectedRange
         var endSlot = startSlot + $scope.booking.duration
         return _.range(startSlot, endSlot );
         
@@ -1214,7 +1196,7 @@ $scope.closeModalok = function() {
    
   $scope.book = function(){
 
-    var date = $scope.datepickerObject.inputDate;
+    var date = $scope.selectedDate.toDate();
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -1222,10 +1204,14 @@ $scope.closeModalok = function() {
     booking.date = date
        
   
-    console.log(booking.date)
+    console.log(booking.date.date)
     
     if ($scope.showRanges && selectedRanges.length == 0){
-      $scope.message = "Occorre selezionare almeno una fascia oraria."
+      //$scope.message = "Occorre selezionare almeno una fascia oraria."
+        $ionicPopup.alert({
+           title: 'Oops!',
+           template: 'Occorre selezionare almeno una fascia oraria.'
+        });
       return;
     }
 
@@ -1256,18 +1242,22 @@ $scope.closeModalok = function() {
       $scope.waiting = null
       console.log(error);
       $scope.showRanges = true
-      $scope.message = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
+      //$scope.message = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
+      $ionicPopup.alert({
+           title: 'Oops!',
+           template: 'Nessun campo disponibile nelle fasce orarie selezionate...'
+        });
       MyObjects.findaAvalaibleRangesInDate(booking.date, booking.gameType)
       .then(
         function(ranges){
           avalaibleRanges = ranges;
-          console.log(ranges)
+          //console.log(ranges)
           $scope.waiting = null
           $scope.$apply()
 
       }, function(error){
-        $scope.waiting = null
-        console.log(error);
+          $scope.waiting = null
+          console.log(error);
       })
 
     })
@@ -2929,10 +2919,6 @@ $scope.ok = function(){
   var actualGame = $rootScope.gameTypes[$stateParams.gameType]
   var  numPlayers = parseInt(actualGame.numberPlayers) -1
   
-  
-  //
-  
-
 
   $scope.bookingId = $stateParams.bookingId
   
@@ -2949,6 +2935,13 @@ $scope.ok = function(){
     backdropClickToClose:false
     }).then(function(modal) {
       $scope.preferitiModal = modal;
+    })
+     $ionicModal.fromTemplateUrl('playersByLevel.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.playersByLevelModal = modal;
     })
     
     $scope.openCercaModal = function(){
@@ -2967,12 +2960,29 @@ $scope.ok = function(){
         $scope.preferitiModal.show()
     }
     
+     $scope.openPlayersByLevelModal = function(){
+        $scope.playersByLevelModal.show()
+        $scope.playersByLevel = []
+        $scope.waiting = "....."
+        MyObjects.getPlayersByLevel().then(function(results){
+            console.log(results)
+            $scope.playersByLevel = results
+            $scope.waiting = null
+            $scope.$apply()
+        })
+        
+    }
+    
     $scope.closeCercaModal = function(){
         $scope.cercaModal.hide()
     }
     
     $scope.closePreferitiModal = function(){
         $scope.preferitiModal.hide()
+    }
+    
+    $scope.closePlayersByLevelModal = function(){
+        $scope.playersByLevelModal.hide()
     }
     
     
@@ -3014,50 +3024,23 @@ $scope.ok = function(){
   }
 
   $scope.invite = function(user){
-
-    $scope.waiting = "........"
     model.name = ""
     $scope.players = null
     if ($scope.invitations.length >= parseInt(numPlayers)){
-      var alertPopup = $ionicPopup.alert({
+      $ionicPopup.alert({
          title: 'Opsss!',
-         template: 'Scusa! In quanti volete giocare???'
+         template: 'Scusa! In quanti volete giocare??? La Call è già al completo!'
        });
        return
     }
-
-    
+    //Asincrono per efficienza....
     MyObjects.invite(user.id,user.get('email'),$scope.bookingId)
-    .then(
-      function(obj){
-        console.log('ok');
-        $scope.message = "Utente invitato!"
-        return MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
-    }, function(error){
-      console.log(error);
-      throw error
-    })
-    .then(
-      function(obj){
+    $scope.message = "Utente invitato!"
+    MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
+    .then(function(obj){
         console.log(obj);
-        $scope.waiting = null
         $scope.invitations = obj
-
-        
-        //$scope.$apply()
-    }, function(error){
-      $scope.waiting = null
-      console.log(error);
-      var alertPopup = $ionicPopup.alert({
-         title: 'Opsss!',
-         template: error.message
-       });
     })
-
-  }
-  
-
-
+}
 })
-
 

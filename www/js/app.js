@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 
 
-angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha','ionic-datepicker','ionic-timepicker'])
+angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
 .run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility) {
 
@@ -18,6 +18,14 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     
     //**************************************
     MyObjects.createInstallationObject()
+    /*Parse.Cloud.run('createInstallationObject', {token:'cycNLlCXM9Y:APA91bFdmPWOnrYwEG8vvpMFM_1JzSF0WpOx0_iI3kq2Tf4ORZ9tMw',platform:'android'}).then(function(success){
+                console.log('okkkkkkk createInstallationObject')
+            },function(error){
+                console.log(error)
+            })*/
+        
+    
+    
     //**************************************
 
 

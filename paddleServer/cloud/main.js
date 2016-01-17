@@ -164,18 +164,19 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       var numPlayers = b.get("playersNumber")
       if (b.get('callToAction') == true && b.get("players").length == numPlayers ){
         //sendEmail
-        console.log('sendEmail.........');
+        console.log('sendPush.........');
         var players = b.get("players")
         _.each(players,function(item){
             //console.log(item);
-            var toAddress = item.get('email')
-            sendEmail(toAddress,"La Partita si farà!" ,"La Partita si farà! ")
+            //var toAddress = item.get('email')
+            //sendEmail(toAddress,"La Partita si farà!" ,"La Partita si farà! ")
+            sendPush(item.id,"La Partita si farà!")
         })
 
       }
       
       if (b.createdAt.getTime() != b.updatedAt.getTime())
-        throw "Prenotazione già esistente...non invio mail.."
+        throw "Prenotazione già esistente...non invio mail all'Admin"
       //***********************
 
   }, function(error){
@@ -417,6 +418,7 @@ Parse.Cloud.define("signUp", function(request, response){
   });
 });
 
+/* La funzione di iscrizione a più circoli è stata disabilitata.
 var followUpWithRequestForSubscription = function(circolo,user,userName,response){
 
   var SubscriptionRequest = Parse.Object.extend("SubscriptionRequest");
@@ -478,8 +480,9 @@ Parse.Cloud.define("requestForSubscription", function(request, response){
     }
   })
 
-});
+});*/
 
+/*
 var InvitationRequestFollowUp = function(response,user,mail,booking){
 
   var InvitationRequest = Parse.Object.extend("InvitationRequest");
@@ -553,6 +556,7 @@ var InvitationRequestFollowUp = function(response,user,mail,booking){
     })
 
 })
+*/
 
 //******************************************************************************************
 /*Parse.Cloud.define("changeUserField", function(request, response){
@@ -587,9 +591,10 @@ Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response
   query.get(id).then(
     function(payment){
       var playDate = moment(payment.get('booking').get('date')).format('LL')
-      var email = payment.get('user').get('email')
-      sendEmail(email,"Pagamento Partita","Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate + ". Grazie!" )
-      
+      //var email = payment.get('user').get('email')
+      //sendEmail(email,"Pagamento Partita","Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate + ". Grazie!" )
+      var message = "Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate + ". Grazie!"
+      sendPush(payment.get('user').id,message)
     })
 
  
@@ -655,12 +660,15 @@ var user = request.user;
   installation.set('deviceToken',token)
   installation.set('deviceType',platform)
   installation.set('user',user)
-  
+  if (platform == "android"){
+      installation.set('GCMSenderId','793980463534')
+      installation.set('pushType','gcm')
+      console.log('.......android')
+  }  
   var channels = ['mb']
   installation.set('channels',channels)
   installation.save().then(function(success){
-        
-        response.success("ok createInstallationObject " )
+  response.success("ok createInstallationObject " )
     }, function(error){
         
         response.error(error);
