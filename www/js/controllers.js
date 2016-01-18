@@ -452,7 +452,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 })
 
-
+/*
 .controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading, $cordovaCalendar) {
     
    
@@ -737,7 +737,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
   $scope.setRangeStatus = function(pos){
-    $scope.resolved = null /*nascondo il messaggio*/
+    $scope.resolved = null
     $scope.avalaivableCourts=null;
     //alert('getRangeStatus' + pos);
     //console.log(avalaibleRanges);
@@ -762,7 +762,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
 
-    /*var m = parseInt($scope.currentMonth) +1 ;
+    var m = parseInt($scope.currentMonth) +1 ;
     var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
     var date = new Date(d);
     $ionicLoading.show({
@@ -788,7 +788,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
          selectedRanges = [];
        });
 
-    })*/
+    })
 
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
 
@@ -879,6 +879,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
  
 
 })
+
+
+*/
 
 .controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading,$cordovaCalendar,$ionicPopup) {
     
@@ -983,6 +986,15 @@ $scope.closeModalok = function() {
      
  }
  
+   $scope.toggleCall = function(){
+    console.log('nnnn')
+    if (booking.callToAction)
+        $ionicPopup.alert({
+             template: "Seleziona il numero di giocatori che possono prendere parte alla tua Call. Ad esempio se sai già che giocherai tu ed un amico allora seleziona il valore 2. "
+        });
+
+}
+
   var toggleCoach = {value:false}
   $scope.toggleCoach = toggleCoach
 
@@ -998,6 +1010,9 @@ $scope.closeModalok = function() {
   booking.date = $scope.selectedDate.toDate();
   booking.duration = 3
   $scope.booking = booking;
+
+
+
   
 
   
@@ -2910,7 +2925,7 @@ $scope.ok = function(){
 }
 })
 
-.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading) {
+.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading, $timeout) {
 
 
   var model = {name:""}
@@ -2949,20 +2964,20 @@ $scope.ok = function(){
     }
     
     $scope.openPreferitiModal = function(){
-        $scope.players = []
+
         $scope.waiting = "....."
+        $scope.preferitiModal.show()
         MyObjects.getPreferred().then(function(results){
             console.log(results)
             $scope.preferences = results
             $scope.waiting = null
             $scope.$apply()
         })
-        $scope.preferitiModal.show()
+
     }
     
      $scope.openPlayersByLevelModal = function(){
         $scope.playersByLevelModal.show()
-        $scope.playersByLevel = []
         $scope.waiting = "....."
         MyObjects.getPlayersByLevel().then(function(results){
             console.log(results)
@@ -3036,6 +3051,9 @@ $scope.ok = function(){
     //Asincrono per efficienza....
     MyObjects.invite(user.id,user.get('email'),$scope.bookingId)
     $scope.message = "Utente invitato!"
+    $timeout(function() {
+       $scope.message = null
+    }, 2000);
     MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
     .then(function(obj){
         console.log(obj);

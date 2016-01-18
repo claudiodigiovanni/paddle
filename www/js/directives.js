@@ -234,7 +234,7 @@ angular.module('starter.directives', [])
 
             console.log($scope.date);
 
-            var dataChart = {}
+            var dataChart = null
 
             var today = new Date();
             today.setHours(0);
@@ -250,7 +250,7 @@ angular.module('starter.directives', [])
               return dataChart
             }
 
-
+            dataChart = {}
             console.log("AVANTI!!!!");
 
             //-----------INIZIO WATCH----------
@@ -295,7 +295,7 @@ angular.module('starter.directives', [])
               //console.log(dataChart);
               $scope.dataChart = dataChart
 
-              //console.log($scope.day);
+              console.log(dataChart);
             //-----------FINE WATCH------------
 
 

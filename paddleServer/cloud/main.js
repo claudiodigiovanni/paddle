@@ -720,4 +720,50 @@ var sendPush = function(userId,message){
     });
 }
 
+Parse.Cloud.job("deleteCallToActionTooOld", function(request, status) {
+  // Set up to modify user data
+  Parse.Cloud.useMasterKey();
+  var today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+
+
+  var time = (25 * 3600 * 1000);
+  var tomorrowDate = new Date(today.getTime() + time);
+
+
+  var Booking = Parse.Object.extend("Booking");
+  var query = new Parse.Query(Booking);
+  query.greaterThanOrEqualTo("date", today);
+  query.lessThanOrEqualTo("date", tomorrowDate);
+  query.equalTo("callToAction", true)
+  //var c = Parse.User.current().get('circolo')
+  //query.equalTo('circolo',c)
+  //query.include('user')
+  query.include('players')
+  //query.limit(30);
+  //query.ascending("date");
+  query.each(function(booking){
+
+      console.log(booking)
+      var players = booking.get('players')
+      _.each(players,function(p){
+          sendPush(p.id,"oh oh...la tua Call To Action è stata cancellata perchè non è stato raggiunto il numero di giocatori richiesto. Sorry!")
+
+      })
+      //booking.destroy()
+
+  })
+  .then(
+      function() {
+        // Set the job's success status
+        status.success("deleteCallToActionTooOld completed successfully.");
+  }, function(error) {
+        // Set the job's error status
+        status.error("Uh oh, something went wrong in deleteCallToActionTooOld!");
+  });
+});
+
 //******************************************************************************************

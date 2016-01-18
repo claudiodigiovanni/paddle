@@ -65,7 +65,6 @@
         </div>
     
         <ion-item ng-show="userRole == 'segreteria' || userRole == 'maestro'">
-         
           <label class="item item-input">
              <i class="icon ion-ios-personadd-outline"></i>
             <input type="text" placeholder="Utente" ng-model="booking.note">
@@ -88,10 +87,21 @@
         </div>
     
        
-        <ion-toggle  ng-model="booking.callToAction" ng-hide="toggleCoach.value">
+        <ion-toggle  ng-model="booking.callToAction" ng-hide="toggleCoach.value" ng-change="toggleCall()">
             <i class="icon ion-speakerphone my-ionicons-big"></i>&nbsp;&nbsp;Call To Action!
         </ion-toggle>
         
+         <label class="item item-input item-select" ng-show="booking.callToAction">
+            <div class="input-label">
+              <i class="icon ion-ios-people my-ionicons-big"></i>&nbsp;&nbsp;Num. giocatori&nbsp;
+            </div>
+            <select ng-model="booking.playersNumber">
+              <option value=1>1</option>
+              <option value=2 >2</option>
+              <option value=3 ng-selected="true">3</option>
+            </select>
+          </label>
+
         <ion-toggle  ng-model="toggleCoach.value" ng-change="toggleCoach()">
               <i class="icon ion-person my-ionicons-big"></i>&nbsp;&nbsp;Maestro
         </ion-toggle>
@@ -241,6 +251,10 @@
               </ion-radio-fix>
     </div>
     
+     <div class="item center item-text-wrap" >
+        <small>n.b. La segreteria si riserva la facoltà di modificare il campo scelto per motivi organizzativi.</small>
+    </div>
+
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>

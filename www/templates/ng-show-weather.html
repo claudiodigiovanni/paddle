@@ -1,6 +1,6 @@
 <span>
 
-  <ion-item class="alert item-text-wrap center">Nessun dato disponibile.</ion-item>
+  <ion-item class="alert item-text-wrap center" ng-show="dataChart == null">Nessun dato disponibile.</ion-item>
   <div class="row">
      
     <div class="col weather-center" ng-repeat="i in dataChart.icon track by $index">

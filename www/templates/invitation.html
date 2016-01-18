@@ -107,7 +107,7 @@
     <div class="center mymessage"> {{message}}</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     
-    <div class="center" ng-show="preferences.length == 0">
+    <div class="center" ng-show="preferences && preferences.length == 0">
             <br>
             Nessun Preferito!
     </div>
@@ -141,7 +141,7 @@
     <div class="center mymessage"> {{message}}</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     
-    <div class="center" ng-show="playersByLevel.length == 0">
+    <div class="center" ng-show="playersByLevel && playersByLevel.length == 0">
             <br>
             Nessun Giocatore!
     </div>
