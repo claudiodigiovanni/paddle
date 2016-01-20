@@ -257,7 +257,7 @@ angular.module('starter.directives', [])
             var forecastDay = []
             weatherService.getWeather5Days().then(function(data){
 
-            console.log(data);
+            //console.log(data);
             forecastDay = _.filter(data.list,function(f){
 
               //console.log(f.weather[0].icon);
@@ -295,7 +295,7 @@ angular.module('starter.directives', [])
               //console.log(dataChart);
               $scope.dataChart = dataChart
 
-              console.log(dataChart);
+              //console.log(dataChart);
             //-----------FINE WATCH------------
 
 

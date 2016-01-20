@@ -14,19 +14,27 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   $ionicPlatform.ready(function() {
       
-    console.log("$ionicPlatform.ready")
+    console.log("$ionicPlatform.ready...")
+    
+    //**************************************
+    
+     $rootScope.closeLoading = function(){
+        
+        
+        $ionicLoading.hide()
+        
+    }
+
+    $rootScope.openLoading = function(){
+        $ionicLoading.show({ template: 'Loading...<br><br> <img src="img/logo.png" width=50 height=50>', scope:$rootScope, duration:4000 });
+        
+    }
+    
     
     //**************************************
     MyObjects.createInstallationObject()
-    /*Parse.Cloud.run('createInstallationObject', {token:'cycNLlCXM9Y:APA91bFdmPWOnrYwEG8vvpMFM_1JzSF0WpOx0_iI3kq2Tf4ORZ9tMw',platform:'android'}).then(function(success){
-                console.log('okkkkkkk createInstallationObject')
-            },function(error){
-                console.log(error)
-            })*/
-        
     
-    
-    //**************************************
+  //**************************************  
 
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
@@ -34,7 +42,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $cordovaSplashscreen.hide()
         }, 100)
     }
-
+      
+      
   
 
 

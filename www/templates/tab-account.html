@@ -98,7 +98,7 @@
         <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyBookings"></ion-spinner>
       </p>
       <!-- xxx -->
-      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" invitation="invitation(b)" showpay="false" call="setCallToAction(b)" message="gotoMessage(b)"></show-bookings>
+      <show-bookings bookings="bookings" text="Prossimi impegni"  delete="delete(b)" invitation="invitation(b)" showpay="false" call="openCallToActionDetailModal(b)" message="gotoMessage(b)"></show-bookings>
       <!-- xxx -->
     </div>
     
@@ -260,5 +260,49 @@
   </div>
 </script>
 
+    <script id="camera.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Foto Attuale</h1>
+      <button class="button button-light" ng-click="closeCameraModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    <div class="item item-text-wrap">
+      
+        <div class="center">
+            <img src="{{currentUser.get('image').url()}}">
+        </div>
+        <button class="button button-positive button-block" ng-click="takePicture()">Scatta Foto</button>
+    </div>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+
+<script id="callToActionDetail.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Call To Action</h1>
+      <button class="button button-light" ng-click="closeCallToActionDetailModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <div class="center mymessage">{{message}}</div>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+       <label class="item item-input item-select">
+            <div class="input-label">
+              <i class="icon ion-ios-people my-ionicons-big"></i>&nbsp;&nbsp;Num. giocatori mancanti&nbsp;
+            </div>
+            <select ng-model="selectedBooking.playersNumber" ng-options="option as option for option in [0, 1, 2, 3]">
+              
+            </select>
+          </label>
+     
+    <button class="button button-positive button-block" ng-click="confirmCallToAction()">Conferma</button>
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
 
 </ion-view>

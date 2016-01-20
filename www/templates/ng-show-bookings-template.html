@@ -30,16 +30,25 @@
       
       <div class="row">
           <div class="col">
-              <i class="icon ion-trash-a assertive my-ionicons-big" ng-click="delete({b:booking})"></i>
+              <button class="button button-outline button-clear" ng-click="delete({b:booking})">
+               <i class="icon ion-trash-a assertive my-ionicons-big" ></i>
+              </button>
+             
           </div>
           <div class="col">
-              <i class="icon ion-ios-personadd-outline positive my-ionicons-big" ng-click="invitation({b:booking})"></i>
+              <button class="button button-outline button-clear" ng-click="invitation({b:booking})">
+              <i class="icon ion-ios-personadd-outline positive my-ionicons-big" ></i>
+            </button>
           </div>
           <div class="col">
-              <i class="icon ion-speakerphone energized my-ionicons-big" ng-click="call({b:booking})"></i>
+              <button class="button button-outline button-clear"  ng-click="call({b:booking})">
+              <i class="icon ion-speakerphone energized my-ionicons-big"></i>
+              </button>
           </div>
           <div class="col">
-              <i class="icon ion-ios-email-outline royal my-ionicons-big" ng-click="message({b:booking})"></i>
+              <button class="button button-outline button-clear" ng-click="message({b:booking})">
+               <i class="icon ion-ios-email-outline royal my-ionicons-big" ></i>
+              </button>
           </div>
       </div>
       

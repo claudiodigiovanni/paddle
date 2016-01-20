@@ -729,7 +729,7 @@ Parse.Cloud.job("deleteCallToActionTooOld", function(request, status) {
   today.setSeconds(0);
   today.setMilliseconds(0);
 
-
+ //hh*sec*millisec
   var time = (25 * 3600 * 1000);
   var tomorrowDate = new Date(today.getTime() + time);
 

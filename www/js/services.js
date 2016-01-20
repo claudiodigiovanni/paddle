@@ -174,9 +174,11 @@ angular.module('starter.services', [])
         var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
 
         var courts = _.range(1,parseInt(courtsNumber) + 1)
-        return this.findBookingsInDate(date,gameT)
+        //return this.findBookingsInDate(date,gameT)
+        return this.findBookingsInDateAndRange(date,gameT,ranges)
         .then(
           function(bookings){
+            console.log(bookings)
             courts.forEach(function(court){
               //console.log("court:" + court);
               var avalaible = true
@@ -199,7 +201,40 @@ angular.module('starter.services', [])
               }
 
             })
-            if (courtsAvalaivable.length > 0){
+            
+             //****OPTIMISE: elimino i campi che hanno prenotazioni che creerebbero un buco di mezz'ora****
+            var optimezedCourts = courtsAvalaivable.slice(0)
+            var startRange = parseInt(_.head(ranges))
+            //console.log(startRange)
+            var endRange   = parseInt(_.last(ranges))
+            //console.log(endRange)
+            courtsAvalaivable.forEach(function(court){
+                  //console.log("COURT****************************:" + court)
+                  var p = _.filter(bookings, function(item){
+                  //console.log(item)
+                  var ranges = item.get("ranges")
+                  if ( item.get("court") == court && ((ranges.indexOf(startRange-1) == -1 &&  ranges.indexOf(startRange-2) != -1) ||
+                                                      (ranges.indexOf(endRange + 1) == -1 &&  ranges.indexOf(endRange + 2) != -1) ))
+                      {
+                        return item
+                      }
+                  })
+                  if (p.length != 0)
+                     _.pull(optimezedCourts,court)
+            })
+            
+            console.log('******COURTS FASE 1*****')
+            console.log(courtsAvalaivable)
+            console.log('******COURTS FASE 2*****')
+            console.log(optimezedCourts)
+            
+            if (optimezedCourts.length > 0){
+              defer.resolve(optimezedCourts)
+            }
+            //**********FINE OPTIMISE*********************************************************************
+            
+           
+            else if (courtsAvalaivable.length > 0){
               defer.resolve(courtsAvalaivable)
             }
             else {
@@ -258,6 +293,37 @@ angular.module('starter.services', [])
               maestro.id = maestroId
               book.set('maestro',maestro)
             }
+              
+           
+            
+            var startRange = parseInt(_.head(_.sortBy(obj.ranges)))
+            var endRange   = parseInt(_.last(_.sortBy(obj.ranges)))
+            
+            console.log(startRange)
+            console.log(endRange)
+            console.log(obj.ranges)
+            
+            console.log(obj.date)
+            
+            //[hh,mm]
+            var hmStart = Utility.getHourMinuteFromSlot(startRange)
+            var startHour = new Date(obj.date.getTime())
+            startHour.setHours(hmStart[0])
+            startHour.setMinutes(hmStart[1])
+            console.log(startHour)
+            
+            var hmEnd = Utility.getHourMinuteFromSlot(endRange)
+            var endHour =new Date(obj.date.getTime())
+            endHour.setHours(hmEnd[0])
+            endHour.setMinutes(hmEnd[1] + 30)
+            console.log(hmEnd)
+            console.log(endHour)
+            
+            book.set('startHour',startHour)
+            book.set('endHour',endHour)
+            
+            //console.log(book)
+            
             return book.save(null)
 
         }, function(error){
@@ -354,6 +420,48 @@ angular.module('starter.services', [])
 
         return query.find()
       },
+        //*****************TODO**********************
+        findBookingsInDateAndRange: function(date,gameT,ranges){
+            
+            
+        var startRange = parseInt(_.head(ranges))
+        var endRange   = parseInt(_.last(ranges))
+        
+         //2 ore
+        var time = (2 * 3600 * 1000);
+        var startRange = parseInt(_.head(_.sortBy(ranges)))
+        var endRange   = parseInt(_.last(_.sortBy(ranges)))
+
+        //[hh,mm]
+        var hmStart = Utility.getHourMinuteFromSlot(startRange)
+        var startHour = new Date(date.getTime())
+        startHour.setHours(hmStart[0])
+        startHour.setMinutes(hmStart[1])
+       
+        var hmEnd = Utility.getHourMinuteFromSlot(endRange)
+        var endHour =new Date(date.getTime())
+        endHour.setHours(hmEnd[0])
+        endHour.setMinutes(hmEnd[1] + 30)
+        
+        var xx = new Date(startHour.getTime() - time);
+        var yy = new Date(endHour.getTime() + time);
+            
+        var Booking = Parse.Object.extend("Booking");
+        var query = new Parse.Query(Booking);
+        query.equalTo("date", date);
+        query.equalTo("gameType",gameT.toString());
+        var c = Parse.User.current().get('circolo')
+
+        query.equalTo('circolo',c)
+        query.greaterThanOrEqualTo("endHour", xx);
+        query.lessThanOrEqualTo("startHour", yy);
+            
+        query.include('players')
+        query.include('user')
+
+        return query.find()
+      },
+        
       findBookingsToPayBeforeDate: function(date){
         console.log(date)
         var Booking = Parse.Object.extend("Booking");
@@ -1269,7 +1377,15 @@ angular.module('starter.services', [])
         },
 
         setCallToAction : function(booking){
-            booking.set("callToAction",true);
+            if (booking.get("callToAction")){
+                booking.set("playersNumber",booking.playersNumber);
+            }
+            else{
+                 booking.add('players',Parse.User.current());
+                 booking.set("callToAction",true);
+                 booking.set("playersNumber",booking.playersNumber);
+            }
+                
             return booking.save()
         },
         
@@ -1389,9 +1505,10 @@ angular.module('starter.services', [])
       var ret = []
       moment.locale('it');
       for (i=0; i <= 7 ; i++) {
-          var day = {value:moment().add(i, 'days'),label:moment().add(i, 'days').format('dd DD/MM/GG')}
+          var day = {value:moment().startOf('day').add(i, 'days'),label:moment().add(i, 'days').format('dd DD/MM/GG')}
           ret.push(day)
      };
+       // console.log(ret)
         return ret
     },
       
@@ -1461,6 +1578,8 @@ angular.module('starter.services', [])
     return game.courtsNames[parseInt(court)-1]
 
     },
+    
+    
 
     formatDate: function formatDate(d) {
       var dd = d.getDate()
