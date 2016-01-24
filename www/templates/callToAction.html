@@ -26,7 +26,7 @@
     <b ng-show="cta.get('note') != null"><i class="icon ion-compose"></i>&nbsp;{{cta.get("note")}} </b>
       
     <div ng-show="cta.get('players').length > 0 ">
-        <i class="icon ion-person-stalker" ></i><br>
+        <i class="icon ion-person-stalker" ></i> (giocatori mancanti: {{cta.get('playersNumber') - cta.get('players').length}})<br>
         <small ng-repeat="player in cta.get('players')">
         - {{player.get('nome')}} (Livello: {{player.get('level')}}) <br>
         </small>

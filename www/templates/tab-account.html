@@ -41,7 +41,7 @@
 
            <a class="item item-icon-left item-icon-right" ng-click="openInvitiModal()">
             <i class="icon ion-at"></i>
-            <small>(inviti)</small> 
+            <small>(inviti ricevuti)</small> 
             <i class="icon ion-chevron-right"> <span class="badge badge-assertive">{{invitationCount}}</span></i>
           </a>
 
@@ -294,7 +294,7 @@
             <div class="input-label">
               <i class="icon ion-ios-people my-ionicons-big"></i>&nbsp;&nbsp;Num. giocatori mancanti&nbsp;
             </div>
-            <select ng-model="selectedBooking.playersNumber" ng-options="option as option for option in [0, 1, 2, 3]">
+            <select ng-model="selectedBooking.playersNumberMissing" ng-options="option as option for option in [0, 1, 2, 3]">
               
             </select>
           </label>

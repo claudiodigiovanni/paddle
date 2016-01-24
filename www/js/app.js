@@ -9,7 +9,7 @@
 
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility,$ionicPush) {
 
 
   $ionicPlatform.ready(function() {
@@ -26,15 +26,19 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     }
 
     $rootScope.openLoading = function(){
-        $ionicLoading.show({ template: 'Loading...<br><br> <img src="img/logo.png" width=50 height=50>', scope:$rootScope, duration:4000 });
+        $ionicLoading.show({ template: '<img src="img/logo.png" width=50 height=50>', scope:$rootScope, duration:4000 });
         
     }
     
     
     //**************************************
-    MyObjects.createInstallationObject()
+    if (Parse.User.current())
+        MyObjects.createInstallationObject()
+    //**************************************
     
-  //**************************************  
+    
+    
+  //***************************************
 
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){

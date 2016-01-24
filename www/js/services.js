@@ -174,8 +174,8 @@ angular.module('starter.services', [])
         var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
 
         var courts = _.range(1,parseInt(courtsNumber) + 1)
-        //return this.findBookingsInDate(date,gameT)
-        return this.findBookingsInDateAndRange(date,gameT,ranges)
+        return this.findBookingsInDate(date,gameT)
+        //return this.findBookingsInDateAndRange(date,gameT,ranges)
         .then(
           function(bookings){
             console.log(bookings)
@@ -817,7 +817,7 @@ angular.module('starter.services', [])
           var defer = $q.defer()
           var user = Parse.User.current();
           var numPlayers = cta.get('playersNumber')
-          if (cta.get("players").length == numPlayers ){
+          if (cta.get("players").length >= numPlayers ){
             defer.reject('Partita già al completo!')
           }
           else{
@@ -965,6 +965,7 @@ angular.module('starter.services', [])
             query2.equalTo('booking',booking)
             promises.push(query2.find())
             $q.all(promises).then(function(results){
+                console.log(results)
                     
                 if (results[0].length == 0 && results[1].length == 0){
                       var InvitationRequest = Parse.Object.extend("InvitationRequest");
@@ -972,10 +973,10 @@ angular.module('starter.services', [])
                       ir.set('user',user)
                       ir.set('booking',booking)
                       ir.save()
-                      Parse.Cloud.run('sendPush', {userId:userIdToInvite,message:"Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per scoprire chi è il mittente!"})
+                      Parse.Cloud.run('sendPush', {userId:userIdToInvite,message:"Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per i dettagli."})
                 }
                 else
-                    console.log("L'utente è gia della partita! oppure è già stato invitato....")
+                    console.log("L'utente è gia della partita! Oppure è già stato invitato....")
                             
             })
         },
@@ -1054,6 +1055,9 @@ angular.module('starter.services', [])
                     console.log(error)
                 })
             })
+            if (! booking.get('callToAction')){
+                Parse.Cloud.run('sendPush', {userId:booking.get('user').id,message:messagex})
+            }
         },
 
         courtsView: function(datex,gameType){
@@ -1377,30 +1381,55 @@ angular.module('starter.services', [])
         },
 
         setCallToAction : function(booking){
+            console.log('setCallToAction')
+            console.log(booking.playersNumberMissing)
+            var numPlayersCurrent = booking.get('players') != null ? booking.get('players').length : 0
+            var numPlayers = numPlayersCurrent + booking.playersNumberMissing
             if (booking.get("callToAction")){
-                booking.set("playersNumber",booking.playersNumber);
+                booking.set("playersNumber",numPlayers);
             }
             else{
                  booking.add('players',Parse.User.current());
                  booking.set("callToAction",true);
-                 booking.set("playersNumber",booking.playersNumber);
+                 booking.set("playersNumber",numPlayers);
             }
                 
             return booking.save()
         },
         
         createInstallationObject: function(){
+            
+                        
             var push = new Ionic.Push({
-              "debug": false
+              "debug": false,
+              "onNotification": function(notification) {
+                var payload = notification.payload;
+                console.log('notifica.....')
+                $ionicLoading.show({ template: notification.text, duration:3000 });
+                
+                //alert(notification, payload);
+              },
+              "onRegister": function(data) {
+                //console.log(data.token);
+              },
+              "pluginConfig": {
+                "ios": {
+                  "badge": true,
+                  "sound": true
+                 },
+                 "android": {
+                   
+                 }
+              } 
             });
 
             push.register(function(token) {
-            console.log("Device token:",token.token);
-            Parse.Cloud.run('createInstallationObject', {token:token.token,platform:$rootScope.platform}).then(function(success){
-                console.log('okkkkkkk createInstallationObject')
-            },function(error){
-                console.log(error)
-            })
+                console.log("Device token:",token.token);
+                Parse.Cloud.run('createInstallationObject', {token:token.token,platform:$rootScope.platform}).then(function(success){
+                    console.log(' createInstallationObject ok')
+                },function(error){
+                    console.log(error)
+                })
             });
       
         },

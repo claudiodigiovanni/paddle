@@ -44,10 +44,14 @@
       "id": "com.phonegap.plugins.PushPlugin"
     },
     "cordova-plugin-calendar",
-    "phonegap-plugin-push"
+    "phonegap-plugin-push",
+    {
+      "locator": "https://github.com/katzer/cordova-plugin-badge.git",
+      "id": "de.appplant.cordova.plugin.badge"
+    }
   ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
+    "android",
+    "ios"
   ]
 }

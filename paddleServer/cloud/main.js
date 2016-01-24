@@ -102,6 +102,10 @@ Parse.Cloud.beforeSave(Parse.Object.extend("Booking"), function(request, respons
             return
         }
         //****************SOLO gli utenti con ruolo ADMIN posso settare il campo payed a true*****************
+        if (mybooking.get('payed') == true){
+            response.success()
+            return    
+        }
         var ranges = mybooking.get('ranges')
         
         //Se la prenotazione non è stata appena creata non c'è problema
@@ -132,7 +136,7 @@ Parse.Cloud.beforeSave(Parse.Object.extend("Booking"), function(request, respons
                    response.success()
                   
                 })
-            }
+        }
   //*******************************************************************************************************  
   }) 
   
@@ -150,21 +154,16 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
   var Booking = Parse.Object.extend("Booking")
   var query = new Parse.Query(Booking);
   query.include('players')
+  query.include('user')
   query.include('circolo')
   query.get(id)
   .then(
     function(b){
       //************************
       circolo = b.get('circolo')
-      /*gameTypes.push(circolo.get("gameType1"))
-      gameTypes.push(circolo.get("gameType2"))
-      gameTypes.push(circolo.get("gameType3"))
-      var actualGame = gameTypes[b.get('gameType')]
-      var numPlayers = parseInt(actualGame.numberPlayers)*/
+      
       var numPlayers = b.get("playersNumber")
       if (b.get('callToAction') == true && b.get("players").length == numPlayers ){
-        //sendEmail
-        console.log('sendPush.........');
         var players = b.get("players")
         _.each(players,function(item){
             //console.log(item);
@@ -172,11 +171,20 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
             //sendEmail(toAddress,"La Partita si farà!" ,"La Partita si farà! ")
             sendPush(item.id,"La Partita si farà!")
         })
-
+        throw "completed"
       }
       
       if (b.createdAt.getTime() != b.updatedAt.getTime())
-        throw "Prenotazione già esistente...non invio mail all'Admin"
+        throw "completed"
+      
+      var date = moment(b.get("date")).add('days',1);
+      messagex = "Campo: " + b.get("court") +  " - Data: " + date.format("DD/MM/YYYY") + " - Orario: " + getHoursFromRanges(b.get("ranges")) + " - Utente: " +  b.get("user").get("nome") +  " - Tel: " + b.get("user").get("phoneNumber") + "- Maestro: " + (b.get("maestro") != null ? b.get("maestro").get("nome") : "---")
+
+      var queryU = new Parse.Query(Parse.User);
+      queryU.equalTo('circolo',circolo)
+      queryU.equalTo('role','admin')
+
+      return queryU.first()
       //***********************
 
   }, function(error){
@@ -184,79 +192,12 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
     throw error
   })
   .then(
-    function(){
-        var Booking = Parse.Object.extend("Booking");
-        var query = new Parse.Query(Booking);
-        query.equalTo('circolo',circolo)
-        query.greaterThanOrEqualTo("date", new Date());
-        //query.lessThanOrEqualTo("date", endDate);
-        query.addAscending("date,court");
-        query.include('user');
-        query.include('maestro');
-        //query.ascending("court");
-
-        return query.find()
-
-    }, function(error){
-        console.log(error);
-        throw error
-    })
-  .then(
-    function(queryResult){
-
-      _.each(queryResult,function(item){
-
-        var date = moment(item.get("date")).add('days',1);
-        
-        var lastOne = ""
-        if (id == item.id)
-          lastOne = "***"
-        messagex = messagex.concat( lastOne,"Campo: " ,item.get("court") , 
-                                    " - Data: " , date.format("DD/MM/YYYY")  , 
-                                    " - Orario: " , getHoursFromRanges(item.get("ranges")),
-                                    " - Utente: " , item.get("user").get("nome"),
-                                    " - Tel: " , item.get("user").get("phoneNumber"),
-                                    " - Maestro: ", item.get("maestro") != null ? item.get("maestro").get("nome") : "-" , lastOne,"\n")
-                
-      })
-      return messagex
-    }, function(error){
-        console.log(error);
-        throw error
-    })
-  .then(
-      function(messagex){
-
-      //console.log(messagex)
-
-      //************SEND EMAIL TO ADMIN****************
-      
-      var query = new Parse.Query(Parse.User);
-      
-      query.equalTo('circolo',circolo)
-      query.equalTo('role','admin')
-
-      return query.first()
-    },function(error){
-        console.log(error);
-        throw error
-      })
-  .then(
       function(admin){
         toAddress = admin.get('email')
-    }, function(error){
-      console.log(error);
-      throw error
-    })
-    .then(
-      function(obj){
-        console.log(toAddress);
         sendEmail(toAddress,"Prenotazione Utente",messagex)
     }, function(error){
       console.log(error);
-
     })
-
       //****************************
       
 });
@@ -594,7 +535,8 @@ Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response
       //var email = payment.get('user').get('email')
       //sendEmail(email,"Pagamento Partita","Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate + ". Grazie!" )
       var message = "Ti è stata appena debitata una quota per la partita che hai disputato il " + playDate + ". Grazie!"
-      sendPush(payment.get('user').id,message)
+      if (payment.get('user') != null)
+        sendPush(payment.get('user').id,message)
     })
 
  
@@ -681,6 +623,8 @@ Parse.Cloud.define("sendPush", function(request, response){
  
     var message = request.params.message;
     var userId = request.params.userId;
+    var userFrom = request.user;
+    message = userFrom.get('nome') + ": " + message
     sendPush(userId,message).then(function(success){
         console.log('push ok')
         response.success("ok push " )
@@ -708,7 +652,8 @@ var sendPush = function(userId,message){
         where: pushQuery,
         //channels:['mb'],
         data: {
-            alert: message
+            alert: message,
+            badge:0
         }
     }, {
         success: function() {

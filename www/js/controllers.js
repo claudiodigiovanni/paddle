@@ -274,6 +274,7 @@ $scope.login = function(){
                 gameTypes.push(obj.get('gameType3'))
                 window.localStorage['gameTypes'] = JSON.stringify(gameTypes)
                 window.localStorage['circolo'] = obj.get('nome')
+                
                 MyObjects.createInstallationObject()
 
 
@@ -1007,8 +1008,9 @@ $scope.closeModalok = function() {
      $scope.openCallToActionDetailModal = function(booking){
         
         $scope.selectedBooking = null
+        $scope.message = null
         console.log('calltoaction')
-        booking.playersNumber = 3
+        booking.playersNumberMissing = 3
         $scope.selectedBooking = booking
         $scope.callToActionDetailModal.show()
         
