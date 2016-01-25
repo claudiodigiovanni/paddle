@@ -108,7 +108,7 @@ Parse.Cloud.beforeSave(Parse.Object.extend("Booking"), function(request, respons
         }
         var ranges = mybooking.get('ranges')
         
-        //Se la prenotazione non è stata appena creata non c'è problema
+        //Se la prenotazione non è stata appena creata non fare nulla altrimenti controlla.
         if (mybooking.createdAt != null )
           response.success()
         else{
@@ -161,15 +161,16 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
     function(b){
       //************************
       circolo = b.get('circolo')
-      
+      var date = moment(b.get("date")).add('days',1);
       var numPlayers = b.get("playersNumber")
+      
       if (b.get('callToAction') == true && b.get("players").length == numPlayers ){
         var players = b.get("players")
         _.each(players,function(item){
             //console.log(item);
             //var toAddress = item.get('email')
             //sendEmail(toAddress,"La Partita si farà!" ,"La Partita si farà! ")
-            sendPush(item.id,"La Partita si farà!")
+            sendPush(item.id,"La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
         })
         throw "completed"
       }
@@ -177,7 +178,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       if (b.createdAt.getTime() != b.updatedAt.getTime())
         throw "completed"
       
-      var date = moment(b.get("date")).add('days',1);
+      
       messagex = "Campo: " + b.get("court") +  " - Data: " + date.format("DD/MM/YYYY") + " - Orario: " + getHoursFromRanges(b.get("ranges")) + " - Utente: " +  b.get("user").get("nome") +  " - Tel: " + b.get("user").get("phoneNumber") + "- Maestro: " + (b.get("maestro") != null ? b.get("maestro").get("nome") : "---")
 
       var queryU = new Parse.Query(Parse.User);
@@ -691,14 +692,18 @@ Parse.Cloud.job("deleteCallToActionTooOld", function(request, status) {
   //query.limit(30);
   //query.ascending("date");
   query.each(function(booking){
-
+      
       console.log(booking)
-      var players = booking.get('players')
-      _.each(players,function(p){
-          sendPush(p.id,"oh oh...la tua Call To Action è stata cancellata perchè non è stato raggiunto il numero di giocatori richiesto. Sorry!")
+      var numPlayers = booking.get("playersNumber")
+      
+      if ( booking.get("players").length != numPlayers ){
+          var players = booking.get('players')
+          _.each(players,function(p){
+              sendPush(p.id,"oh oh...la tua Call To Action è stata cancellata perchè non è stato raggiunto il numero di giocatori richiesto. Sorry!")
 
-      })
-      //booking.destroy()
+          })
+          //booking.destroy()
+      }
 
   })
   .then(

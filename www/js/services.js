@@ -273,12 +273,13 @@ angular.module('starter.services', [])
 
             if (obj.callToAction == true){
                 book.add('players',Parse.User.current())
+                book.set("playersNumber",parseInt(obj.playersNumber) + 1)
 
             }
             book.set("gameType",obj.gameType.toString());
             book.set("note",obj.note);
             book.set("payed",false);
-            book.set("playersNumber",obj.playersNumber)
+            
 
             /*var ps = {quote:0,tessere:0}
             book.set("payments",ps)*/
@@ -1016,7 +1017,7 @@ angular.module('starter.services', [])
           return query.count()
         },
 
-            acceptInvitation: function(invitation){
+        acceptInvitation: function(invitation){
 
             var defer = $q.defer()
             var booking = invitation.get('booking')
@@ -1026,17 +1027,26 @@ angular.module('starter.services', [])
               return p.id == Parse.User.current().id
             })
             console.log(index)
-            if (index != -1){
+            
+            //*****************
+             var numPlayersCurrent = booking.get('players') != null ? booking.get('players').length : 0
+             var numPlayers = booking.get("playersNumber")
+             if (numPlayers == numPlayersCurrent){
+              defer.reject("Ooopssss! La Call è già completa! Puoi solo declinare l'invito....") 
+             }
+            //*****************
+             else if (index != -1){
               defer.reject("Utente già iscritto alla partita...")
-            }
-            else{
+             }
+             else {
                 booking.add('players',Parse.User.current())
                 booking.save()
                 invitation.destroy()
                 Parse.Cloud.run('sendPush', {userId:booking.get('user').id,message:"Il tuo invito è stato accettato!"})
                 defer.resolve("ok acceptInvitation");
-            }
-            return defer.promise; 
+             }
+             
+             return defer.promise; 
         },
 
         declineInvitation: function(invitation){
@@ -1391,7 +1401,7 @@ angular.module('starter.services', [])
             else{
                  booking.add('players',Parse.User.current());
                  booking.set("callToAction",true);
-                 booking.set("playersNumber",numPlayers);
+                 booking.set("playersNumber",numPlayers + 1);
             }
                 
             return booking.save()

@@ -563,10 +563,14 @@ $scope.closeModalok = function() {
  
    $scope.toggleCall = function(){
     
-    if (booking.callToAction)
+    if (booking.callToAction){
+        booking.playersNumber = 3
         $ionicPopup.alert({
              template: "Seleziona il numero di giocatori che possono prendere parte alla tua Call. Ad esempio se sai già che giocherai tu ed un amico allora seleziona il valore 2. "
         });
+    }
+    
+    
 
 }
 
@@ -1203,6 +1207,10 @@ $scope.closeModalok = function() {
         
     }, function(error){
         $scope.waitingMyInvitations = null
+        $ionicPopup.alert({
+         title: 'Opsss!',
+         template: error
+       });
         console.log(error);
         
     })

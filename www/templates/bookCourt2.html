@@ -93,12 +93,10 @@
         
          <label class="item item-input item-select" ng-show="booking.callToAction">
             <div class="input-label">
-              <i class="icon ion-ios-people my-ionicons-big"></i>&nbsp;&nbsp;Num. giocatori&nbsp;
+              <i class="icon ion-ios-people my-ionicons-big"></i>&nbsp;&nbsp;Num. giocatori richiesti&nbsp;
             </div>
-            <select ng-model="booking.playersNumber">
-              <option value=1>1</option>
-              <option value=2 >2</option>
-              <option value=3 ng-selected="true">3</option>
+            <select ng-model="booking.playersNumber" ng-options="option as option for option in [1, 2, 3]">
+              
             </select>
           </label>
 
