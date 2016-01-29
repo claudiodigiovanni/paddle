@@ -18,6 +18,9 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     
     //**************************************
     
+         
+    //**************************************
+    
      $rootScope.closeLoading = function(){
         
         
@@ -95,8 +98,6 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
                 $rootScope.currentGameType = currentGameType
 
             }
-            
-            
             
 
             MyObjects.countMyInvitations().then(function(count){

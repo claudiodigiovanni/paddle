@@ -1,4 +1,4 @@
-
+ 
 angular.module('starter.controllers', ['chart.js','ngCordova']) 
 
 .controller('checkNewVersionCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {

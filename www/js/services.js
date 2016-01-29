@@ -3,6 +3,8 @@ angular.module('starter.services', [])
 .factory('MyObjects', function(Utility,$ionicLoading, $rootScope, config,$q) {
 
     return {
+        
+     
 
       getUsersToEnableTest: function(){
         var query = new Parse.Query(Parse.User);

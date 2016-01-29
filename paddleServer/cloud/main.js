@@ -39,12 +39,41 @@ var sendEmail = function(toAddress,subjectx,textx){
   });
 
 }
+
+var sendPushForCall = function(circolo, level,userName,date){
+    
+        console.log('sendPushForCall')
+         if (level == null)
+             return
+        
+         Parse.Cloud.useMasterKey();
+         var query = new Parse.Query(Parse.Installation);
+         var innerQuery1 = new Parse.Query(Parse.User);
+         innerQuery1.equalTo("level",level)
+         innerQuery1.equalTo("circolo",circolo)
+         var innerQuery2 = new Parse.Query(Parse.User);
+         innerQuery2.equalTo("level",level-1)
+         innerQuery2.equalTo("circolo",circolo)
+         var mainInnerQuery = Parse.Query.or(innerQuery1, innerQuery2);
+         query.include('user')
+         query.matchesQuery('user',mainInnerQuery)
+         query.each(
+             function(installation){
+                 
+                 sendPush(installation.get('user').id,"Ciao! " + userName + " giocherà un match giorno "  + date  + ". Se vuoi puoi unirti (sempre che qualcuno non sia stato più veloce di te!) andando nella sezione Open Games dell'App.")
+             },
+             function(error){
+                 console.log(error)
+             }
+         )
+
+}
+
 Parse.Cloud.define("hello", function(request, response) {
-
-  response.success("Hello world from your Parse Server....!");
-  console.log('log server...');
+        console.log('hello')
+        response.success("Hello world from your Parse Server....! " + inside);
+             
 });
-
 
 var addUserToRoleNamed = function(user, roleName) {
     var query = new Parse.Query(Parse.Role);
@@ -144,13 +173,20 @@ Parse.Cloud.beforeSave(Parse.Object.extend("Booking"), function(request, respons
 
 Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response) {
 
+  //Il pagamento è l'ultima modifica.
+  var mybooking = request.object
+  if (mybooking.get('payed')){
+      response.success()
+      return
+  }
+      
   var toAddress
   var messagex = ""
-
   var gameTypes = []
   var id = request.object.id
 
   var circolo = null;
+  var userLevel = null
   var Booking = Parse.Object.extend("Booking")
   var query = new Parse.Query(Booking);
   query.include('players')
@@ -161,6 +197,8 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
     function(b){
       //************************
       circolo = b.get('circolo')
+      userLevel = b.get("user").get("level")
+      
       var date = moment(b.get("date")).add('days',1);
       var numPlayers = b.get("playersNumber")
       
@@ -174,6 +212,11 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
         })
         throw "completed"
       }
+        
+      if (b.get('callToAction')){
+          sendPushForCall(circolo,userLevel, b.get("user").get("nome"), date.format("DD/MM/YYYY"))
+      }
+        
       
       if (b.createdAt.getTime() != b.updatedAt.getTime())
         throw "completed"
@@ -196,6 +239,7 @@ Parse.Cloud.afterSave(Parse.Object.extend("Booking"), function(request, response
       function(admin){
         toAddress = admin.get('email')
         sendEmail(toAddress,"Prenotazione Utente",messagex)
+        
     }, function(error){
       console.log(error);
     })
@@ -523,6 +567,7 @@ var InvitationRequestFollowUp = function(response,user,mail,booking){
 
 });*/
 
+
 Parse.Cloud.afterSave(Parse.Object.extend("Payment"), function(request, response) {
   //moment.locale('it');
   var id = request.object.id
@@ -590,7 +635,6 @@ Parse.Cloud.define("changeUserField", function(request, response){
 
 
 Parse.Cloud.define("createInstallationObject", function(request, response){
- 
 var token = request.params.token;
 var platform = request.params.platform;
 var user = request.user;
