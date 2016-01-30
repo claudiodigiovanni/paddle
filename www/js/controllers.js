@@ -2139,7 +2139,7 @@ $scope.closeModalok = function() {
   })
 
   $scope.mayIJoin = function(cta){
-    return _.inRange(Parse.User.current().get('level'), cta.level - 1, parseInt(config.playersLevels) + 1) ;
+    return _.inRange(Parse.User.current().get('level'), cta.get('user').get('level') - 1, parseInt(config.playersLevels) + 1) ;
   }
 
 
