@@ -11,16 +11,17 @@ angular.module('starter.directives', [])
     link: function(scope, elem, attrs) {
 
     },
-    controller: ['$scope', 'MyObjects',  function($scope, MyObjects) {
+    controller: ['$scope', 'MyObjectsREST',  function($scope, MyObjectsREST) {
         
         $scope.isPreferred = false
-        if( MyObjects.isPreferred($scope.user)){
+        
+		if( MyObjectsREST.isPreferred($scope.user)){
             $scope.isPreferred = true
         }
         
         $scope.setPreferred = function(user){
             $scope.isPreferred = ! $scope.isPreferred
-            MyObjects.setPreferred(user)
+            MyObjectsREST.setPreferred(user)
         }
             
     }]
@@ -191,7 +192,7 @@ angular.module('starter.directives', [])
           showpay: '@'
         },
         templateUrl: 'templates/ng-show-bookings-template.html',
-        controller: ['$scope', '$http', 'Utility', '$rootScope', 'MyObjects','$state','$ionicPopup',function($scope, $http, Utility, $rootScope, MyObjects,$state,$ionicPopup) {
+        controller: ['$scope', '$http', 'Utility', '$rootScope', 'MyObjectsREST','$state','$ionicPopup',function($scope, $http, Utility, $rootScope, MyObjectsREST,$state,$ionicPopup) {
 
           //console.log($rootScope.userRole)
           $scope.userRole = $rootScope.userRole
@@ -200,15 +201,15 @@ angular.module('starter.directives', [])
 
           /*$scope.payment = function(booking,type,qty){
             
-            MyObjects.payment(booking,type,qty)
-            //MyObjects.findBookings(2,2015)
+            MyObjectsREST.payment(booking,type,qty)
+            //MyObjectsREST.findBookings(2,2015)
 
           }
 
           $scope.saveNote = function(booking){
             console.log('saveNote...' + booking.note)
-            MyObjects.saveNote(booking)
-            //MyObjects.findBookings(2,2015)
+            MyObjectsREST.saveNote(booking)
+            //MyObjectsREST.findBookings(2,2015)
 
           }
 

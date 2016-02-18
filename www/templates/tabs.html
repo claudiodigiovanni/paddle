@@ -29,17 +29,17 @@ navigation history that also transitions its views in and out.
     <ion-nav-view name="tab-dash"></ion-nav-view>
   </ion-tab>
 
-  <!-- setAvalability Tab -->
-  <ion-tab title="Gestisci" icon-off="ion-clipboard" icon-on="ion-clipboard" href="#/tab/setAvalability" ng-if ="currentUser.get('maestro') != undefined">
-    <ion-nav-view name="tab-setAvalability"></ion-nav-view>
-  </ion-tab>
-
-
-
+ 
   <!-- Book Court Tab -->
   <ion-tab title="Prenota" icon-off="ion-ios-tennisball" icon-on="ion-ios-tennisball" href="#/tab/bookCourt2">
     <ion-nav-view name="tab-bookCourt"></ion-nav-view>
   </ion-tab>
+	
+	 <!-- setAvalability Tab -->
+  <ion-tab title="Gestisci" icon-off="ion-clipboard" icon-on="ion-clipboard" href="#/tab/setAvalability" ng-if ="currentUser.get('maestro') != undefined">
+    <ion-nav-view name="tab-setAvalability"></ion-nav-view>
+  </ion-tab>
+	
 
   <!-- Book Court Tab -->
   <ion-tab title="Open Game" icon-off="ion-speakerphone" icon-on="ion-speakerphone" href="#/tab/callToAction">

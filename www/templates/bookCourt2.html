@@ -99,10 +99,11 @@
               
             </select>
           </label>
-
+		<!--
         <ion-toggle  ng-model="toggleCoach.value" ng-change="toggleCoach()">
               <i class="icon ion-person my-ionicons-big"></i>&nbsp;&nbsp;Maestro
         </ion-toggle>
+		-->
 
     </ion-list>
     
@@ -171,9 +172,9 @@
     <ion-content>
 <span class="item item-text-wrap">
    
-    <b><i class="icon ion-calendar my-ion-checkmark-circled"></i></b> {{booking.get('date') | date:'dd/MM/yyyy'}}&nbsp;<br><br>
-    <b><i class="icon ion-clock my-ion-checkmark-circled"></i></b> {{booking.get('ranges') | range}}&nbsp;&nbsp;<br><br>
-    <b><i class="icon ion-android-pin my-ion-checkmark-circled"></i></b> {{booking.get("court") | courtName:booking.get('gameType') }} &nbsp;
+    <b><i class="icon ion-calendar my-ion-checkmark-circled"></i></b> {{booking.date | date:'dd/MM/yyyy'}}&nbsp;<br><br>
+    <b><i class="icon ion-clock my-ion-checkmark-circled"></i></b> {{booking.ranges | range}}&nbsp;&nbsp;<br><br>
+    <b><i class="icon ion-android-pin my-ion-checkmark-circled"></i></b> {{booking.court | courtName:booking.gameType }} &nbsp;
 </span>
 
 
@@ -213,11 +214,11 @@
         </span>
 
         <span class="item item-icon-right item-text-wrap item-avatar " ng-repeat="coach in coaches" ng-click="selectCoach(coach)">
-          <img src="{{coach.get('img').url()}}">
-          <h2>{{coach.get('nome')}}</h2>
+          <img src="{{coach.img.url()}}">
+          <h2>{{coach.nome}}</h2>
 
           <p>
-            {{coach.get('descrizione')}}
+            {{coach.descrizione}}
           </p>
 
 

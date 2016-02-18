@@ -7,9 +7,9 @@
 // 'starter.controllers' is found in controllers.js
 
 
-angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
+angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers',  'starter.servicesREST','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility,$ionicPush) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjectsREST,Utility,$ionicPush) {
 
 
   $ionicPlatform.ready(function() {
@@ -35,8 +35,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     
     
     //**************************************
-    if (Parse.User.current())
-        MyObjects.createInstallationObject()
+    /*if (Parse.User.current())
+        MyObjects.createInstallationObject()*/
     //**************************************
     
     
@@ -68,12 +68,14 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   });
 
-    Parse.initialize("MteACDZVcFz7FCTlvjp1x5DXIaLlmEQxqtIayE7o","kCH6rpFSzc4PUR3g6NvWnHKLHcmcpzrJbTdnteVc");
-    
-   
+     
     $rootScope.$on('$stateChangeStart', function (event, next) {
-        var currentUser = Parse.User.current();
-        $rootScope.platform = ionic.Platform.platform()
+        //var currentUser = Parse.User.current();
+		var currentUser 
+		if (window.localStorage['user'])
+		 	currentUser = JSON.parse(window.localStorage['user'])
+        
+		$rootScope.platform = ionic.Platform.platform()
 
         if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled' || next.name == 'privacy') {
 
@@ -84,12 +86,18 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
         else if (currentUser) {
 
             $rootScope.currentUser = currentUser;
-            $rootScope.userRole = currentUser.get('role')
+            //TODO
+			$rootScope.userRole = 'ADMIN'
 
-            //console.log($rootScope.userRole)
+            console.log($rootScope.userRole)
 
             if ($rootScope.gameTypes == null){
-              $rootScope.gameTypes = JSON.parse(window.localStorage['gameTypes'])
+				var circolo = JSON.parse(window.localStorage['user']).circolo
+				var gameTypes = []
+                gameTypes.push(circolo.gameType1)
+                gameTypes.push(circolo.gameType2)
+                gameTypes.push(circolo.gameType3)
+                $rootScope.gameTypes = gameTypes
 
             }
             
@@ -100,12 +108,12 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             }
             
 
-            MyObjects.countMyInvitations().then(function(count){
+            /*MyObjects.countMyInvitations().then(function(count){
               if (count > 0 ) 
                 $rootScope.invitationCount = count 
               else 
                 $rootScope.invitationCount = null
-            })
+            })*/
 
             
   
@@ -173,8 +181,9 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   })
 })*/
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider,$httpProvider) {
 
+  $httpProvider.interceptors.push('TokenInterceptor');
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -220,48 +229,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     }
   })
 
-  .state('tab.setAvalability', {
-      url: '/setAvalability',
-      views: {
-        'tab-setAvalability': {
-          templateUrl: 'templates/setAvalability.html',
-          controller: 'SetAvalability'
-        }
-      }
-    })
-
-  /*.state('tab.bookCoach', {
-      url: '/bookCoach',
-      views: {
-        'tab-bookCoach': {
-          templateUrl: 'templates/bookCoach.html',
-          controller: 'BookCoach'
-        }
-      }
-    })
-
-  .state('tab.coachAvalabilities', {
-      url: '/coachAvalabilities/:coachId',
-      cache: false,
-      views: {
-        'tab-bookCoach': {
-          templateUrl: 'templates/coachAvalabilities.html',
-          controller: 'CoachAvalabilities'
-        }
-      }
-    })*/
-
-  /*.state('tab.bookCourt', {
-      url: '/bookCourt',
-      cache: false,
-      views: {
-        'tab-bookCourt': {
-          templateUrl: 'templates/bookCourt.html',
-          controller: 'BookCourt'
-        }
-      }
-    })*/
   
+ 
   .state('tab.bookCourt2', {
       url: '/bookCourt2',
       cache: false,
@@ -272,7 +241,18 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
         }
       }
     })
+  
+.state('tab.setAvalability', {
+      url: '/setAvalability',
+      views: {
+        'tab-setAvalability': {
+          templateUrl: 'templates/setAvalability.html',
+          controller: 'SetAvalability'
+        }
+      }
+    })
 
+  
   .state('tab.callToAction', {
       url: '/callToAction',
       cache: false,

@@ -341,59 +341,7 @@ angular.module('starter.services', [])
         return booking.save();
 
       },
-      /*findBookingsForSegreteria: function(date){
-        $ionicLoading.show({
-          template: 'Loading...'
-        });
-        var defer = $q.defer()
-        var today = new Date();
-        today.setHours(0);
-        today.setMinutes(0);
-        today.setSeconds(0);
-        today.setMilliseconds(0);
-        var ret = {}
-
-        var myContext = this
-
-        myContext.findBookingsToPayBeforeDate(today)
-        .then(
-          function(obj){
-            console.log(obj)
-            ret.bookingsToPayBeforeToday = obj;
-            $ionicLoading.hide();
-        }, function(error){
-          console.log(error);
-          $ionicLoading.hide();
-        })
-
-        //*****************
-        var gameTypes = $rootScope.gameTypes
-
-        ret.bookingsInDate = []
-        _.each(gameTypes, function(item,index){
-
-          var i = index
-          myContext.findBookingsInDate(date,i.toString())
-          .then(
-            function(obj){
-
-              ret.bookingsInDate  = ret.bookingsInDate.concat (obj);
-              $ionicLoading.hide();
-          }, function(error){
-            console.log(error);
-            defer.reject(error)
-            $ionicLoading.hide();
-          })
-
-          defer.resolve(ret)
-        })
-
-        return defer.promise;
-        //*****************
-
-
-
-      },*/
+      
       findBookings: function(month,year){
 
         var daysInMonth = Utility.getDaysInMonth(month,year);

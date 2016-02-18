@@ -42,8 +42,8 @@
           <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
         </div>
       </label>
-                <ion-radio-fix ng-model="currentUser.circolo" ng-value="c.id" ng-repeat="c in circoli">
-                  {{c.get('nome')}}
+                <ion-radio-fix ng-model="currentUser.circolo" ng-value="c._id" ng-repeat="c in circoli" name="circoli">
+                  {{c.nome}}
                 </ion-radio-fix>
 
       <br>
@@ -75,13 +75,7 @@
                 </ion-radio-fix>
 
 <br>
-              <div ng-hide="platform == 'ios' || platform == 'android'">
-                  <div vc-recaptcha
-                  key="'6Lc5tw4TAAAAAM3BaRQP0tK_Lxo1Ox_VRRCibheg'"
-                  theme="light"
-                  on-success="setResponse(response)">
-                  </div>
-              </div>
+              
 
       <ion-item class="item-text-wrap alert" ng-show="mymessage.text">
        {{mymessage.text}}

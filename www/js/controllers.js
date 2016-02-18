@@ -1,7 +1,7 @@
  
 angular.module('starter.controllers', ['chart.js','ngCordova']) 
 
-.controller('checkNewVersionCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
+.controller('checkNewVersionCtrl', function($scope, MyObjectsREST, Utility,$ionicModal, $rootScope) {
 
   //*********************INSTALL NEW UPDATE *************************************
 
@@ -55,22 +55,23 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
 })
 
-.controller('DashCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
+.controller('DashCtrl', function($scope, MyObjectsREST, Utility,$ionicModal, $rootScope) {
 
-
+  
+  
   var edit = {text:"xxxx"}
   $scope.edit = edit 
 
-  MyObjects.getDashboardText()
+  MyObjectsREST.getDashboardText()
   .then(
-    function(text){
-
-        //$scope.text = text
-        console.log('getDashboardText ok...')
-        $scope.text0 = text[0]
-        $scope.text1 = text[1]
-        $scope.text2 = text[2]
-        $scope.$apply()
+    function(response){
+		console.log(response);
+		var item = response.results[0];
+		console.log(item);
+        $scope.text0 = item.area1
+        $scope.text1 = item.area2
+        $scope.text2 = item.area3
+        //$scope.$apply()
 
         /*
 
@@ -100,7 +101,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
   $scope.closeModal = function() {
     $scope.modal.hide();
-    MyObjects.saveDashboardText($scope.index,edit.text)
+    MyObjectsREST.saveDashboardText($scope.index,edit.text)
     var myx = "text" + $scope.index
     $scope[myx] = edit.text
     //$state.go('tab.account');
@@ -120,7 +121,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log, MyObjects) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log, MyObjectsREST) {
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -151,82 +152,6 @@ $ionicModal.fromTemplateUrl('reset-pwd.html', {
 })
 
 
-/*identifyUser = function() {
-  $log.info('Ionic User: Identifying with Ionic User service');
-
-  var user = $ionicUser.get();
-  if(!user.user_id) {
-    // Set your user_id here, or generate a random one.
-    console.log(Parse.User.current().id);
-    user.user_id = Parse.User.current().id
-  }
-
-  // Add some metadata to your user object.
-  angular.extend(user, {
-    name: Parse.User.current().get('email'),
-    bio: 'I come from planet Ion'
-  });
-
-  // Identify your user with the Ionic User Service
-  $ionicUser.identify(user).then(function(){
-    //$scope.identified = true;
-    console.log('Identified user ' + user.name + '\n ID ' + user.user_id);
-  });
-};
-
-pushRegister = function() {
-  $log.info('Ionic Push: Registering user.....xxxx');
-
-  // Register with the Ionic Push service.  All parameters are optional.
-  $ionicPush.register({
-    canShowAlert: true, //Can pushes show an alert on your screen?
-    canSetBadge: true, //Can pushes update app icon badges?
-    canPlaySound: true, //Can notifications play a sound?
-    canRunActionsOnWake: true, //Can run actions outside the app,
-    onNotification: function(notification) {
-      // Handle new push notifications here
-      $log.info(notification);
-      return true;
-    }
-  })
-}
-
-$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
-        console.log("Successfully registered token " + data.token);
-        console.log('Ionic Push: Got token ', data.token, data.platform);
-        //$rootScope.token = data.token;
-        console.log('localStorage deviceToken:' + data.token );
-        window.localStorage['deviceToken'] = data.token
-
-        registerToken(currentUser.username.toLowerCase(),data.token)
-});
-
-registerToken = function(username, token){
-
-  var Token = Parse.Object.extend("Token");
-  var query = new Parse.Query(Token);
-  query.equalTo("username",username)
-  query.first()
-  .then(
-    function(obj){
-      if (obj == null){
-        var t = new Token();
-        t.set("username",username)
-        t.set("token",token)
-        t.save();
-      }
-      else{
-        obj.set("token",token)
-        obj.save();
-      }
-  }, function(error){
-    console.log(error);
-  })
-
-
-}
-
-*/
 
 
 var currentUser = {}
@@ -252,54 +177,45 @@ $scope.login = function(){
 
   var uname = currentUser.username.toLowerCase();
   var pwd = currentUser.password;
-
-  Parse.Cloud.run('login', {username:uname, password:pwd }, {
-    success: function(sessionToken) {
-        Parse.User.become(sessionToken).then(function (user) {
-          // The current user is now set to user.
-          $scope.modal.hide();
-          $ionicLoading.hide();
-          //$state.go('tab.dash');
-          $state.go('tab.dash');
-          //***********************************************************
-          var Circolo = Parse.Object.extend("Circolo");
-          var query = new Parse.Query(Circolo);
-          query.get($rootScope.currentUser.get('circolo').id)
-          .then(
-            function(obj){
-
-                var gameTypes = []
+	
+  if (uname !== undefined && pwd !== undefined) {
+          
+	  	 MyObjectsREST.login(uname, pwd).success(function(data) {
+       
+        
+			 window.localStorage['token'] = data.token
+			 window.localStorage['user'] = JSON.stringify(data.user)
+			 window.localStorage['userRole'] = data.user.role
+			 $rootScope.currentUser = data.user
+			 console.log(data.user)
+          
+			  /*var gameTypes = []
                 gameTypes.push(obj.get('gameType1'))
                 gameTypes.push(obj.get('gameType2'))
                 gameTypes.push(obj.get('gameType3'))
                 window.localStorage['gameTypes'] = JSON.stringify(gameTypes)
                 window.localStorage['circolo'] = obj.get('nome')
                 
-                MyObjects.createInstallationObject()
+                 */
+			MyObjectsREST.createInstallationObject()
+			$scope.modal.hide();
+          	$ionicLoading.hide();
+          	//$state.go('tab.dash');
+			console.log('$rootScope.currentUser ')
+			console.log($rootScope.currentUser )
+          	$state.go('tab.dash');
 
 
-          }, function(error){
-            console.log(error);
-          })
-          //***********************************************************
+          
 
-          //TODO
-          //identifyUser();
-          //pushRegister();
-
-
-        }, function (error) {
-          // The token could not be validated.
+        }).error(function(status) {
+          alert('Oops something went wrong!');
         });
-    },
-    error: function(error) {
-      $ionicLoading.hide();
-      mymessage.text = error.message
-      console.log(error);
-      $scope.$apply();
+      } else {
+        alert('Invalid credentials');
+     }
 
-    }
-  })
+  
 
 
 }
@@ -344,14 +260,17 @@ $scope.gotoSignUp = function(){
 }
 
 $scope.logOut = function(form) {
-  Parse.User.logOut();
+  window.localStorage['token'] = null
+  window.localStorage['user'] = null
+  window.localStorage['userRole'] = null
+ 
   $scope.currentUser = null;
   $state.go('login');
 };
 
 })
 
-.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope,$http,vcRecaptchaService,MyObjects) {
+.controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope,$http,vcRecaptchaService,MyObjectsREST) {
 
 //$scope.currentUser = Parse.User.current();
 var currentUser = {level:3}
@@ -365,11 +284,12 @@ $scope.setPrivacy = function(){
 }
 
 $scope.waiting = "........"
-MyObjects.getCircoli()
+MyObjectsREST.getCircoli()
 .then(
   function(obj){
+	  console.log(obj)
     $scope.waiting = null
-    $scope.circoli = obj
+    $scope.circoli = obj.data.circoli
     $scope.$apply()
 
 }, function(error){
@@ -407,14 +327,14 @@ $scope.signUp = function() {
   });
 
   
-if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.captchaResponse == null){
+/*if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.captchaResponse == null){
   mymessage.text = "Occorre verificare correttamente il captcha..."
   $ionicLoading.hide();
   return
-}
+}*/
 
-  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null || currentUser.circolo === undefined){
-    console.log(currentUser.email);
+  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null /*|| currentUser.circolo === undefined*/){
+    console.log(currentUser);
     mymessage.text = "Occorre inserire email, username, password, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
     $ionicLoading.hide();
     return
@@ -432,30 +352,24 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
 
   console.log(currentUser);
-
-  Parse.Cloud.run('signUp', {email:e, username:u, password:p,level:l ,nome:n, circolo:c, codfis:y,
-                            captchaResponse: $scope.captchaResponse, platform: $rootScope.platform, phoneNumber:x }, {
-    success: function(user) {
-      //$scope.modal.hide();
-      $ionicLoading.hide();
-      //Parse.User.logOut();
-      $state.go('waitingToBeEnabled');
-    },
-    error: function(error) {
-      $ionicLoading.hide();
+  MyObjectsREST.signup(currentUser).success(function(data){
+	  console.log(data)
+	  $ionicLoading.hide();
+	  $state.go('waitingToBeEnabled');
+  }).error(function(error){
+	  $ionicLoading.hide();
       mymessage.text = error;
       console.log(error);
-    }
   })
+
+  
 
 
 };
 
 })
 
-
-
-.controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading,$cordovaCalendar,$ionicPopup,$timeout) {
+.controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjectsREST, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading,$cordovaCalendar,$ionicPopup,$timeout) {
     
     
     //*************************SEZIONE MODAL*******************************************************
@@ -609,7 +523,7 @@ $scope.closeModalok = function() {
       var date = booking.date
       
       
-      MyObjects.checkBeforeCreateBooking(date,ranges , booking.gameType)
+      MyObjectsREST.checkBeforeCreateBooking(date,ranges , booking.gameType)
     .then(
       function(obj){
           $scope.waiting = null
@@ -628,7 +542,7 @@ $scope.closeModalok = function() {
         template: 'Nessun campo disponibile nelle fascie orarie selezionate...Ecco gli orari disponibili.'
        });
       $scope.showRanges = true
-       MyObjects.findaAvalaibleRangesInDate(booking.date, booking.gameType)
+       MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType)
       .then(
         function(ranges){
           avalaibleRanges = ranges;
@@ -702,7 +616,7 @@ $scope.closeModalok = function() {
 
     if ($scope.toggleCoach.value == true){
       $scope.coachesModal.show();
-      MyObjects.getCoaches().then(function(results){
+      MyObjectsREST.getCoaches().then(function(results){
         $scope.coaches = results
         $scope.waiting = null
         
@@ -732,7 +646,7 @@ $scope.closeModalok = function() {
     $scope.showRanges = true
   
     var date = booking.date
-    MyObjects.getCoachAvalabilitiesFilteredByBookings(date.getMonth(),date.getFullYear(),coach.id, booking.gameType )
+    MyObjectsREST.getCoachAvalabilitiesFilteredByBookings(date.getMonth(),date.getFullYear(),coach.id, booking.gameType )
     .then(
       function(results){
         $scope.coachAvalabilities = results
@@ -782,12 +696,7 @@ $scope.closeModalok = function() {
    
    
   $scope.book = function(){
-
-     
-      //var datex = booking.datex
-      //booking.date = datex
-      console.log(booking)
-      
+  
     
     if ($scope.showRanges && selectedRanges.length == 0){
       //$scope.message = "Occorre selezionare almeno una fascia oraria."
@@ -806,18 +715,18 @@ $scope.closeModalok = function() {
 
     //console.log(booking);
 
-    MyObjects.createBooking(booking)
+    MyObjectsREST.createBooking(booking)
     .then(
-      function(result){
+      function(response){
           
       $scope.waiting = null
-      console.log(result)
-
-      //$scope.modal.hide();
+      console.log(response.results)
+	 
 
       $scope.message = "Prenotazione Effettuata!";
-      $scope.booking = result
-      //$state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
+       
+	  $scope.booking = booking
+      
       $scope.modalok.show();
       $rootScope.closeLoading()
      
@@ -833,7 +742,7 @@ $scope.closeModalok = function() {
            title: 'Oops!',
            template: 'Nessun campo disponibile nelle fasce orarie selezionate...'
         });
-      MyObjects.findaAvalaibleRangesInDate(booking.date, booking.gameType)
+      MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType)
       .then(
         function(ranges){
           avalaibleRanges = ranges;
@@ -891,69 +800,84 @@ $scope.closeModalok = function() {
 
 })
 
+.controller('callToAction', function($scope, MyObjectsREST,$ionicModal, config,$ionicPopup,$rootScope) {
+
+  $ionicModal.fromTemplateUrl('ok-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
+  })
+
+  $scope.mayIJoin = function(cta){
+    return _.inRange($rootScope.currentUser.level, cta.user.level - 1, parseInt(config.playersLevels) + 1) ;
+  }
 
 
-.controller('gameTypeController',function($scope,$state,$rootScope){
-    
-    
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
 
-    $scope.close = function(){
-      $state.go('tab.dash')
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
 
-    }
+  //Invece del loading....
+  $scope.waiting = "......"
+   MyObjectsREST.findCallToAction()
+  .then(
+    function(response){
+      console.log(response.results)
+      $scope.waiting = null
+      $scope.callToActionOpen = response.results
+      $scope.$apply()
+  }, function(error){
+    console.log(error);
+  })
+
+
+  $scope.add = function(cta){
+
+    $scope.waiting = "......"
+     MyObjectsREST.addCallToActionPlayer(cta)
+    .then(
+      function(obj){
+        $scope.waiting = null
+         MyObjectsREST.findCallToAction()
+        .then(
+          function(results){
+            $scope.callToActionOpen = results
+            $scope.$apply()
+        }, function(error){
+          $scope.waiting = null
+          console.log(error);
+        })
+
+    }, function(error){
+      $scope.waiting = null
+      console.log(error);
+      var alertPopup = $ionicPopup.alert({
+         title: 'Opsss!',
+         template: error
+       });
+       alertPopup.then(function(res) {
+         console.log('Thank you for not eating my delicious ice cream cone!');
+         selectedRanges = [];
+       });
+    })
+
+  }
+
 })
 
-.controller('changeLevelCtrl',function($scope,$state,$rootScope){
-    var currentLevel = {value: $rootScope.currentUser.get('level')}
-    $scope.currentLevel = currentLevel
-
-    $scope.confirmChangeLevel = function(){
-      //Utilizzato invece del ionicLoading per far vedere lo spinner in pagina...
-      $scope.waiting = "..."
-      var currentUser = Parse.User.current();
-      currentUser.set('level' , parseInt($scope.currentLevel.value));
-      currentUser.save()
-      .then(
-        function(obj){
-          //console.log(obj);
-
-          $state.go('tab.account')
-
-      }, function(error){
-        console.log(error);
-      })
-
-    }
-})
-
-.controller('resetPwdCtrl',function($scope,$state,$rootScope){
-    $scope.confirmResetPwd = function(){
-      var email = Parse.User.current().get('email')
-      Parse.User.requestPasswordReset(email, {
-          success: function() {
-          // Password reset request was sent successfully
-          Parse.User.logOut();
-          },
-          error: function(error) {
-            // Show the error message somewhere
-            alert("Error: " + error.code + " " + error.message);
-          }
-        });
-
-      $state.go('login')
-    }
-      
-
-    
-})
-
-  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading,$http,$cordovaCamera,Utility) {
+.controller('AccountCtrl', function($scope, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading,$http,$cordovaCamera,Utility,MyObjectsREST) {
     
     // Il ruolo admin o segreteria non vede la pagina account (inutile...)
-    if ($rootScope.currentUser.get('role') == 'admin' || $rootScope.currentUser.get('role') == 'segreteria')
+    if ($rootScope.currentUser.role == 'admin' || $rootScope.currentUser.role == 'segreteria')
       $state.go("statistics") 
 
-    var currentLevel = {value: $rootScope.currentUser.get('level')}
+    var currentLevel = {value: $rootScope.currentUser.level}
     $scope.currentLevel = currentLevel
     
    
@@ -1028,7 +952,7 @@ $scope.closeModalok = function() {
   
     $scope.confirmCallToAction = function(){
         console.log($scope.selectedBooking)
-        MyObjects.setCallToAction($scope.selectedBooking)
+        MyObjectsREST.setCallToAction($scope.selectedBooking)
         $scope.message = "Fatto!"
         $scope.callToActionDetailModal.hide()
     
@@ -1099,23 +1023,10 @@ $scope.closeModalok = function() {
     });
   };
  
-  // Function to submit the object to Parse using the REST API
+  // Function to submit the object using the REST API
   function submitObject(imageData) {
  
-    // This part is important. As part of the JSON that we send to Parse,
-    // we need to specify the content type here as a field(__ContentType)
-    // along with the image data. Notice that the Content-Type specified
-    // in the headers is actually "plain/text"
-    var fileName = "image-" + Parse.User.current().id + ".png"
-    var file = new Parse.File(fileName, { base64: imageData });
-    file.save().then(
-        function(file){
-            Parse.User.current().set('image',file)
-            Parse.User.current().save()
-        },
-        function (error){
-            console.log(error)
-        }) 
+    //TODO
   };
  
 
@@ -1126,10 +1037,11 @@ $scope.closeModalok = function() {
       $scope.prossimiImpegniModal.show()
       $scope.waitingMyBookings = "....."
       $rootScope.openLoading()
-      MyObjects.findMyBookings()
+       MyObjectsREST.findMyBookings()
         .then(
           function(results){
             $rootScope.closeLoading()
+			console.log(results)
             $scope.bookings = results
             $scope.waitingMyBookings = null
             //$scope.$apply()
@@ -1147,10 +1059,10 @@ $scope.closeModalok = function() {
       $scope.invitiModal.show()
       $scope.waitingMyInvitations = "....."
       $rootScope.openLoading()
-      MyObjects.findMyInvitations()
+      MyObjectsREST.findMyInvitations()
         .then(
-          function(results){
-            $scope.invitations = results
+          function(response){
+            $scope.invitations = response.results
             $rootScope.closeLoading()
             $scope.waitingMyInvitations = null
             $scope.$apply()
@@ -1168,12 +1080,12 @@ $scope.closeModalok = function() {
       $scope.saldareModal.show()
       $scope.waitingMyGameNotPayed = "....."
       $rootScope.openLoading()
-      MyObjects.findMyGameNotPayed()
+      MyObjectsREST.findMyGameNotPayed()
         .then(
           function(results){
             $scope.waitingMyGameNotPayed = null
             $rootScope.closeLoading()
-            $scope.gameNotPayed = _.flatten(results)
+            $scope.gameNotPayed = results
             //$scope.$apply()
         }, function(error){
           console.log(error);
@@ -1189,7 +1101,7 @@ $scope.closeModalok = function() {
    
     var init = function(){
         $scope.error = null
-        Parse.User.current().fetch()
+        
     }
 
     //***************************************
@@ -1198,10 +1110,10 @@ $scope.closeModalok = function() {
     
   $scope.accept = function(invitation){
     $scope.waitingMyInvitations = "......"
-    MyObjects.acceptInvitation(invitation)
+    MyObjectsREST.acceptInvitation(invitation)
     .then(
       function(obj){
-        MyObjects.deleteParseObjectFromCollection(invitation,$scope.invitations)
+        MyObjectsREST.deleteParseObjectFromCollection(invitation,$scope.invitations)
         $scope.waitingMyInvitations = null
         //$scope.$apply()
         
@@ -1219,10 +1131,10 @@ $scope.closeModalok = function() {
 
   $scope.decline = function(invitation){
     $scope.waitingMyInvitations = "......"
-    MyObjects.declineInvitation(invitation)
+    MyObjectsREST.declineInvitation(invitation)
     .then(
       function(obj){
-        MyObjects.deleteParseObjectFromCollection(invitation,$scope.invitations)
+        MyObjectsREST.deleteParseObjectFromCollection(invitation,$scope.invitations)
         $scope.waitingMyInvitations = null
         $scope.$apply()
         
@@ -1248,7 +1160,7 @@ $scope.closeModalok = function() {
      });
   }
   
-    $scope.infoProssimiImpegni = function(){
+  $scope.infoProssimiImpegni = function(){
             $ionicPopup.alert({
                title: 'Info',
                template: "Le icone hanno, nell'ordine, il seguente significato: cancella, invita, trasforma in una Call To Action, invia un messaggio ai giocatori della partita." 
@@ -1260,9 +1172,9 @@ $scope.closeModalok = function() {
 
    $scope.waitingMyBookings = "......"
    $rootScope.openLoading()
-    MyObjects.deleteBooking(item)
+     MyObjectsREST.deleteBooking(item)
     .then(function(){
-      MyObjects.deleteParseObjectFromCollection(item,$scope.bookings)
+       MyObjectsREST.deleteParseObjectFromCollection(item,$scope.bookings)
       $scope.waitingMyBookings = null
       $rootScope.closeLoading()
       $scope.$apply()
@@ -1278,7 +1190,7 @@ $scope.closeModalok = function() {
   $scope.payMyBooking = function(booking){
     //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
    $scope.waitingMyGameNotPayed = "......"
-    MyObjects.payMyBooking(booking).then(function(ret){
+     MyObjectsREST.payMyBooking(booking).then(function(ret){
       $ionicListDelegate.closeOptionButtons()
       $scope.waitingMyGameNotPayed = null
       console.log('payed....')
@@ -1319,13 +1231,13 @@ $scope.closeModalok = function() {
   
   $scope.setStatus = function(){
       
-      MyObjects.setStatus($scope.status.value)
+       MyObjectsREST.setStatus($scope.status.value)
       $scope.statusModal.hide()
   }
   
   $scope.sendMessage=function(){
       
-      MyObjects.sendMessageBookingUsers($scope.bookingMessage,$scope.messageToSend.value)
+       MyObjectsREST.sendMessageBookingUsers($scope.bookingMessage,$scope.messageToSend.value)
       $scope.messageModal.hide()
       $scope.message = "Messaggio inviato!"
       
@@ -1333,6 +1245,55 @@ $scope.closeModalok = function() {
 
 })
 
+
+.controller('gameTypeController',function($scope,$state,$rootScope){
+    
+    
+
+    $scope.close = function(){
+      $state.go('tab.dash')
+
+    }
+})
+
+.controller('changeLevelCtrl',function($scope,$state,$rootScope){
+    var currentLevel = {value: $rootScope.currentUser.get('level')}
+    $scope.currentLevel = currentLevel
+
+    $scope.confirmChangeLevel = function(){
+      //Utilizzato invece del ionicLoading per far vedere lo spinner in pagina...
+      $scope.waiting = "..."
+      var currentUser = Parse.User.current();
+      currentUser.set('level' , parseInt($scope.currentLevel.value));
+      currentUser.save()
+      .then(
+        function(obj){
+          //console.log(obj);
+
+          $state.go('tab.account')
+
+      }, function(error){
+        console.log(error);
+      })
+
+    }
+})
+
+.controller('resetPwdCtrl',function($scope,$state,$rootScope){
+    $scope.confirmResetPwd = function(){
+      window.localStorage.removeItem('token')
+	  window.localStorage.removeItem('user')
+	  window.localStorage.removeItem('userRole')
+
+	  $scope.currentUser = null;
+	  $state.go('login');
+    }
+      
+
+    
+})
+
+  
 .controller('manageUsers', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state,$rootScope){
 
   if($rootScope.userRole == null)
@@ -1384,7 +1345,7 @@ $scope.closeModalok = function() {
 
     $scope.confirmChangeLevel = function(user){
       user.set('level',user.level)
-      MyObjects.changeUserLevel(user)
+       MyObjectsREST.changeUserLevel(user)
       .then(
         function(obj){
           //console.log(obj);
@@ -1403,7 +1364,7 @@ $scope.closeModalok = function() {
         $ionicLoading.show({
           template: 'Loading...'
         });
-        MyObjects.findPlayersWithName($scope.userToSearch.nome)
+         MyObjectsREST.findPlayersWithName($scope.userToSearch.nome)
         .then(function(ret){
           $ionicLoading.hide()
           $scope.myresults = ret
@@ -1420,7 +1381,7 @@ $scope.closeModalok = function() {
           
           $scope.waiting = "....."
           $scope.user = user
-          MyObjects.getRecharges(user)
+           MyObjectsREST.getRecharges(user)
         .then(function(results){
           $scope.recharges = results
           $scope.waiting = null
@@ -1431,7 +1392,7 @@ $scope.closeModalok = function() {
     $scope.getPayments = function(user){
           $scope.waiting = "....."
           $scope.user = user
-          MyObjects.getPayments(user)
+           MyObjectsREST.getPayments(user)
         .then(function(results){
           $scope.payments = results
           $scope.waiting = null
@@ -1448,7 +1409,7 @@ $scope.closeModalok = function() {
           $ionicLoading.show({
             template: 'Loading...'
           });
-          MyObjects.findPlayersWithName($scope.userToSearch.nome)
+           MyObjectsREST.findPlayersWithName($scope.userToSearch.nome)
           .then(function(ret){
             $ionicLoading.hide()
             $scope.rechargeModal.hide()
@@ -1460,9 +1421,9 @@ $scope.closeModalok = function() {
       }
 
       $scope.addCharge = function(){
-        MyObjects.addCharge($scope.user,$scope.recharge.qty)
+         MyObjectsREST.addCharge($scope.user,$scope.recharge.qty)
         .then(function(ret){
-           return MyObjects.getRecharges($scope.user)
+           return  MyObjectsREST.getRecharges($scope.user)
           })
           .then(function(results){
             $scope.recharges = results
@@ -1475,9 +1436,9 @@ $scope.closeModalok = function() {
         $ionicLoading.show({
             template: 'Loading...'
           });
-        MyObjects.enabling(user)
+         MyObjectsREST.enabling(user)
         .then(function(ret){
-          MyObjects.findPlayersWithName($scope.userToSearch.nome)
+           MyObjectsREST.findPlayersWithName($scope.userToSearch.nome)
         .then(function(ret){
           $ionicLoading.hide()
           $scope.myresults = ret
@@ -1499,7 +1460,7 @@ $scope.closeModalok = function() {
       $ionicLoading.show({
         template: 'Loading...'
       });
-      MyObjects.getUsersToEnable()
+       MyObjectsREST.getUsersToEnable()
       .then(
         function(results){
           
@@ -1530,28 +1491,28 @@ $scope.closeModalok = function() {
     $scope.month = parseInt(month)+1
     $scope.year = year
 
-    MyObjects.statsByBookingAndMonth(month,year)
+     MyObjectsREST.statsByBookingAndMonth(month,year)
     .then(function(results){
       //$scope.waiting = null
       $scope.statsByBookingAndMonth = results
       
     })
 
-    MyObjects.statsByPaymentsAndMonth(month,year,'quota')
+     MyObjectsREST.statsByPaymentsAndMonth(month,year,'quota')
     .then(function(results){
       //$scope.waiting = null
       $scope.statsByPaymentsAndMonth_quote = results
       
     })
 
-    MyObjects.statsByPaymentsAndMonth(month,year,'tessera')
+     MyObjectsREST.statsByPaymentsAndMonth(month,year,'tessera')
     .then(function(results){
       //$scope.waiting = null
       $scope.statsByPaymentsAndMonth_tessere = results
       
     })
 
-    MyObjects.statsByUser().then(
+     MyObjectsREST.statsByUser().then(
         function(obj){
           
           $scope.stats_usersNumber = obj 
@@ -1562,7 +1523,7 @@ $scope.closeModalok = function() {
       })
 
 
-    MyObjects.statsByBookingAndYear(year).then(
+     MyObjectsREST.statsByBookingAndYear(year).then(
         function(obj){
     
           //$scope.statsBookingYear = obj 
@@ -1584,7 +1545,7 @@ $scope.closeModalok = function() {
         console.log(error);
       })
 
-    MyObjects.statsByPaymentAndYear(year).then(
+     MyObjectsREST.statsByPaymentAndYear(year).then(
         function(obj){
           var quote = _.take(obj,12)
           var tariffe = _.takeRight(obj,12)
@@ -1649,7 +1610,7 @@ $scope.closeModalok = function() {
     $scope.openSaldareModal = function(){
       $scope.saldareModal.show()
       $scope.waiting = "....."
-      MyObjects.findBookingsToPayBeforeDate(today)
+       MyObjectsREST.findBookingsToPayBeforeDate(today)
       .then(
         function(results){
            $scope.waiting = null
@@ -1680,7 +1641,7 @@ $scope.closeModalok = function() {
 
   /*$scope.pay = function(booking){
 
-    MyObjects.payBooking(booking)
+     MyObjectsREST.payBooking(booking)
     .then(
       function(obj){
         console.log('ok');
@@ -1692,7 +1653,7 @@ $scope.closeModalok = function() {
 
     $scope.setBookingPayed = function(booking){
 
-    MyObjects.setBookingPayed(booking)
+     MyObjectsREST.setBookingPayed(booking)
     .then(
       function(obj){
         console.log('ok');
@@ -1711,9 +1672,9 @@ $scope.closeModalok = function() {
     var m = parseInt($scope.currentMonth) + 1
     var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
 
-    MyObjects.deleteBooking(item)
+     MyObjectsREST.deleteBooking(item)
     .then(function(item){
-      return MyObjects.findBookingsToPayBeforeDate(new Date(datex))
+      return  MyObjectsREST.findBookingsToPayBeforeDate(new Date(datex))
     })
     .then(
       function(results){
@@ -1735,7 +1696,7 @@ $scope.closeModalok = function() {
     var datex = $scope.currentYear + "/" + m + "/" + day
     $scope.date = Utility.formatDate(new Date(datex))
 
-    MyObjects.findBookingsToPayBeforeDate(new Date(datex))
+     MyObjectsREST.findBookingsToPayBeforeDate(new Date(datex))
     .then(
       function(results){
         $scope.results = results
@@ -1823,7 +1784,7 @@ $scope.closeModalok = function() {
     $scope.waiting = "......."
     $scope.bookingx = booking
     $scope.bookingx.note = booking.get('note')
-    MyObjects.getPaymentsByBooking(booking).then(
+     MyObjectsREST.getPaymentsByBooking(booking).then(
         function(results){
            $scope.waiting = null
            $scope.payments = results
@@ -1839,7 +1800,7 @@ $scope.closeModalok = function() {
 
   $scope.closeModal = function() {
     $scope.modal.hide();
-    //MyObjects.saveDashboardText($scope.index,edit.text)
+    // MyObjectsREST.saveDashboardText($scope.index,edit.text)
   };
 
   $scope.openAddPaymentTesseraModal = function(booking) {
@@ -1850,7 +1811,7 @@ $scope.closeModalok = function() {
   };
 
   $scope.closeAddPaymentTesseraModal = function() { 
-    MyObjects.getPaymentsByBooking($scope.bookingx).then(
+     MyObjectsREST.getPaymentsByBooking($scope.bookingx).then(
         function(results){
            $scope.payments = results
            $scope.addPaymentModal.hide();
@@ -1867,7 +1828,7 @@ $scope.closeModalok = function() {
     $scope.messageModalTessera = ""
     $scope.waiting = "......"
 
-    MyObjects.findPlayersWithName($scope.searchUser.name)
+     MyObjectsREST.findPlayersWithName($scope.searchUser.name)
       .then(
         function(results){
           $scope.waiting = null
@@ -1910,7 +1871,7 @@ $scope.closeModalok = function() {
     $scope.waiting = "...."
     var d = new Date( datex)
 
-    MyObjects.courtsView(d, gameType)
+     MyObjectsREST.courtsView(d, gameType)
     .then(function(results){
       $scope.waiting = null
       $scope.myresults = results
@@ -1953,7 +1914,7 @@ $scope.closeModalok = function() {
   $scope.payQuota = function(booking){
         
         $scope.waiting = "......"
-        MyObjects.payQuota(booking).then(
+         MyObjectsREST.payQuota(booking).then(
             function(quota){
               $scope.waiting = null
               $scope.payments.push(quota) 
@@ -1968,7 +1929,7 @@ $scope.closeModalok = function() {
 
     $scope.payTessera = function(booking){
       $scope.waiting = "......"
-      MyObjects.payTessera(Parse.User.current(),booking,1)
+       MyObjectsREST.payTessera(Parse.User.current(),booking,1)
           .then(function(tessera){
             $scope.waiting = null
             $scope.payments.push(tessera) 
@@ -1986,7 +1947,7 @@ $scope.closeModalok = function() {
         $ionicLoading.show({
           template: 'Loading...'
         });
-        MyObjects.payTessera(user,$scope.bookingx,1)
+         MyObjectsREST.payTessera(user,$scope.bookingx,1)
         .then(function(ret){
           console.log('ok....')
           $scope.messageModalTessera = "Pagamento effettuato con successo!"
@@ -2010,13 +1971,13 @@ $scope.closeModalok = function() {
 
   $scope.saveNote = function(booking){
     console.log('saveNote...' + booking.note)
-    MyObjects.saveNote(booking)
-    //MyObjects.findBookings(2,2015)
+     MyObjectsREST.saveNote(booking)
+    // MyObjectsREST.findBookings(2,2015)
   }
 
 
   $scope.setBookingPayed = function(booking){
-    MyObjects.setBookingPayed(booking)
+     MyObjectsREST.setBookingPayed(booking)
     .then(
       function(obj){
         console.log('ok');
@@ -2030,7 +1991,7 @@ $scope.closeModalok = function() {
     console.log('delete');
     //console.log(item)
     
-    MyObjects.deleteBooking(mybooking)
+     MyObjectsREST.deleteBooking(mybooking)
     .then(function(){
       
       _.each(mybooking.get('ranges'), function(range,index){
@@ -2063,12 +2024,12 @@ $scope.closeModalok = function() {
 
     mybooking.ranges = selectedRanges;
     mybooking.court = court
-    MyObjects.createBooking(mybooking)
+     MyObjectsREST.createBooking(mybooking)
     .then(
       function(result){
       //console.log('state.go....') 
       //$state.go('tab.courtsView',{'datez': datex});
-      //MyObjects.courtsView(new Date( datex))
+      // MyObjectsREST.courtsView(new Date( datex))
       _.each(mybooking.ranges, function(range,index){
 
           var row = _.find($scope.myresults, function(row){
@@ -2092,10 +2053,10 @@ $scope.closeModalok = function() {
 
   $scope.deletePayment = function(payment){
     $scope.waiting = "....."
-    MyObjects.deletePayment(payment)
+     MyObjectsREST.deletePayment(payment)
     .then(
       function(obj){
-        return MyObjects.getPaymentsByBooking($scope.bookingx)
+        return  MyObjectsREST.getPaymentsByBooking($scope.bookingx)
       }, function(error){
         console.log(error);
       })
@@ -2116,7 +2077,7 @@ $scope.closeModalok = function() {
       $ionicLoading.show({
         template: 'Loading...'
       });
-      MyObjects.courtsView(new Date( datex), gameType)
+       MyObjectsREST.courtsView(new Date( datex), gameType)
       .then(function(results){
 
         $scope.myresults = results
@@ -2127,77 +2088,6 @@ $scope.closeModalok = function() {
 
 })
 
-
-.controller('callToAction', function($scope, MyObjects,$ionicModal, config,$ionicPopup) {
-
-  $ionicModal.fromTemplateUrl('ok-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up',
-    backdropClickToClose:false
-  }).then(function(modal) {
-    $scope.modal = modal;
-  })
-
-  $scope.mayIJoin = function(cta){
-    return _.inRange(Parse.User.current().get('level'), cta.get('user').get('level') - 1, parseInt(config.playersLevels) + 1) ;
-  }
-
-
-  $scope.closeModal = function() {
-    $scope.modal.hide();
-  };
-
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
-
-  //Invece del loading....
-  $scope.waiting = "......"
-  MyObjects.findCallToAction()
-  .then(
-    function(results){
-      console.log(results)
-      $scope.waiting = null
-      $scope.callToActionOpen = results
-      $scope.$apply()
-  }, function(error){
-    console.log(error);
-  })
-
-
-  $scope.add = function(cta){
-
-    $scope.waiting = "......"
-    MyObjects.addCallToActionPlayer(cta)
-    .then(
-      function(obj){
-        $scope.waiting = null
-        MyObjects.findCallToAction()
-        .then(
-          function(results){
-            $scope.callToActionOpen = results
-            $scope.$apply()
-        }, function(error){
-          $scope.waiting = null
-          console.log(error);
-        })
-
-    }, function(error){
-      $scope.waiting = null
-      console.log(error);
-      var alertPopup = $ionicPopup.alert({
-         title: 'Opsss!',
-         template: error
-       });
-       alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone!');
-         selectedRanges = [];
-       });
-    })
-
-  }
-
-})
 
 //{date: new Date(d), ranges:selectedRanges, maestro:maestro1}
 //Funzione disponibile solo a Maestro!!!!
@@ -2221,7 +2111,7 @@ $scope.closeModalok = function() {
       $scope.currentMonth = m
       $scope.currentYear = y
 
-      MyObjects.getDisponibilitaCoachForCalendar(m,y, maestro.id).then(
+       MyObjectsREST.getDisponibilitaCoachForCalendar(m,y, maestro.id).then(
         function(ret){
           //console.log(ret);
           //coachAvalabilities ==>[{day:d.get('date').getDate(),range:ranges}]
@@ -2270,7 +2160,7 @@ $scope.closeModalok = function() {
     var d = $scope.currentYear + "/" + m + "/" + day;
     var date = new Date(d);
 
-    MyObjects.deleteDisponibilitaCoach(date)
+     MyObjectsREST.deleteDisponibilitaCoach(date)
     $scope.coachAvalabilities.splice(ix ,1);
     selectedRanges = [];
     $scope.showDeleteButton = false;
@@ -2324,7 +2214,7 @@ $scope.closeModalok = function() {
 
       var d = $scope.currentYear + "/" + m + "/" + value;
 
-      MyObjects.addDisponibilitaCoach({date: new Date(d), ranges:selectedRanges}).then(
+       MyObjectsREST.addDisponibilitaCoach({date: new Date(d), ranges:selectedRanges}).then(
         function(result){
           //coachAvalabilities ==>[{day:d.get('date').getDate(),range:ranges}]
           $scope.coachAvalabilities.push({day: value, range:selectedRanges})
@@ -2346,79 +2236,6 @@ $scope.closeModalok = function() {
 
 })
 
-
-.controller('manageSubscribtions',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$ionicPopup) {
-
-MyObjects.getCircoli()
-.then(
-  function(obj){
-    $scope.subscriptions = obj
-    $scope.circolo = _.find(obj,function (item){
-      return item.id == Parse.User.current().get('circolo').id
-    })
-    $scope.$apply()
-}, function(error){
-  console.log(error);
-})
-
-$scope.setAsDefault = function(circolo){
-
-  Parse.User.current().set("circolo",circolo)
-  Parse.User.current().save()
-  .then(
-    function(obj){
-      $scope.circolo = circolo
-      window.localStorage['circolo'] = circolo.get('nome')
-      
-       /* var gameTypes = []
-        gameTypes.push(circolo.get('gameType1'))
-        gameTypes.push(circolo.get('gameType2'))
-        gameTypes.push(circolo.get('gameType3'))
-        window.localStorage['gameTypes'] = JSON.stringify(gameTypes)*/
-
-      
-      $scope.$apply()
-      var alertPopup = $ionicPopup.alert({
-         title: 'ok',
-         template: 'Modificato il circolo predefinito'
-       });
-      alertPopup.then(function(res) {});
-  }, function(error){
-    console.log(error);
-  })
-
-
-}
-
-$scope.subscribe = function(circolo){
-  MyObjects.requestForSubscription(circolo)
-  .then(
-    function(response){
-      console.log(response);
-      var alertPopup = $ionicPopup.alert({
-         title: 'ok',
-         template: 'Richiesta di iscrizione inviata...!'
-       });
-      alertPopup.then(function(res) {});
-
-  }, function(error){
-    console.log(error);
-
-    var alertPopup = $ionicPopup.alert({
-       title: 'ok',
-       template: 'Richiesta di iscrizione già inviata in passato...!'
-     });
-    alertPopup.then(function(res) {});
-  })
-
-
-}
-
-
-
-})
-
-
 .controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading,$ionicPopup,$ionicModal,$rootScope) {
 
    if($rootScope.userRole == null)
@@ -2435,7 +2252,7 @@ $scope.subscribe = function(circolo){
   $ionicLoading.show({
     template: 'Loading...'
   });
-  MyObjects.getUsersToEnable()
+   MyObjectsREST.getUsersToEnable()
   .then(
     function(results){
       console.log(results);
@@ -2462,7 +2279,7 @@ $scope.subscribe = function(circolo){
 
   $scope.enableUser = function(user){
     console.log(user);
-    MyObjects.enableUser(user)
+     MyObjectsREST.enableUser(user)
     .then(
       function(obj){
         console.log('ok');
@@ -2493,7 +2310,7 @@ $scope.subscribe = function(circolo){
 
   $scope.confirmChangeLevel = function(user){
       user.set('level',user.level)
-      MyObjects.changeUserLevel(user)
+       MyObjectsREST.changeUserLevel(user)
       .then(
         function(obj){
           console.log(obj);
@@ -2582,7 +2399,7 @@ $scope.ok = function(){
         $rootScope.openLoading()
        
         $scope.preferitiModal.show()
-        MyObjects.getPreferred().then(function(results){
+         MyObjectsREST.getPreferred().then(function(results){
             //console.log(results)
             $rootScope.closeLoading()
             $scope.preferences = results
@@ -2596,7 +2413,7 @@ $scope.ok = function(){
         $rootScope.openLoading()
         $scope.playersByLevelModal.show()
         $scope.waiting = "....."
-        MyObjects.getPlayersByLevel().then(function(results){
+         MyObjectsREST.getPlayersByLevel().then(function(results){
             
             $rootScope.closeLoading()
             $scope.playersByLevel = results
@@ -2620,7 +2437,7 @@ $scope.ok = function(){
     
     
     //*******INIT*******************
-    MyObjects.findInvitationAlredySentForBooking($scope.bookingId).then(
+     MyObjectsREST.findInvitationAlredySentForBooking($scope.bookingId).then(
     function(results){
         $scope.waiting = null
         $scope.invitations = results
@@ -2636,7 +2453,7 @@ $scope.ok = function(){
       $scope.waiting = "........"
       $scope.preferences = []
       $rootScope.openLoading()
-      MyObjects.findPlayersWithName($scope.model.name)
+       MyObjectsREST.findPlayersWithName($scope.model.name)
       .then(
         function(results){
           //console.log(results);
@@ -2669,12 +2486,12 @@ $scope.ok = function(){
        return
     }
     //Asincrono per efficienza....
-    MyObjects.invite(user.id,user.get('email'),$scope.bookingId)
+     MyObjectsREST.invite(user.id,user.get('email'),$scope.bookingId)
     $scope.message = "Utente invitato!"
     $timeout(function() {
        $scope.message = null
     }, 2000);
-    MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
+     MyObjectsREST.findInvitationAlredySentForBooking($scope.bookingId)
     .then(function(obj){
         console.log(obj);
         $scope.invitations = obj

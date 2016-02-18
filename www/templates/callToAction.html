@@ -1,7 +1,5 @@
 <ion-view view-title="Open Games">
 
-
-
 <ion-content>
 
 <div align="center">
@@ -16,19 +14,19 @@
   
 
     <a class="item call" ng-repeat="cta in callToActionOpen" >
-       <i class="icon ion-android-done"></i> {{cta.get('gameType') | gameName}}&nbsp;<i class="icon ion-speakerphone" ng-show="cta.get('callToAction') == true"></i><br>
+       <i class="icon ion-android-done"></i> {{cta.gameType | gameName}}&nbsp;<i class="icon ion-speakerphone" ng-show="cta.get('callToAction') == true"></i><br>
 
-    <b><i class="icon ion-calendar"></i></b> {{cta.get('date') | date:'dd/MM/yyyy'}}<br>
-    <b><i class="icon ion-clock"></b></i> {{cta.get('ranges') | range}}<br>
+    <b><i class="icon ion-calendar"></i></b> {{cta.date | date:'dd/MM/yyyy'}}<br>
+    <b><i class="icon ion-clock"></b></i> {{cta.ranges | range}}<br>
 
-    <b><i class="icon ion-android-pin"></i></b> {{cta.get("court") | courtName:cta.get('gameType') }} <br>
-    <b><i class="icon ion-person"></i></b>&nbsp;{{cta.get("user").get("nome")}} <br>
-    <b ng-show="cta.get('note') != null"><i class="icon ion-compose"></i>&nbsp;{{cta.get("note")}} </b>
+    <b><i class="icon ion-android-pin"></i></b> {{cta.court | courtName:cta.gameType }} <br>
+    <b><i class="icon ion-person"></i></b>&nbsp;{{cta.user.nome}} <br>
+    <b ng-show="cta.get('note') != null"><i class="icon ion-compose"></i>&nbsp;{{cta.note}} </b>
       
     <div ng-show="cta.get('players').length > 0 ">
-        <i class="icon ion-person-stalker" ></i> (giocatori mancanti: {{cta.get('playersNumber') - cta.get('players').length}})<br>
+        <i class="icon ion-person-stalker" ></i> (giocatori mancanti: {{cta.playersNumber - cta.players.length}})<br>
         <small ng-repeat="player in cta.get('players')">
-        - {{player.get('nome')}} (Livello: {{player.get('level')}}) <br>
+        - {{player.nome}} (Livello: {{player.level}}) <br>
         </small>
     </div>
 
