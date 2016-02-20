@@ -12,6 +12,9 @@ var Invitation = require('./model/invitation.js');
 var Recharge = require('./model/recharge.js');
 var Payment = require('./model/payment.js');
 var Q = require('q')
+
+var push = require('./utils/push.js')
+var mail = require('./utils/mailgun.js')
 /*
  * Routes that can be accessed by any one
  */ 
@@ -108,7 +111,7 @@ router.post('/api/v1/createBooking', function(req, res,next) {
 	console.log(booking)
 	booking.save(function(err) {
 
-	  if (err) next(err);
+	  	if (err) return next(err);
 	  	console.log('Booking saved successfully!');
 	  	res.json({succes: true, data: booking});
 	});
@@ -156,13 +159,20 @@ router.post('/api/v1/findCallToAction', function(req, res,next) {
 
 router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
 	
-	
 	Booking.findByIdAndUpdate(req.body.id, {$push: { 'players': req.body.user }})
+		.populate('players')
 		.exec( function (err, booking) {
-		  res.json({data: booking});
-		})
-	
-            
+		
+			 var numPlayers = b.playersNumber
+			 if (booking.callToAction == true && booking.players.length == numPlayers ){
+				 var players = booking.players
+				_.each(players,function(item){
+					
+					push.pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
+				})
+			 }
+		  	res.json({data: booking});
+		})         
 });
 
 router.post('/api/v1/findMyInvitations', function(req, res,next) {
@@ -417,6 +427,7 @@ router.post('/api/v1/setCallToAction', function(req, res,next) {
             res.json({'message':'ok'})
 			  
 			})
+			//TODO sendpush se raggiunto num players 
 	          
 });
 
@@ -510,12 +521,22 @@ router.post('/api/v1/getPreferred', function(req, res,next) {
 
 router.post('/api/v1/setStatus', function(req, res,next) {
 	
-	User.findByIdAndUpdate(req.body.user, {status:'req.body.message'})
-		
-		.exec( function (err, user) {
-		  
-			  res.json({data: user});
+	//console.log('setStatus...' + req.body.user + ":" + req.body.status)
+	try{
+		User.findByIdAndUpdate(req.body.user, {'status':req.body.status}, function (err, user) {
+			//console.log('setStatus222...')
+		  	  if (err){
+				 console.log(err)
+				 next(err)  
+			  } 
+			console.log(user)
+			res.json({data: user});
 		}) 
+	}
+	catch(error){
+		console.log(error)
+	}
+	
 		
 	
 		          
@@ -545,6 +566,7 @@ router.post('/api/v1/saveImage/', function(req, res,next) {
 	User.findById(user).exec(function(err,user){
 		user.image = imgBuf
 		user.save()
+		res.json({'data': user});
 	})
 	
 	

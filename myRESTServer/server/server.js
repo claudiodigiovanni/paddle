@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var _ = require('lodash');
 
-var push = require('./utils/push.js')
+
 var init = require('./initialize.js');
 
 var app = express();
@@ -29,7 +29,7 @@ mongoose.connection.on('error', function () {
 });
 
 
-
+//mail.sendMessage('','')
 
 app.all('/*', function(req, res, next) {
   // CORS headers
@@ -49,13 +49,13 @@ app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
 
 app.use('/', require('./routes.js'));
 
-// If no route is matched by now, it must be a 404
+// Error Handler
 app.use(function(err, req, res, next) {
-  console.error(err);
-  res.json({
-           "status": 500,
-           "message": err.message
-  });
+  	res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
   
 });
 

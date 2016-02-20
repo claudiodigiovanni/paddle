@@ -273,7 +273,7 @@ $scope.logOut = function(form) {
 .controller('SignUp', function($scope, $stateParams, config,$state,$ionicModal, $ionicLoading, $rootScope,$http,vcRecaptchaService,MyObjectsREST) {
 
 //$scope.currentUser = Parse.User.current();
-var currentUser = {level:3}
+var currentUser = {level:3, role: 'user'}
 $scope.currentUser = currentUser;
 $scope.registered = false;
 
@@ -341,14 +341,6 @@ $scope.signUp = function() {
   }
 
 
-  var e = currentUser.email.toLowerCase()
-  var u = currentUser.username.toLowerCase()
-  var n = currentUser.nome
-  var p = currentUser.password
-  var l = currentUser.level
-  var c = currentUser.circolo
-  var x = currentUser.phoneNumber
-  var y = currentUser.codfis
 
 
   console.log(currentUser);
@@ -531,7 +523,6 @@ $scope.closeModalok = function() {
         $scope.avalaivableCourts = obj
         //$scope.$apply()
         
-
     }, function(error){
       $scope.waiting = null
       console.log(error);
@@ -548,7 +539,7 @@ $scope.closeModalok = function() {
           avalaibleRanges = ranges;
           console.log(ranges)
           $scope.waiting = null
-          $scope.$apply()
+          //$scope.$apply()
 
       }, function(error){
         $scope.waiting = null
@@ -720,12 +711,11 @@ $scope.closeModalok = function() {
       function(response){
           
       $scope.waiting = null
-      console.log(response.results)
+      console.log(response)
 	 
-
       $scope.message = "Prenotazione Effettuata!";
        
-	  $scope.booking = booking
+	  $scope.booking = response.results
       
       $scope.modalok.show();
       $rootScope.closeLoading()
@@ -748,7 +738,7 @@ $scope.closeModalok = function() {
           avalaibleRanges = ranges;
           //console.log(ranges)
           $scope.waiting = null
-          $scope.$apply()
+          //$scope.$apply()
 
       }, function(error){
           $scope.waiting = null
@@ -831,7 +821,7 @@ $scope.closeModalok = function() {
       console.log(response.results)
       $scope.waiting = null
       $scope.callToActionOpen = response.results
-      $scope.$apply()
+      //$scope.$apply()
   }, function(error){
     console.log(error);
   })
@@ -876,7 +866,8 @@ $scope.closeModalok = function() {
     // Il ruolo admin o segreteria non vede la pagina account (inutile...)
     if ($rootScope.currentUser.role == 'admin' || $rootScope.currentUser.role == 'segreteria')
       $state.go("statistics") 
-
+	  
+	console.log($rootScope.currentUser)
     var currentLevel = {value: $rootScope.currentUser.level}
     $scope.currentLevel = currentLevel
     
@@ -967,7 +958,7 @@ $scope.closeModalok = function() {
         $scope.cameraModal.hide()
     }
     $scope.openStatusModal = function(){
-        $scope.status = {value: Parse.User.current().get('status')}
+        $scope.status = {value: $rootScope.currentUser.status}
         $scope.statusModal.show()
     }
     
@@ -1113,7 +1104,7 @@ $scope.closeModalok = function() {
     MyObjectsREST.acceptInvitation(invitation)
     .then(
       function(obj){
-        MyObjectsREST.deleteParseObjectFromCollection(invitation,$scope.invitations)
+        MyObjectsREST.deleteObjectFromCollection(invitation,$scope.invitations)
         $scope.waitingMyInvitations = null
         //$scope.$apply()
         
@@ -1134,7 +1125,7 @@ $scope.closeModalok = function() {
     MyObjectsREST.declineInvitation(invitation)
     .then(
       function(obj){
-        MyObjectsREST.deleteParseObjectFromCollection(invitation,$scope.invitations)
+        MyObjectsREST.deleteObjectFromCollection(invitation,$scope.invitations)
         $scope.waitingMyInvitations = null
         $scope.$apply()
         
@@ -1174,7 +1165,7 @@ $scope.closeModalok = function() {
    $rootScope.openLoading()
      MyObjectsREST.deleteBooking(item)
     .then(function(){
-       MyObjectsREST.deleteParseObjectFromCollection(item,$scope.bookings)
+       MyObjectsREST.deleteObjectFromCollection(item,$scope.bookings)
       $scope.waitingMyBookings = null
       $rootScope.closeLoading()
       $scope.$apply()
@@ -1230,8 +1221,10 @@ $scope.closeModalok = function() {
   }
   
   $scope.setStatus = function(){
+	  console.log($scope.status.value)
+	  
       
-       MyObjectsREST.setStatus($scope.status.value)
+      MyObjectsREST.setStatus($scope.status.value)
       $scope.statusModal.hide()
   }
   
@@ -1248,33 +1241,25 @@ $scope.closeModalok = function() {
 
 .controller('gameTypeController',function($scope,$state,$rootScope){
     
-    
-
     $scope.close = function(){
       $state.go('tab.dash')
 
     }
 })
 
-.controller('changeLevelCtrl',function($scope,$state,$rootScope){
-    var currentLevel = {value: $rootScope.currentUser.get('level')}
+.controller('changeLevelCtrl',function($scope,$state,$rootScope,MyObjectsREST){
+    var currentLevel = {value: $rootScope.currentUser.level}
     $scope.currentLevel = currentLevel
 
     $scope.confirmChangeLevel = function(){
       //Utilizzato invece del ionicLoading per far vedere lo spinner in pagina...
       $scope.waiting = "..."
-      var currentUser = Parse.User.current();
-      currentUser.set('level' , parseInt($scope.currentLevel.value));
-      currentUser.save()
-      .then(
-        function(obj){
-          //console.log(obj);
-
-          $state.go('tab.account')
-
-      }, function(error){
-        console.log(error);
-      })
+      var user = JSON.parse(window.localStorage['user'])
+	  user.level = parseInt($scope.currentLevel.value);
+	  window.localStorage['user'] = JSON.stringify(user)
+      MyObjectsREST.changeUserLevel(user)
+	  $state.go('tab.account')
+      
 
     }
 })
@@ -1289,8 +1274,6 @@ $scope.closeModalok = function() {
 	  $state.go('login');
     }
       
-
-    
 })
 
   

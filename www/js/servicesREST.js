@@ -120,13 +120,14 @@ angular.module('starter.servicesREST', [])
             console.log(courtsAvalaivable)
             console.log('******COURTS FASE 2*****')
             console.log(optimezedCourts)
-            
+           
             if (optimezedCourts.length > 0){
               defer.resolve(optimezedCourts)
             }
+			
             //**********FINE OPTIMISE*********************************************************************
             
-           
+            
             else if (courtsAvalaivable.length > 0){
               defer.resolve(courtsAvalaivable)
             }
@@ -227,6 +228,7 @@ angular.module('starter.servicesREST', [])
         }, function(error){
 
           console.log(error);
+		  throw error
         })
       },
 	findaAvalaibleRangesInDate: function(date,gameT){
@@ -235,8 +237,8 @@ angular.module('starter.servicesREST', [])
         var avalaibleRanges = [];
         return this.findBookingsInDate (date,gameT)
         .then(
-          function(bookings){
-
+          function(response){
+			var bookings = response.results
             var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
             var num = $rootScope.gameTypes[gameT].courtsNumber
 
@@ -397,7 +399,7 @@ angular.module('starter.servicesREST', [])
           }
           else{
             var players = cta.players
-            if (! _.find(players,{id:user.id})){
+            if (! _.find(players,{_id:user._id})){
 				
 			  $http({
 				  url: 'http://localhost:3000/api/v1/addCallToActionPlayer',
@@ -416,7 +418,7 @@ angular.module('starter.servicesREST', [])
           }   
            return defer.promise 
         },
-    findCallToAction:function(){
+     findCallToAction:function(){
 		
 		 
         var today = new Date();
@@ -860,7 +862,10 @@ angular.module('starter.servicesREST', [])
 
         },
 	setStatus:function(message){
-               
+            var user = JSON.parse(window.localStorage['user'])
+			user.status = message
+			window.localStorage['user'] = JSON.stringify(user)
+			$rootScope.currentUser = user
 			return $http({
 			  url: 'http://localhost:3000/api/v1/setStatus',
 			  method: 'POST',
@@ -882,6 +887,12 @@ angular.module('starter.servicesREST', [])
             return query.find()
 
         },
+		
+		deleteObjectFromCollection: function(item, collection){
+          _.remove(collection, function(object){
+              return object._id == item._id
+          })
+        }
 		//*****************TODO**********************
 
 	  /*

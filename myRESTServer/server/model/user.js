@@ -20,6 +20,7 @@ var userSchema = new Schema({
   created_at: Date,
   updated_at: Date,
   level: String,
+  status: String,
   preferences: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   image: Buffer
 });
@@ -75,37 +76,6 @@ userSchema.methods.comparePassword = function (passw,cb) {
 
 
 
-userSchema.statics.findAll = function(){	
-	User.find({}, function(err, users) {
-	  if (err) return next(err);
-
-	  return users
-	});
-}
-
-userSchema.statics.findOneAndUpdate = function(){
-	User.findOneAndUpdate({ username: 'starlord55' }, { username: 'starlord88' }, function(err, user) {
-	if (err) return next(err);
-
-	  // we have the updated user returned to us
-	  return user
-	});
-}
-
-userSchema.statics.findOneAndRemove = function(){
-	User.findOneAndRemove({ username: 'starlord55' }, function(err) {
-  	if (err) return next(err);
-  		// we have deleted the user
-  		console.log('User deleted!');
-	});
-}
-
-userSchema.methods.test = function() {
-  // add some stuff to the users name
-  this.name = this.name + '-dude'; 
-
-  return this.name;
-};
 
 
 // the schema is useless so far

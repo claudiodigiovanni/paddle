@@ -11,10 +11,12 @@ angular.module('starter.filters', [])
 })
 .filter('courtName', function($rootScope) {
   return function(court,gameType) {
+	  console.log(court);
+	  console.log(gameType);
     if (gameType == null || $rootScope.gameTypes == null)
       return court
     var game = $rootScope.gameTypes[parseInt(gameType)]
-    //console.log(gameType);
+    console.log(gameType);
     return game.courtsNames[parseInt(court)-1]
   };
 })

@@ -33,6 +33,7 @@ console.log(req.headers)
       validateUser(key).then(function(user){
 		  
 		  if (user && decoded.exp > Date.now()) {
+		  req.user = user
           next()
 		  } 
 		  else if (user && decoded.exp <= Date.now()){

@@ -1,11 +1,27 @@
-/* if ((req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
-          next(); // To move to next middleware
-        } else {
-          res.status(403);
-          res.json({
-            "status": 403,
-            "message": "Not Authorized"
-          });
-          return;
-        }
-*/
+var User = require('../model/user.js');
+
+
+module.exports = function(req, res, next) {
+
+console.log(req.headers)
+
+  // The key would be the logged in user's username
+  var key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key'];
+  var user = User.find({'username':key}).exec(function(err,user){
+	  if (user.role == 'admin')
+		  next()
+	  else{
+		   console.log('Invalid Role')
+            
+            res.json({
+                "status": 401,
+                "message": "Invalid Role...."
+            });
+            return;
+	  }
+	  
+  })
+
+   
+   
+};
