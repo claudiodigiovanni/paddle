@@ -3,7 +3,6 @@ var User = require('../model/user.js');
 
 module.exports = function(req, res, next) {
 
-console.log(req.headers)
 
   // The key would be the logged in user's username
   var key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key'];

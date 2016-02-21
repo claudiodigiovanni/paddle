@@ -31,7 +31,7 @@ module.exports = function(req, res, next) {
           next()
 		  } 
 		  else if (user && decoded.exp <= Date.now()){
-			  
+			console.log('********regenerating Token***********')
 			regenerateToken()
 			next()
 		  }
