@@ -260,10 +260,11 @@ $scope.gotoSignUp = function(){
 }
 
 $scope.logOut = function(form) {
-  window.localStorage['token'] = null
-  window.localStorage['user'] = null
-  window.localStorage['userRole'] = null
- 
+   window.localStorage.removeItem('token')
+   window.localStorage.removeItem('user')
+   window.localStorage.removeItem('userRole')
+   window.localStorage.removeItem('deviceToken')
+
   $scope.currentUser = null;
   $state.go('login');
 };
@@ -1269,6 +1270,7 @@ $scope.closeModalok = function() {
       window.localStorage.removeItem('token')
 	  window.localStorage.removeItem('user')
 	  window.localStorage.removeItem('userRole')
+	  window.localStorage.removeItem('deviceToken')
 
 	  $scope.currentUser = null;
 	  $state.go('login');

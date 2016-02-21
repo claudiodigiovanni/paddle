@@ -5,9 +5,9 @@ var mg = new Mailgun(apiKey);
 
 var myfunction = {
 
-	sendMessage : function(user,message){
+	sendMessage : function(email,message){
 		mg.sendText('xxxx@xxx.it',
-			 [user.email],
+			 [email],
 			 'Magic Booking!',
 			 message,
 			 function(err) { 

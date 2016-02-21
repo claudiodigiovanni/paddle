@@ -821,6 +821,7 @@ angular.module('starter.servicesREST', [])
 			if ($rootScope.platform == 'ios' || $rootScope.platform == 'android'){
 				push.register(function(token) {
                 console.log("Device token:",token.token);
+				window.localStorage['deviceToken'] = data.token
 				return $http({
 					url: 'http://localhost:3000/registerToken',
 					method: 'POST',
@@ -1238,6 +1239,7 @@ angular.module('starter.servicesREST', [])
 		if (window.localStorage['token']){
 			console.log('TokenInterceptor')
 			config.headers['X-Access-Token'] = window.localStorage['token'];
+			config.headers['X-Device-Token'] = window.localStorage['deviceToken'];
 			config.headers['X-Key'] = JSON.parse(window.localStorage['user']).username;
 			//console.log(JSON.parse(window.localStorage['user']).username)
 			config.headers['Content-Type'] = "application/json";

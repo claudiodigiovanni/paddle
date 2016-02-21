@@ -1,21 +1,15 @@
 var jwt = require('jwt-simple');
 var validateUser = require('../utils/auth.js').validateUser;
+var regenerateToken = require('../utils/auth.js').regenerateToken;
 
 module.exports = function(req, res, next) {
 
-console.log(req.headers)
-	
-  
-  
-  
   var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'] ||  req.headers['X-Access-Token'];
   // The key would be the logged in user's username
   var key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key'];
 
     try {
-		console.log('token')
-        console.log(token)
-		console.log(key)
+		
         if (token == null || key == null) {
 			console.log('Invalid Token or Key')
             
@@ -38,7 +32,7 @@ console.log(req.headers)
 		  } 
 		  else if (user && decoded.exp <= Date.now()){
 			  
-			//TODO: regenerate Token
+			regenerateToken()
 			next()
 		  }
 		  else {

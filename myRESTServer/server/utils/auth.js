@@ -103,7 +103,24 @@ var auth = {
 						res.json({succes: true});
 						
 					})
+  },
+  
+ regenerateToken: function(user){
+	  Installation.findOne({'token': req.headers['X-Access-Token']}).exec(
+					function(err,installation){
+						if (installation){
+							var token = genToken(req.user).token
+							installation.token = token
+							installation.save()
+							return true
+						}
+						else
+							return false
+						
+						
+					})
   }
+	
 }
 
 // private method
