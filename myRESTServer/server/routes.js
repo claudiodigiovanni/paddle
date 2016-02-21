@@ -407,28 +407,34 @@ router.post('/api/v1/deleteBooking', function(req, res,next) {
 });
 
 router.post('/api/v1/setCallToAction', function(req, res,next) {
-	
+	var defer = Q.defer()
 	Booking.findById(req.body.booking)
 			.populate('players')
 			.exec( function (err, booking) {  
 				var numPlayersCurrent = booking.players != null ? booking.players.length : 0
 				var numPlayers = numPlayersCurrent + req.body.playersNumberMissing
 				if (booking.callToAction){
-					booking.update({'playersNumber':numPlayers}).exec(function(error,booking){
-						console.log("ok")
-					})
+					var promise1 = booking.update({'playersNumber':numPlayers})
+					defer.resolve(promise1);
 				}
 				else{
 					var u = req.body.user
-					 booking.update({playersNumber:numPlayers+1, "callToAction": true,  $push: {'players':u} }).exec(function(error,booking){
-						console.log("ok")
-					})
+					var promise2 = booking.update({playersNumber:numPlayers+1, "callToAction": true,  $push: {'players':u} })
+					defer.resolve(promise2);
 				}
-            res.json({'message':'ok'})
+				defer.promise.then(function(result){
+					if (booking.callToAction == true && booking.players.length == numPlayers ){
+						 var players = booking.players
+						_.each(players,function(item){
+							push.pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
+						})
+					 }
+					
+				})
+            	res.json({'message':'ok'})
 			  
 			})
-			//TODO sendpush se raggiunto num players 
-	          
+
 });
 
 
