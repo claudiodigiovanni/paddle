@@ -7,12 +7,10 @@ var Schema = mongoose.Schema;
 
 // create a schema
 var userSchema = new Schema({
-  name: String,
-  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true,  unique: true  },
   password: { type: String, required: true },
   role: { type: String, required: false},
   circolo: { type: Schema.Types.ObjectId, ref: 'Circolo' },
-  email: { type: String, required: false },
   enabled: { type: Boolean},
   nome: { type: String, required: false },
   phoneNumber: { type: String, required: false },
@@ -29,9 +27,9 @@ var userSchema = new Schema({
 
 
 userSchema.pre('save', function (next) {
-    var user = this;
-	var currentDate = new Date();
   
+  var user = this;
+  var currentDate = new Date();
   // change the updated_at field to current date
   user.updated_at = currentDate;
 

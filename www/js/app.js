@@ -282,11 +282,11 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     controller: 'changeLevelCtrl'
   })
 
-   .state('resetPwd', {
-    url: '/resetPwd',
+   .state('exit', {
+    url: '/exit',
     cache: false,
-    templateUrl: 'templates/resetPwd.html',
-    controller: 'resetPwdCtrl'
+    templateUrl: 'templates/exit.html',
+    controller: 'exitCtrl'
   })
 
   .state('statistics', {

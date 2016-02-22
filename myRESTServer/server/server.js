@@ -52,12 +52,9 @@ app.use('/', require('./routes.js'));
 // Error Handler
 app.use(function(err, req, res, next) {
   	res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+    res.json({error: err.message})
+ });
   
-});
 
 //init.initDB();
 

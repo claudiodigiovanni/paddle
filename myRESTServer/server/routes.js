@@ -21,6 +21,7 @@ var mail = require('./utils/mailgun.js')
 router.post('/login', auth.login);
 router.post('/registerToken', auth.registerToken);
 router.post('/signup', auth.signup);
+router.post('/requestPasswordReset',auth.requestPasswordReset)
 
 /*
  * Routes that can be accessed only by autheticated users

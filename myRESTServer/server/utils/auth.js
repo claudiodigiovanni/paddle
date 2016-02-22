@@ -5,14 +5,17 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var utils = require('./utils.js');
 
+var push = require('../utils/push.js')
+var mail = require('../utils/mailgun.js')
+
 var auth = {
 
   login: function(req, res,next) {
 
-    var username = req.body.username || '';
+    var email = req.body.email || '';
     var password = req.body.password || '';
 
-    if (username == '' || password == '') {
+    if (email == '' || password == '') {
       //res.status(401);
       res.json({
         "status": 401,
@@ -21,12 +24,27 @@ var auth = {
       return;
     }
 	  
-	User.findOne({ 'username': username }).populate('circolo').exec( function (err, user) {
+	User.findOne({ 'email': email }).populate('circolo').exec( function (err, user) {
 		
   		if (err) {
 			console.log(err);
-			next(err)
-			return
+			return next(err)	
+		}
+		if (user == null) {
+			res.status(401);
+		    res.json({
+			  "status": 401,
+			  "message": "Invalid credentials..."
+		  	});
+		    return;	
+		}
+		if (!user.enabled) {
+			res.status(402);
+		    res.json({
+			  "status": 402,
+			  "message": "User still not enabled..."
+		  	});
+		    return;	
 		}
 		console.log(user) 
 		user.comparePassword(password, function(err, isMatch) {
@@ -36,11 +54,7 @@ var auth = {
 				res.json(genToken(user));
 			}
 			else{
-				  //res.status(401);
-				  res.json({
-					"status": 401,
-					"message": "Invalid credentials..."
-				  });
+				  res.status(401).send("Invalid credentials...")
 				  return;
 			}
 		})
@@ -51,7 +65,7 @@ var auth = {
 	    console.log("signup")
 		
 
-		if (req.body.username == '' || req.body.password == '') {
+		if (req.body.email == '' || req.body.password == '') {
 		 
 		  res.json({
 			"status": 401,
@@ -63,6 +77,7 @@ var auth = {
 		
 		//TODO: copiare campi
 	  	utils.copyProperties(req.body,u)
+		u.enabled = false
 		console.log(u)
 		u.save(function(err) {
 			  console.log(err)
@@ -77,10 +92,8 @@ var auth = {
 			
 	},
 
-  validateUser: function(username) {
-    
-	  
-	 return User.findOne({ 'username': username }, function (err, user) {
+  validateUser: function(email) {
+	 return User.findOne({ 'email': email }, function (err, user) {
   		if (err) throw err;
   		return user
 	 })
@@ -105,7 +118,7 @@ var auth = {
 					})
   },
   
- regenerateToken: function(user){
+  regenerateToken: function(user){
 	  Installation.findOne({'token': req.headers['X-Access-Token']}).exec(
 					function(err,installation){
 						if (installation){
@@ -119,6 +132,12 @@ var auth = {
 						
 						
 					})
+  },
+	
+  requestPasswordReset: function(req, res,next){
+	  console.log('requestPasswordReset...')
+	  var email = req.body.email
+	  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://localhost:8080'>fai click qui per procedere!</a>")
   }
 	
 }

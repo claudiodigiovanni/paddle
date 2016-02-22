@@ -17,12 +17,12 @@ angular.module('starter.servicesREST', [])
 			
 			return new Booking()
 	},  	
-	login: function(user,pass){
+	login: function(email,pass){
 		  
 		  return $http({
 		  	url: 'http://localhost:3000/login',
 		  	method: 'POST',
-		  	data: {'username':user, 'password':pass},
+		  	data: {'email':email, 'password':pass},
 			headers: {
 			   'Content-Type': 'application/json'
 			 }
@@ -39,6 +39,16 @@ angular.module('starter.servicesREST', [])
 			 }
 		})
     },
+	requestPasswordReset: function(email){
+		return $http({
+		  url: 'http://localhost:3000/requestPasswordReset',
+		  method: 'POST',
+		  data: email,
+		  headers: {
+			   'Content-Type': 'application/json'
+			 }
+		})
+	},
 	getCircoli: function(){
 		return $http({
 		  url: 'http://localhost:3000/api/circolo',
@@ -832,6 +842,17 @@ angular.module('starter.servicesREST', [])
 				 	})  
             	});
 			}
+			else{
+				return $http({
+					url: 'http://localhost:3000/registerToken',
+					method: 'POST',
+					data: {'user':$rootScope.currentUser._id, 'deviceToken':'web access', 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
+					headers: {
+					   'Content-Type': 'application/json'
+					 }
+				 })  
+				
+			}
             
 
         },
@@ -1240,7 +1261,7 @@ angular.module('starter.servicesREST', [])
 			console.log('TokenInterceptor')
 			config.headers['X-Access-Token'] = window.localStorage['token'];
 			config.headers['X-Device-Token'] = window.localStorage['deviceToken'];
-			config.headers['X-Key'] = JSON.parse(window.localStorage['user']).username;
+			config.headers['X-Key'] = JSON.parse(window.localStorage['user']).email;
 			//console.log(JSON.parse(window.localStorage['user']).username)
 			config.headers['Content-Type'] = "application/json";
 			//console.log(window.localStorage['token'])

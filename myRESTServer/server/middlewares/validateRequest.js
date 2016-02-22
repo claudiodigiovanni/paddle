@@ -4,9 +4,9 @@ var regenerateToken = require('../utils/auth.js').regenerateToken;
 
 module.exports = function(req, res, next) {
 
-  var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'] ||  req.headers['X-Access-Token'];
-  // The key would be the logged in user's username
-  var key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key'];
+  var token = req.headers['x-access-token'] ||  req.headers['X-Access-Token'];
+  // The key would be the logged in user's email
+  var key = req.headers['x-key'];
 
     try {
 		
@@ -45,9 +45,6 @@ module.exports = function(req, res, next) {
 			return;
 		  }
 	  })
-
-      
-
     } catch (err) {
 	 	next(err)
     }

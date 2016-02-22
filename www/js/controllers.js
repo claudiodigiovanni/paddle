@@ -121,7 +121,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log, MyObjectsREST) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log, MyObjectsREST,$ionicPopup) {
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -152,8 +152,6 @@ $ionicModal.fromTemplateUrl('reset-pwd.html', {
 })
 
 
-
-
 var currentUser = {}
 $scope.currentUser = currentUser;
 $scope.registered = true;
@@ -167,53 +165,45 @@ $scope.login = function(){
     template: 'Loading...'
   });
 
-  var missing = currentUser.username == null || currentUser.password == null
+  var missing = currentUser.email == null || currentUser.password == null
 
   if (missing){
     mymessage.text = "Email o password errata...."
+	$ionicLoading.hide();
     return
   }
 
 
-  var uname = currentUser.username.toLowerCase();
+  var uname = currentUser.email.toLowerCase();
   var pwd = currentUser.password;
-	
-  if (uname !== undefined && pwd !== undefined) {
-          
-	  	 MyObjectsREST.login(uname, pwd).success(function(data) {
-       
-        
-			 window.localStorage['token'] = data.token
-			 window.localStorage['user'] = JSON.stringify(data.user)
-			 window.localStorage['userRole'] = data.user.role
-			 $rootScope.currentUser = data.user
-			 console.log(data.user)
-          
-			  /*var gameTypes = []
-                gameTypes.push(obj.get('gameType1'))
-                gameTypes.push(obj.get('gameType2'))
-                gameTypes.push(obj.get('gameType3'))
-                window.localStorage['gameTypes'] = JSON.stringify(gameTypes)
-                window.localStorage['circolo'] = obj.get('nome')
-                
-                 */
-			MyObjectsREST.createInstallationObject()
-			$scope.modal.hide();
-          	$ionicLoading.hide();
-          	//$state.go('tab.dash');
-			console.log('$rootScope.currentUser ')
-			console.log($rootScope.currentUser )
-          	$state.go('tab.dash');
-
-
-          
-
-        }).error(function(status) {
-          alert('Oops something went wrong!');
+	        
+  MyObjectsREST.login(uname, pwd).success(function(data) {
+	mymessage.text = null
+	window.localStorage['token'] = data.token
+	window.localStorage['user'] = JSON.stringify(data.user)
+	window.localStorage['userRole'] = data.user.role
+	$rootScope.currentUser = data.user
+	console.log(data.user)
+	 
+	MyObjectsREST.createInstallationObject()
+	$scope.modal.hide();
+	$ionicLoading.hide();
+	$state.go('tab.dash');
+  }).error(function(response) {
+	console.log(response)
+	$ionicLoading.hide();
+	var message
+	if (response.status == 401)
+		message = "Credenziali non valide!"
+	else if (response.status == 402)
+		message = "Utente non ancora abilitato!"
+	else
+		message = "Ops! Qualcosa non ha funzionato!"
+  	$ionicPopup.alert({
+             template: message
         });
-      } else {
-        alert('Invalid credentials');
-     }
+  });
+      
 
   
 
@@ -231,10 +221,10 @@ $scope.confirmResetPwd = function(){
     template: 'Loading...'
   });
   var email = $scope.resetPwd.email
-  Parse.User.requestPasswordReset(email, {
-      success: function() {
+  MyObjectsREST.requestPasswordReset(email, {
+      success: function(response) {
       // Password reset request was sent successfully
-      Parse.User.logOut();
+      //Parse.User.logOut();
       $ionicLoading.hide()
       $scope.messagePwdReset = "Ok! Mail inviata. Leggila e ripristina la tua password. "
       $scope.resetPwdModal.hide()
@@ -291,7 +281,7 @@ MyObjectsREST.getCircoli()
 	  console.log(obj)
     $scope.waiting = null
     $scope.circoli = obj.data.circoli
-    $scope.$apply()
+    //$scope.$apply()
 
 }, function(error){
   console.log(error);
@@ -334,9 +324,9 @@ $scope.signUp = function() {
   return
 }*/
 
-  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.username === null /*|| currentUser.circolo === undefined*/){
+  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.circolo === undefined){
     console.log(currentUser);
-    mymessage.text = "Occorre inserire email, username, password, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
+    mymessage.text = "Occorre inserire email, password, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
     $ionicLoading.hide();
     return
   }
@@ -349,10 +339,13 @@ $scope.signUp = function() {
 	  console.log(data)
 	  $ionicLoading.hide();
 	  $state.go('waitingToBeEnabled');
-  }).error(function(error){
+  }).error(function(response){
 	  $ionicLoading.hide();
-      mymessage.text = error;
-      console.log(error);
+	  if (response.error.indexOf('E11000') != -1)
+		  mymessage.text = "Email già utilizzata!"
+	  else
+      	mymessage.text = response.error;
+      console.log(response);
   })
 
   
@@ -362,6 +355,32 @@ $scope.signUp = function() {
 
 })
 
+.controller('WaitingToBeEnabled',function($scope, $stateParams, Utility, MyObjectsREST,$state,$ionicModal) {
+
+  $ionicModal.fromTemplateUrl('signup-ok-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.modal = modal;
+    $scope.modal.show()
+  })
+
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
+$scope.ok = function(){
+  console.log('ok');
+  $state.go('login');
+}
+})
+	
 .controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjectsREST, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading,$cordovaCalendar,$ionicPopup,$timeout) {
     
     
@@ -1265,7 +1284,7 @@ $scope.closeModalok = function() {
     }
 })
 
-.controller('resetPwdCtrl',function($scope,$state,$rootScope){
+.controller('exitCtrl',function($scope,$state,$rootScope){
     $scope.confirmResetPwd = function(){
       window.localStorage.removeItem('token')
 	  window.localStorage.removeItem('user')
@@ -2310,32 +2329,7 @@ $scope.closeModalok = function() {
 
 })
 
-.controller('WaitingToBeEnabled',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal) {
 
-  $ionicModal.fromTemplateUrl('signup-ok-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up',
-    backdropClickToClose:false
-  }).then(function(modal) {
-    $scope.modal = modal;
-    $scope.modal.show()
-  })
-
-
-  $scope.closeModal = function() {
-    $scope.modal.hide();
-  };
-
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
-
-$scope.ok = function(){
-  console.log('ok');
-  Parse.User.logOut();
-  $state.go('login');
-}
-})
 
 .controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading, $timeout) {
 
