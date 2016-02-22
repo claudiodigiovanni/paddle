@@ -1285,7 +1285,13 @@ angular.module('starter.servicesREST', [])
     /* Because day 0 equates to the last day of the previous month the number returned is effectively the number of days for the month we want.
     */
     getDaysInMonth: function(month,year) {
-      return new Date(year, month + 1, 0).getDate();
+		
+		var x = new Date(parseInt(year), parseInt(month) + 1, 0)
+	  	x.setHours(0);
+	  	x.setMinutes(0);
+	  	x.setSeconds(0);
+		x.setMilliseconds(0)
+      	return x.getDate();
     },
     getDayOfFirstDateOfMonth: function(month,year){
       //            1     2     3     4     5     6     0
