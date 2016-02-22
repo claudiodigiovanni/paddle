@@ -1668,12 +1668,10 @@ $scope.closeModalok = function() {
     }
 
   $scope.$on('currentDateChanged', function(event, x) {
-      console.log('on currentDateChanged.....')
       var m = x.split(":")[0]
       var y = x.split(":")[1]
       $scope.currentMonth = m
       $scope.currentYear = y
-
       $scope.selectedDay = null;
 
   });
