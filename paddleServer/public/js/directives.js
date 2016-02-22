@@ -1,5 +1,33 @@
 angular.module('starter.directives', [])
 
+.directive('preferred', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      user: '=',
+    },
+    template: '<i class="icon  {{isPreferred ? \'ion-ios-star energized\' : \'ion-ios-star-outline\'}}" ng-click="setPreferred(user)"></i>',
+    link: function(scope, elem, attrs) {
+
+    },
+    controller: ['$scope', 'MyObjects',  function($scope, MyObjects) {
+        
+        $scope.isPreferred = false
+        if( MyObjects.isPreferred($scope.user)){
+            $scope.isPreferred = true
+        }
+        
+        $scope.setPreferred = function(user){
+            $scope.isPreferred = ! $scope.isPreferred
+            MyObjects.setPreferred(user)
+        }
+            
+    }]
+}
+})
+
+
 .directive('hoursRange', function() {
   return {
     restrict: 'E',
@@ -157,6 +185,7 @@ angular.module('starter.directives', [])
           delete: '&',
           invitation: '&',
           call: '&',
+          message: '&',
           date: '=',
           text: '@',
           showpay: '@'
@@ -187,13 +216,6 @@ angular.module('starter.directives', [])
             $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
           }*/
 
-          $scope.info = function(){
-            $ionicPopup.alert({
-               title: 'Info',
-               template: "Trascina verso destra l'elemento per visualizzare le opzione disponibili. L'opzione <em>Call To Action</em> permette agli altri giocatori interessati di unirsi al match (se hanno un livello di gioco simile al tuo ovviamente...)" 
-             });
-          }
-
 
         }]
     }
@@ -212,7 +234,7 @@ angular.module('starter.directives', [])
 
             console.log($scope.date);
 
-            var dataChart = {}
+            var dataChart = null
 
             var today = new Date();
             today.setHours(0);
@@ -228,14 +250,14 @@ angular.module('starter.directives', [])
               return dataChart
             }
 
-
+            dataChart = {}
             console.log("AVANTI!!!!");
 
             //-----------INIZIO WATCH----------
             var forecastDay = []
             weatherService.getWeather5Days().then(function(data){
 
-            console.log(data);
+            //console.log(data);
             forecastDay = _.filter(data.list,function(f){
 
               //console.log(f.weather[0].icon);
@@ -246,7 +268,7 @@ angular.module('starter.directives', [])
               //http://openweathermap.org/img/w/10d.png
             })
 
-            console.log(forecastDay);
+            //console.log(forecastDay);
             })
             .then(
             function(obj){
@@ -270,10 +292,10 @@ angular.module('starter.directives', [])
 
               //dataChart = {hour:h,temp:t,rain:r,wind:w, icon:i}
               dataChart = {hour:h,icon:i}
-              console.log(dataChart);
+              //console.log(dataChart);
               $scope.dataChart = dataChart
 
-              console.log($scope.day);
+              //console.log(dataChart);
             //-----------FINE WATCH------------
 
 

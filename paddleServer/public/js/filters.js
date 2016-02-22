@@ -27,3 +27,4 @@ angular.module('starter.filters', [])
     return game.name
   };
 });
+

@@ -9,10 +9,39 @@
 
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers', 'starter.services','starter.directives','starter.filters','vcRecaptcha'])
 
-.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility) {
+.run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjects,Utility,$ionicPush) {
 
 
   $ionicPlatform.ready(function() {
+      
+    console.log("$ionicPlatform.ready...")
+    
+    //**************************************
+    
+         
+    //**************************************
+    
+     $rootScope.closeLoading = function(){
+        
+        
+        $ionicLoading.hide()
+        
+    }
+
+    $rootScope.openLoading = function(){
+        $ionicLoading.show({ template: '<img src="img/logo.png" width=50 height=50>', scope:$rootScope, duration:4000 });
+        
+    }
+    
+    
+    //**************************************
+    if (Parse.User.current())
+        MyObjects.createInstallationObject()
+    //**************************************
+    
+    
+    
+  //***************************************
 
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
@@ -20,7 +49,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
             $cordovaSplashscreen.hide()
         }, 100)
     }
-
+      
+      
   
 
 
@@ -62,6 +92,13 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
               $rootScope.gameTypes = JSON.parse(window.localStorage['gameTypes'])
 
             }
+            
+            if ($rootScope.currentGameType == null){
+                var currentGameType = {value:0}
+                $rootScope.currentGameType = currentGameType
+
+            }
+            
 
             MyObjects.countMyInvitations().then(function(count){
               if (count > 0 ) 
@@ -214,13 +251,24 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
       }
     })*/
 
-  .state('tab.bookCourt', {
+  /*.state('tab.bookCourt', {
       url: '/bookCourt',
       cache: false,
       views: {
         'tab-bookCourt': {
           templateUrl: 'templates/bookCourt.html',
           controller: 'BookCourt'
+        }
+      }
+    })*/
+  
+  .state('tab.bookCourt2', {
+      url: '/bookCourt2',
+      cache: false,
+      views: {
+        'tab-bookCourt': {
+          templateUrl: 'templates/bookCourt2.html',
+          controller: 'BookCourt2'
         }
       }
     })
@@ -313,6 +361,7 @@ controller: 'manageSubscribtions'
 .state('invitation', {
   url: '/invitation/:bookingId/:gameType',
   templateUrl: 'templates/invitation.html',
+  cache: false,
   controller: 'InvitationCtrl'
 
 })
@@ -345,6 +394,13 @@ controller: 'statsController'
 url: '/privacy',
 cache: true,
 templateUrl: 'templates/privacy.html'
+})
+  
+  .state('gameType', {
+url: '/gameType',
+cache: true,
+templateUrl: 'templates/setGameType.html',
+controller: 'gameTypeController'
 })
 
 

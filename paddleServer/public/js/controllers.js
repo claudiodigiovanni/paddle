@@ -1,4 +1,4 @@
-
+ 
 angular.module('starter.controllers', ['chart.js','ngCordova']) 
 
 .controller('checkNewVersionCtrl', function($scope, MyObjects, Utility,$ionicModal, $rootScope) {
@@ -120,7 +120,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
 })
 
-.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log) {
+.controller('Login', function($scope, $stateParams, config,$state, $ionicModal,$ionicBackdrop, $timeout, $rootScope,$ionicLoading,$ionicUser, $ionicPush, $log, MyObjects) {
 
 $ionicModal.fromTemplateUrl('login-modal.html', {
   scope: $scope,
@@ -274,6 +274,8 @@ $scope.login = function(){
                 gameTypes.push(obj.get('gameType3'))
                 window.localStorage['gameTypes'] = JSON.stringify(gameTypes)
                 window.localStorage['circolo'] = obj.get('nome')
+                
+                MyObjects.createInstallationObject()
 
 
           }, function(error){
@@ -452,37 +454,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 })
 
 
-.controller('BookCourt', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading, $cordovaCalendar) {
+
+.controller('BookCourt2', function($scope, $stateParams, config,Utility, MyObjects, $ionicModal, $state,$rootScope,$ionicPopup, $ionicPopover,$ionicLoading,$cordovaCalendar,$ionicPopup,$timeout) {
     
-   
     
+    //*************************SEZIONE MODAL*******************************************************
 
-  var toggleCoach = {value:false}
-  $scope.toggleCoach = toggleCoach
-
-
-  var currentDate = new Date();
-  var currentMonth = parseInt(currentDate.getMonth())  ;
-  var currentYear = currentDate.getFullYear();
-  $scope.currentMonth = currentMonth;
-  $scope.currentYear = currentYear;
-
-  $scope.coachAvalabilities = []
-
-  var avalaibleRanges = [];
-  var selectedRanges = [];
-
-  $scope.showAddButton = false;
-
-
-  var booking = {};
-  booking.gameType = "0";
-  booking.callToAction = false;
-  $scope.booking = booking;
-
-
-
-  //*************************SEZIONE MODAL*******************************************************
   $ionicModal.fromTemplateUrl('coaches-modal.html', {
     scope: $scope,
     animation: 'slide-in-up',
@@ -498,233 +475,187 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }).then(function(modal) {
     $scope.modalok = modal;
   })
+  
+  $ionicModal.fromTemplateUrl('courts.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.courtsModal = modal;
+  })
+  
+  $ionicModal.fromTemplateUrl('meteo.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.meteoModal = modal;
+  })
+  
+  
+  $scope.getMeteo = function(){
+      $scope.meteoModal.show()
+  }
 
   $scope.closeModalok = function() {
     $scope.modalok.hide();
     $state.go('tab.account');
   };
+    
+  $scope.closeModalCourts = function() {
+    $scope.courtsModal.hide();
+   
+  };
+    
+ $scope.closeModalMeteo = function() {
+    $scope.meteoModal.hide();
+   
+  };
+    
+$scope.closeModalok = function() {
+    $scope.modalok.hide();
+    $state.go('tab.account');
+  };
+
+    
 
   $scope.$on('$destroy', function() {
     $scope.modalok.remove();
   });
 
+//***************************FINE SEZIONE MODAL*****************************************************
 
-  $ionicModal.fromTemplateUrl('ranges-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.modal = modal
-  })
-
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
-
-  $scope.$on('currentDateChanged', function(event, x) {
-      console.log('currentDateChanged');
-      var m = x.split(":")[0]
-      var y = x.split(":")[1]
-      $scope.currentMonth = m
-      $scope.currentYear = y
-      selectedRanges = [];
-      $scope.coachAvalabilities = []
-      $scope.selectedDay = null
-
-      $scope.toggleCoach.value = false
-      booking.maestro = null
-      avalaibleRanges = []
-
-  });
-
-  $scope.getGameType = function(index){
-    if (index == booking.gameType )
-      return "balanced"
-    return "dark"
-  }
-
-  $scope.setGameType = function(index){
-    booking.gameType = index
-  }
-
-  
-  
-
-  $scope.$watch('booking.gameType',function(obj){
-    console.log('$watch on booking.gameType...');
-    console.log(booking.gameType)
-    $scope.toggleCoach.value = false
-    booking.maestro = null
-    $scope.coachAvalabilities = []
-    avalaibleRanges = []
-
-
-    $scope.numberPlayers = $rootScope.gameTypes[booking.gameType].numberPlayers
-    console.log('numberPlayers....' + $scope.numberPlayers )
-
-    //Assegno un default
-    booking.playersNumber = $scope.numberPlayers[0]
-
-  })
-
-  
-
-
-  $scope.openModal = function() {
-    selectedRanges = [];
-    $scope.modal.show()
-   
+ $scope.weekDays = Utility.getWeekdayFromToday()
+ $scope.selectedDate = $scope.weekDays[0].value
+ //console.log($scope.selectedDate)
+ 
+ $scope.hours = Utility.getHours()
+ $scope.selectedRange = 25
+ 
+ $scope.dateCallback = function(item){
+     console.log(item) 
+     $scope.selectedDate=item
+     $scope.coachAvalabilities = []
+     avalaibleRanges = [];
+     selectedRanges = [];
+     $scope.showRanges = false
+     $scope.toggleCoach.value = false
+     $scope.avalaivableCourts = []
+     $scope.message = null
+     //booking.datex = item.toDate()
+     booking.date = item.toDate()
+     
+     console.log(booking)
+     
+ }
+  $scope.timeCallback = function(item){
+     console.log(item)
+     $scope.selectedRange = item
+     $scope.coachAvalabilities = []
+     avalaibleRanges = [];
+     selectedRanges = [];
+     $scope.showRanges = false
+     $scope.toggleCoach.value = false
+     $scope.avalaivableCourts = []
+     $scope.message = null
+     
+ }
+ 
+   $scope.toggleCall = function(){
     
-  }
-
-  $scope.closeModal = function() {
-    $scope.modal.hide();
-    selectedRanges = [];
-    $scope.selectedHours = ""
-    //$scope.$apply();
-  };
-
-  $ionicPopover.fromTemplateUrl('my-popover.html', {
-      scope: $scope
-    }).then(function(popover) {
-      $scope.popover = popover;
-    });
-
-  $scope.openPopover = function($event) {
-    $scope.popover.show($event);
-  };
-  $scope.closePopover = function() {
-    $scope.popover.hide();
-  };
-
-  $scope.gotoInvitation = function(){
+    if (booking.callToAction){
+        booking.playersNumber = 3
+        $ionicPopup.alert({
+             template: "Seleziona il numero di giocatori che possono prendere parte alla tua Call. Ad esempio se sai già che giocherai tu ed un amico allora seleziona il valore 2. "
+        });
+    }
     
-    $scope.modalok.hide();
-    $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
+    
+
+}
+
+  var toggleCoach = {value:false}
+  $scope.toggleCoach = toggleCoach
+
+
+  $scope.coachAvalabilities = []
+  var avalaibleRanges = [];
+  var selectedRanges = [];
+
+  
+  var booking = {};
+  booking.gameType = $rootScope.currentGameType.value;
+  booking.callToAction = false;
+  booking.date = $scope.selectedDate.toDate();
+  booking.duration = 3
+  $scope.booking = booking;
+    
+  //console.log(booking)
+
+  $scope.getDuration = function(){
+    //console.log($scope.booking.duration)
+    return $scope.booking.duration
   }
 
-  //***************************FINE SEZIONE MODAL*****************************************************
-
-
-
-  $scope.toggleCoach = function(){
-
-
-
-    if ($scope.toggleCoach.value == true){
-
-      MyObjects.getCoaches().then(function(results){
-        $scope.coaches = results
-        $scope.coachesModal.show();
-      },function(error){
-        console.log(error);
-      })
-
-    }
-
-    else {
-      booking.maestro = null
-      $scope.coachAvalabilities = []
-      avalaibleRanges = []
-    }
+  $scope.setDuration = function(index){
+    $scope.booking.duration = index
   }
-
-
-  $scope.selectCoach = function(coach){
-
-    console.log(coach);
-    booking.maestro = coach
-    $scope.coachesModal.hide();
-
-    // coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
-    MyObjects.getCoachAvalabilitiesFilteredByBookings($scope.currentMonth,$scope.currentYear,coach.id, booking.gameType )
-    .then(
-      function(results){
-        $scope.coachAvalabilities = results
-        //console.log(results);
-        $scope.$apply()
-    }, function(error){
-      console.log(error);
-    })
-
-
-  }
-
-  $scope.closeCoachesModal = function(){
-
-    $scope.toggleCoach.value = false
-    booking.maestro = null
-    $scope.coachAvalabilities = []
-    $scope.coachesModal.hide();
-    avalaibleRanges = []
-
-  }
-
-
-  $scope.dayClicked = function(day){
-
-    if (day == "-")
-      return;
-
-    avalaibleRanges = []
-    selectedRanges = [];
-    $scope.resolved = null;
-    $scope.avalaivableCourts = null
-    $scope.showAddButton = false;
-    $scope.selectedDay =  day;
-
-
-    var m = parseInt($scope.currentMonth) +1 ;
-    var d = $scope.currentYear + "/" + m + "/" + day;
-    var date = new Date(d);
-
-    //Usato dalla direttiva Weather
-    $scope.selectedDate = date
-
-    if(booking.maestro != null){
-      //coachAvalabilities => [{day:d.get('date').getDate(),range:r}]
-      var x = _.filter($scope.coachAvalabilities, function(item){
-          if (item.day == day ){
-            return item
-          }
-
-      })
-      avalaibleRanges = _.pluck(x,'range')
-      $scope.showAddButton = true;
-      $scope.modal.show()
-    }
-    else{
-      $scope.modal.show()
-      
-      //**************************
-      var alertPopup = $ionicPopup.alert({
-         
-         template: "Attiva l'opzione <b>Call To Action</b> se cerchi compagni di gioco con livello simile al tuo."
-       });
-      //**************************
-       
+  
+  
+  $scope.getAvalaivableCourts = function(){
       $scope.waiting = "....."
-      //booking.gameType + di tipo string....
-      MyObjects.findaAvalaibleRangesInDate(date, booking.gameType)
+      $scope.courtsModal.show()
+      var ranges = getRanges()
+      var date = booking.date
+      
+      
+      MyObjects.checkBeforeCreateBooking(date,ranges , booking.gameType)
+    .then(
+      function(obj){
+          $scope.waiting = null
+
+        $scope.avalaivableCourts = obj
+        //$scope.$apply()
+        
+
+    }, function(error){
+      $scope.waiting = null
+      console.log(error);
+      $scope.courtsModal.hide()
+      //$scope.message = "Nessun campo disponibile nelle fascie orarie selezionate..."
+      $ionicPopup.alert({
+        title: 'Oops!',
+        template: 'Nessun campo disponibile nelle fascie orarie selezionate...Ecco gli orari disponibili.'
+       });
+      $scope.showRanges = true
+       MyObjects.findaAvalaibleRangesInDate(booking.date, booking.gameType)
       .then(
         function(ranges){
           avalaibleRanges = ranges;
-          console.log("avalaibleRanges length:" + avalaibleRanges.length)
-          $scope.showAddButton = true;
+          console.log(ranges)
           $scope.waiting = null
           $scope.$apply()
-          
-          
-
 
       }, function(error){
         $scope.waiting = null
         console.log(error);
       })
-    }
 
+    })
+  }
+  
 
+ 
+
+  $scope.gotoInvitation = function(){
+    
+    $scope.modalok.hide();
+    console.log ('invitation....')
+    $state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
   }
 
+
+  
   $scope.getRangeStatus = function(pos){
     if (selectedRanges.indexOf(pos) != -1){
       return "energized"
@@ -736,10 +667,9 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   }
 
   $scope.setRangeStatus = function(pos){
-    $scope.resolved = null /*nascondo il messaggio*/
+    $scope.message = null /*nascondo il messaggio*/
     $scope.avalaivableCourts=null;
-    //alert('getRangeStatus' + pos);
-    //console.log(avalaibleRanges);
+    
 
     if (avalaibleRanges.indexOf(pos) == -1){
       return
@@ -760,79 +690,161 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
 
 
-
-    /*var m = parseInt($scope.currentMonth) +1 ;
-    var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
-    var date = new Date(d);
-    $ionicLoading.show({
-        template: 'Loading...'
-      });
-    MyObjects.checkBeforeCreateBooking(date, selectedRanges, booking.gameType)
-    .then(
-      function(obj){
-
-        $scope.avalaivableCourts = obj
-        $ionicLoading.hide()
-
-    }, function(error){
-      console.log(error);
-      $ionicLoading.hide()
-
-      var alertPopup = $ionicPopup.alert({
-         title: 'Opsss!',
-         template: 'Nessun campo disponibile nelle fascie orarie selezionate...'
-       });
-       alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone!');
-         selectedRanges = [];
-       });
-
-    })*/
-
     $scope.selectedHours = Utility.getHoursFromRanges(selectedRanges);
 
   }
 
 
+  $scope.toggleCoach = function(){
+
+    $scope.showRanges = false
+    $scope.waiting = "........"
+
+    if ($scope.toggleCoach.value == true){
+      $scope.coachesModal.show();
+      MyObjects.getCoaches().then(function(results){
+        $scope.coaches = results
+        $scope.waiting = null
+        
+        $scope.$apply()
+        
+      },function(error){
+        console.log(error);
+      })
+
+    }
+
+    else {
+      booking.maestro = null
+      $scope.coachAvalabilities = []
+      avalaibleRanges = []
+      $scope.waiting = null
+      $scope.message = null
+    }
+  }
+
+
+  $scope.selectCoach = function(coach){
+
+    console.log(coach);
+    booking.maestro = coach
+    $scope.coachesModal.hide();
+    $scope.showRanges = true
+  
+    var date = booking.date
+    MyObjects.getCoachAvalabilitiesFilteredByBookings(date.getMonth(),date.getFullYear(),coach.id, booking.gameType )
+    .then(
+      function(results){
+        $scope.coachAvalabilities = results
+        console.log(results)
+        
+        // Formato coachAvalabilities ==> [{day:d.get('date').getDate(),range:r}]
+        var x = _.filter($scope.coachAvalabilities, function(item){
+          if (item.day == date.getDate() ){
+            return item
+          }
+        })
+        avalaibleRanges = _.pluck(x,'range')
+        $scope.$apply()
+    }, function(error){
+      console.log(error);
+    })
+
+
+  }
+
+  $scope.closeCoachesModal = function(){
+
+    $scope.toggleCoach.value = false
+    booking.maestro = null
+    $scope.coachAvalabilities = []
+    $scope.coachesModal.hide();
+    avalaibleRanges = []
+
+  }
+
+
+
+
+  var getRanges = function(){
+      if (selectedRanges.length == 0){
+        var startSlot =  $scope.selectedRange
+        var endSlot = startSlot + $scope.booking.duration
+        return _.range(startSlot, endSlot );
+        
+        
+      }
+      else
+          return selectedRanges
+          
+  }
+
+   
+   
   $scope.book = function(){
 
-    if ($scope.selectedDay === null  || selectedRanges.length === 0) {
-      $scope.resolved = "Selezionare la fascia oraria."
+     
+      //var datex = booking.datex
+      //booking.date = datex
+      console.log(booking)
+      
+    
+    if ($scope.showRanges && selectedRanges.length == 0){
+      //$scope.message = "Occorre selezionare almeno una fascia oraria."
+        $ionicPopup.alert({
+           title: 'Oops!',
+           template: 'Occorre selezionare almeno una fascia oraria.'
+        });
       return;
     }
 
-    if ($rootScope.userRole == 'segreteria' && booking.note === undefined){
-      $scope.resolved = "Inserire il nome del giocatore."
-      return;
-    }
-
+    
+    $rootScope.openLoading()
     $scope.waiting = "......."
-
-    var m = parseInt($scope.currentMonth) +1 ;
-    var d = $scope.currentYear + "/" + m + "/" + $scope.selectedDay;
-    var date = new Date($scope.currentYear + "/" + m + "/" + $scope.selectedDay);
-    booking.date = date;
-    booking.ranges = selectedRanges;
+   
+    booking.ranges = getRanges();
 
     //console.log(booking);
 
     MyObjects.createBooking(booking)
     .then(
       function(result){
+          
       $scope.waiting = null
       console.log(result)
 
-      $scope.modal.hide();
+      //$scope.modal.hide();
 
-      $scope.resolved = "Prenotazione Effettuata!";
+      $scope.message = "Prenotazione Effettuata!";
       $scope.booking = result
+      //$state.go('invitation',{'bookingId':$scope.booking.id,'gameType':$scope.booking.get('gameType')})
       $scope.modalok.show();
+      $rootScope.closeLoading()
+     
 
     }, function(error){
 
       $scope.waiting = null
       console.log(error);
-      $scope.resolved = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
+      $scope.showRanges = true
+      booking.court = null
+      //$scope.message = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
+      $ionicPopup.alert({
+           title: 'Oops!',
+           template: 'Nessun campo disponibile nelle fasce orarie selezionate...'
+        });
+      MyObjects.findaAvalaibleRangesInDate(booking.date, booking.gameType)
+      .then(
+        function(ranges){
+          avalaibleRanges = ranges;
+          //console.log(ranges)
+          $scope.waiting = null
+          $scope.$apply()
+
+      }, function(error){
+          $scope.waiting = null
+          console.log(error);
+      })
 
     })
     selectedRanges = [];
@@ -842,7 +854,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.addEventToCalendar = function(){
 
       var startSlot = $scope.booking.get('ranges')[0]
-     var endSlot = $scope.booking.get('ranges')[$scope.booking.get('ranges').length - 1]
+      var endSlot = $scope.booking.get('ranges')[$scope.booking.get('ranges').length - 1]
 
       var startHM = Utility.getHourMinuteFromSlot(startSlot)
       var endHM = Utility.getHourMinuteFromSlot(endSlot)
@@ -877,6 +889,18 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     
  
 
+})
+
+
+
+.controller('gameTypeController',function($scope,$state,$rootScope){
+    
+    
+
+    $scope.close = function(){
+      $state.go('tab.dash')
+
+    }
 })
 
 .controller('changeLevelCtrl',function($scope,$state,$rootScope){
@@ -923,7 +947,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     
 })
 
-  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading) {
+  .controller('AccountCtrl', function($scope,MyObjects, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading,$http,$cordovaCamera,Utility) {
     
     // Il ruolo admin o segreteria non vede la pagina account (inutile...)
     if ($rootScope.currentUser.get('role') == 'admin' || $rootScope.currentUser.get('role') == 'segreteria')
@@ -931,7 +955,8 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
 
     var currentLevel = {value: $rootScope.currentUser.get('level')}
     $scope.currentLevel = currentLevel
-
+    
+   
 
     $ionicModal.fromTemplateUrl('prossimiImpegni.html', {
     scope: $scope,
@@ -954,15 +979,157 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }).then(function(modal) {
       $scope.saldareModal = modal;
     })
+    $ionicModal.fromTemplateUrl('camera.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.cameraModal = modal;
+    })
+     $ionicModal.fromTemplateUrl('status.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.statusModal = modal;
+    })
+     $ionicModal.fromTemplateUrl('message.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.messageModal = modal;
+  })
+   $ionicModal.fromTemplateUrl('callToActionDetail.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+  }).then(function(modal) {
+    $scope.callToActionDetailModal = modal;
+  })
+  
+     
+     $scope.openCallToActionDetailModal = function(booking){
+        
+        $scope.selectedBooking = null
+        $scope.message = null
+        console.log('calltoaction')
+        booking.playersNumberMissing = 3
+        $scope.selectedBooking = booking
+        $scope.callToActionDetailModal.show()
+        
+    } 
+     
+     
+      $scope.closeCallToActionDetailModal = function(){
+        
+        $scope.callToActionDetailModal.hide()
+    }
+  
+    $scope.confirmCallToAction = function(){
+        console.log($scope.selectedBooking)
+        MyObjects.setCallToAction($scope.selectedBooking)
+        $scope.message = "Fatto!"
+        $scope.callToActionDetailModal.hide()
+    
+    }
 
+    $scope.openCameraModal = function(){
+        
+        $scope.cameraModal.show()
+    }
+    
+    $scope.closeCameraModal = function(){
+        $scope.cameraModal.hide()
+    }
+    $scope.openStatusModal = function(){
+        $scope.status = {value: Parse.User.current().get('status')}
+        $scope.statusModal.show()
+    }
+    
+    $scope.closeStatusModal = function(){
+        $scope.statusModal.hide()
+    }
+    
+    $scope.closeMessageModal = function() {
+        $scope.message = null
+        //$scope.$apply()
+        $scope.messageModal.hide();
+        //$state.go('tab.account');
+    };
+    
+    $scope.gotoMessage = function(booking){
+     $scope.bookingMessage = booking
+     $scope.messageToSend = {value:""}
+     $scope.messageModal.show()
+    }
+    //*********************************************
+  var vm = $scope;
+  var imageData;
+ 
+  // Object to save to Parse that includes an image
+  var object = {
+    text: "",
+    image: null
+  };
+ 
+  // Function to take a picture using the device camera
+  vm.takePicture = function() {
+ 
+    // Define various properties for getting an image using the camera
+    var cameraOptions = {
+      quality : 75,
+      // This ensures the actual base64 data is returned, and not the file URI
+      destinationType: Camera.DestinationType.DATA_URL,
+      encodingType : Camera.EncodingType.JPEG,
+      targetWidth: 300,
+      targetHeight: 300
+    };
+ 
+    // Use the Cordova Camera APIs to get a picture. For brevity, camera
+    // is simply an injected service
+    $cordovaCamera.getPicture(cameraOptions).then(function(returnedImageData) {
+    imageData = returnedImageData;
+    submitObject(imageData)
+    $scope.cameraModal.hide()
+        
+ 
+    }, function(err) {
+      console.log("Error taking picture: " + err);
+    });
+  };
+ 
+  // Function to submit the object to Parse using the REST API
+  function submitObject(imageData) {
+ 
+    // This part is important. As part of the JSON that we send to Parse,
+    // we need to specify the content type here as a field(__ContentType)
+    // along with the image data. Notice that the Content-Type specified
+    // in the headers is actually "plain/text"
+    var fileName = "image-" + Parse.User.current().id + ".png"
+    var file = new Parse.File(fileName, { base64: imageData });
+    file.save().then(
+        function(file){
+            Parse.User.current().set('image',file)
+            Parse.User.current().save()
+        },
+        function (error){
+            console.log(error)
+        }) 
+  };
+ 
+
+    //*********************************************
+    
     $scope.openProssimiImpegniModal = function(){
 
       $scope.prossimiImpegniModal.show()
       $scope.waitingMyBookings = "....."
+      $rootScope.openLoading()
       MyObjects.findMyBookings()
         .then(
           function(results){
-
+            $rootScope.closeLoading()
             $scope.bookings = results
             $scope.waitingMyBookings = null
             //$scope.$apply()
@@ -979,10 +1146,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.openInvitiModal = function(){
       $scope.invitiModal.show()
       $scope.waitingMyInvitations = "....."
+      $rootScope.openLoading()
       MyObjects.findMyInvitations()
         .then(
           function(results){
             $scope.invitations = results
+            $rootScope.closeLoading()
             $scope.waitingMyInvitations = null
             $scope.$apply()
         }, function(error){
@@ -998,10 +1167,12 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     $scope.openSaldareModal = function(){
       $scope.saldareModal.show()
       $scope.waitingMyGameNotPayed = "....."
+      $rootScope.openLoading()
       MyObjects.findMyGameNotPayed()
         .then(
           function(results){
             $scope.waitingMyGameNotPayed = null
+            $rootScope.closeLoading()
             $scope.gameNotPayed = _.flatten(results)
             //$scope.$apply()
         }, function(error){
@@ -1032,10 +1203,14 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
       function(obj){
         MyObjects.deleteParseObjectFromCollection(invitation,$scope.invitations)
         $scope.waitingMyInvitations = null
-        $scope.$apply()
+        //$scope.$apply()
         
     }, function(error){
         $scope.waitingMyInvitations = null
+        $ionicPopup.alert({
+         title: 'Opsss!',
+         template: error
+       });
         console.log(error);
         
     })
@@ -1072,15 +1247,24 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
        template: "Trascina verso destra l'elemento per visualizzare le opzioni disponibili. Anche se hai pagato la tua quota potresti continuare a vedere la prenotazione in quest'area perchè la segreteria non ha ricevuto tutte le restanti quote." 
      });
   }
+  
+    $scope.infoProssimiImpegni = function(){
+            $ionicPopup.alert({
+               title: 'Info',
+               template: "Le icone hanno, nell'ordine, il seguente significato: cancella, invita, trasforma in una Call To Action, invia un messaggio ai giocatori della partita." 
+             });
+          }
 
   
   $scope.delete = function(item){
 
    $scope.waitingMyBookings = "......"
+   $rootScope.openLoading()
     MyObjects.deleteBooking(item)
     .then(function(){
       MyObjects.deleteParseObjectFromCollection(item,$scope.bookings)
       $scope.waitingMyBookings = null
+      $rootScope.closeLoading()
       $scope.$apply()
     })
   }
@@ -1089,11 +1273,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
      $scope.prossimiImpegniModal.hide()
      $state.go('invitation',{'bookingId':booking.id,'gameType':booking.get('gameType')})
   }
-  $scope.setCallToAction = function(booking){
-    console.log('calltoaction')
-    MyObjects.setCallToAction(booking)
-    $scope.message = "Fatto!"
-  }
+  
 
   $scope.payMyBooking = function(booking){
     //Pago la mia quota ma non posso mettere payed a true perchè è possibile che altri debbano pagare.
@@ -1136,7 +1316,20 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   $scope.changeMyLevel=function(){
     $state.go('changeLevel')
   }
-
+  
+  $scope.setStatus = function(){
+      
+      MyObjects.setStatus($scope.status.value)
+      $scope.statusModal.hide()
+  }
+  
+  $scope.sendMessage=function(){
+      
+      MyObjects.sendMessageBookingUsers($scope.bookingMessage,$scope.messageToSend.value)
+      $scope.messageModal.hide()
+      $scope.message = "Messaggio inviato!"
+      
+  }
 
 })
 
@@ -1475,12 +1668,10 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
     }
 
   $scope.$on('currentDateChanged', function(event, x) {
-      console.log('on currentDateChanged.....')
       var m = x.split(":")[0]
       var y = x.split(":")[1]
       $scope.currentMonth = m
       $scope.currentYear = y
-
       $scope.selectedDay = null;
 
   });
@@ -1946,7 +2137,7 @@ if ($rootScope.platform != 'ios' && $rootScope.platform != 'android' && $scope.c
   })
 
   $scope.mayIJoin = function(cta){
-    return _.inRange(Parse.User.current().get('level'), cta.level - 1, parseInt(config.playersLevels) + 1) ;
+    return _.inRange(Parse.User.current().get('level'), cta.get('user').get('level') - 1, parseInt(config.playersLevels) + 1) ;
   }
 
 
@@ -2342,7 +2533,7 @@ $scope.ok = function(){
 }
 })
 
-.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading) {
+.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjects,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading, $timeout) {
 
 
   var model = {name:""}
@@ -2350,9 +2541,89 @@ $scope.ok = function(){
   $scope.invitations = []
   var actualGame = $rootScope.gameTypes[$stateParams.gameType]
   var  numPlayers = parseInt(actualGame.numberPlayers) -1
-
+  
+  
+  
 
   $scope.bookingId = $stateParams.bookingId
+  
+  $ionicModal.fromTemplateUrl('cerca.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.cercaModal = modal;
+    })
+    $ionicModal.fromTemplateUrl('preferiti.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.preferitiModal = modal;
+    })
+     $ionicModal.fromTemplateUrl('playersByLevel.html', {
+    scope: $scope,
+    animation: 'slide-in-up',
+    backdropClickToClose:false
+    }).then(function(modal) {
+      $scope.playersByLevelModal = modal;
+    })
+    
+    $scope.openCercaModal = function(){
+        $scope.cercaModal.show()
+    }
+    
+    $scope.openPreferitiModal = function(){
+
+        $scope.waiting = "....."
+        
+        $rootScope.openLoading()
+       
+        $scope.preferitiModal.show()
+        MyObjects.getPreferred().then(function(results){
+            //console.log(results)
+            $rootScope.closeLoading()
+            $scope.preferences = results
+            $scope.waiting = null
+            $scope.$apply()
+        })
+
+    }
+    
+     $scope.openPlayersByLevelModal = function(){
+        $rootScope.openLoading()
+        $scope.playersByLevelModal.show()
+        $scope.waiting = "....."
+        MyObjects.getPlayersByLevel().then(function(results){
+            
+            $rootScope.closeLoading()
+            $scope.playersByLevel = results
+            $scope.waiting = null
+            $scope.$apply()
+        })
+        
+    }
+    
+    $scope.closeCercaModal = function(){
+        $scope.cercaModal.hide()
+    }
+    
+    $scope.closePreferitiModal = function(){
+        $scope.preferitiModal.hide()
+    }
+    
+    $scope.closePlayersByLevelModal = function(){
+        $scope.playersByLevelModal.hide()
+    }
+    
+    
+    //*******INIT*******************
+    MyObjects.findInvitationAlredySentForBooking($scope.bookingId).then(
+    function(results){
+        $scope.waiting = null
+        $scope.invitations = results
+    })
+    //******************************
 
 
   $scope.search = function(){
@@ -2361,11 +2632,14 @@ $scope.ok = function(){
     if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
 
       $scope.waiting = "........"
+      $scope.preferences = []
+      $rootScope.openLoading()
       MyObjects.findPlayersWithName($scope.model.name)
       .then(
         function(results){
-          console.log(results);
+          //console.log(results);
           $scope.waiting = null
+          $rootScope.closeLoading()
           $scope.players = results
           $scope.$apply()
           
@@ -2383,47 +2657,26 @@ $scope.ok = function(){
   }
 
   $scope.invite = function(user){
-
-    $scope.waiting = "........"
     model.name = ""
     $scope.players = null
     if ($scope.invitations.length >= parseInt(numPlayers)){
-      var alertPopup = $ionicPopup.alert({
+      $ionicPopup.alert({
          title: 'Opsss!',
-         template: 'Scusa! In quanti volete giocare???'
+         template: 'Scusa! In quanti volete giocare??? La Call è già al completo!'
        });
        return
     }
-
-    
+    //Asincrono per efficienza....
     MyObjects.invite(user.id,user.get('email'),$scope.bookingId)
-    .then(
-      function(obj){
-        console.log('ok');
-        return MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
-    }, function(error){
-      console.log(error);
-      throw error
-    })
-    .then(
-      function(obj){
+    $scope.message = "Utente invitato!"
+    $timeout(function() {
+       $scope.message = null
+    }, 2000);
+    MyObjects.findInvitationAlredySentForBooking($scope.bookingId)
+    .then(function(obj){
         console.log(obj);
-        $scope.waiting = null
         $scope.invitations = obj
-
-        
-        //$scope.$apply()
-    }, function(error){
-      $scope.waiting = null
-      console.log(error);
-      var alertPopup = $ionicPopup.alert({
-         title: 'Opsss!',
-         template: error.message
-       });
     })
-
-  }
-
+}
 })
-
 

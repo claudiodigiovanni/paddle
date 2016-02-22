@@ -29,6 +29,17 @@ color: #444;
 
 }
 
+.call{
+  
+  font-size: 14px;
+  /*background-color:#f5f5f5;*/
+  font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
+line-height: 20px;
+text-rendering: optimizeLegibility;
+color: #444 !important;
+
+}
+
 /*
 .badge{ position: relative !important;
   top:0 !important;
@@ -53,6 +64,10 @@ i.ion-social-pinterest-outline {
   color: rgb(219, 110, 31)
 }
 
+.mymessage{
+  color: rgb(219, 110, 31)
+}
+
 .bar-subheader.custom
 {
   height: 34px !important;
@@ -62,6 +77,19 @@ i.ion-social-pinterest-outline {
 .has-subheader-custom {
     top: 165px !important;
 }
+
+
+.bar-subheader.custom2
+{
+  height: 34px !important;
+  border: none;
+}
+
+.has-subheader2-custom {
+    top: 100px !important;
+}
+
+
 
 .courtsViewFont{
 
@@ -86,6 +114,11 @@ color: #444;
   cursor: pointer !important;
 }
 
+.my-ionicons-big{
+  font-size: 30px !important;
+  
+}
+
 .my-ion-checkmark-circled{
   font-size: 24px !important;
   cursor: pointer !important;
@@ -93,6 +126,10 @@ color: #444;
 
 .my-ion-information-circled{
   font-size: 18px !important;
+  cursor: pointer !important;
+}
+
+.mycursor{
   cursor: pointer !important;
 }
 
@@ -111,5 +148,6 @@ color: #444;
   fill: #444;
   
 }
+
 
 </style>
