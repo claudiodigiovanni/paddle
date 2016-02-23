@@ -14,6 +14,18 @@ var paymentSchema = new Schema({
   updated_at: Date
 });
 
+
+paymentSchema.pre('save', function (next) {
+  
+  var payment = this;
+  var currentDate = new Date();
+  // change the updated_at field to current date
+  payment.updated_at = currentDate;
+	if (payment.isNew){
+		payment.created_at = currentDate
+	}
+})
+
 var Payment = mongoose.model('Payment', paymentSchema);
 
 // make this available to our users in our Node applications

@@ -40,10 +40,11 @@ angular.module('starter.servicesREST', [])
 		})
     },
 	requestPasswordReset: function(email){
+		
 		return $http({
 		  url: 'http://localhost:3000/requestPasswordReset',
 		  method: 'POST',
-		  data: email,
+		  data: {email:email},
 		  headers: {
 			   'Content-Type': 'application/json'
 			 }
@@ -268,7 +269,8 @@ angular.module('starter.servicesREST', [])
         }, function(error){
             
             console.log(error);
-            Utility.handleParseError(error);
+            //Utility.handleParseError(error);
+			throw error
         })
       },
 	findBookingsInDate: function(date,gameT){
@@ -357,14 +359,16 @@ angular.module('starter.servicesREST', [])
 
                 }, function(error){
                   console.log(error);
-                  Utility.handleParseError(error);
+                  //Utility.handleParseError(error);
+					throw error
                 })
             .then(
               function(obj){
                 return myContext.getDisponibilitaCoach(month,year,maestroId)
             }, function(error){
               console.log(error);
-                Utility.handleParseError(error);
+                //Utility.handleParseError(error);
+				throw error
             })
             .then(
               function(disponibilitaCoach){
@@ -392,7 +396,8 @@ angular.module('starter.servicesREST', [])
             }, function(error){
                 $ionicLoading.hide()
                 console.log(error);
-                Utility.handleParseError(error);
+                //Utility.handleParseError(error);
+				throw error
             })
                 //************
       },
@@ -656,11 +661,11 @@ angular.module('starter.servicesREST', [])
 		  	
         },
     getPaymentsByBooking: function(booking){
-		  
+		   console.log(booking)
 		   return $http({
 				  url: 'http://localhost:3000/api/v1/getPaymentsByBooking',
 				  method: 'GET',
-				  data: {'booking': $rootScope.booking._id}
+				  data: {'booking': booking._id}
 		  })
            
         },
@@ -1266,7 +1271,7 @@ angular.module('starter.servicesREST', [])
 			config.headers['Content-Type'] = "application/json";
 			//console.log(window.localStorage['token'])
 		}
-		//console.log(config)
+		console.log(config)
 		return config
 		
     },
@@ -1422,19 +1427,8 @@ angular.module('starter.servicesREST', [])
       var yy = d.getFullYear() % 100
       if ( yy < 10 ) yy = '0' + yy
       return dd+'.'+mm+'.'+yy
-    },
-    handleParseError: function (err) {
-        console.log(err);
-
-        switch (err.code) {
-          case Parse.Error.INVALID_SESSION_TOKEN:
-            Parse.User.logOut();
-            $state.go('login');
-            break;
-          default:
-            console.log(err);
-          }
-}
+    }
+    
   };
 })
 

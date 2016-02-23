@@ -216,27 +216,29 @@ $scope.resetPwd = function(){
 }
 
 $scope.confirmResetPwd = function(){
+  console.log('confirmResetPwd')
   console.log($scope.resetPwd.email);
   $ionicLoading.show({
     template: 'Loading...'
   });
   var email = $scope.resetPwd.email
-  MyObjectsREST.requestPasswordReset(email, {
-      success: function(response) {
-      // Password reset request was sent successfully
-      //Parse.User.logOut();
+  MyObjectsREST.requestPasswordReset(email).then(function(response) {
+      console.log(response)
       $ionicLoading.hide()
       $scope.messagePwdReset = "Ok! Mail inviata. Leggila e ripristina la tua password. "
       $scope.resetPwdModal.hide()
-      },
-      error: function(error) {
+	  $scope.modal.show();
+      },function(error) {
         // Show the error message somewhere
         $ionicLoading.hide()
-        alert("Error: " + error.code + " " + error.message);
-      }
-    });
+		$scope.resetPwdModal.hide()
+		$scope.messagePwdReset = error.data
+	    $scope.modal.show();
+		console.log(error)
+		
+        //alert("Error: " + error.code + " " + error.message);	  
+      } )
 
-  $scope.modal.show();
 }
 
 $scope.closeResetPwd = function(){
@@ -1581,7 +1583,7 @@ $scope.closeModalok = function() {
 })
     
 
-.controller('statistics', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state,$rootScope){
+.controller('statistics', function($scope, MyObjectsREST,$ionicModal,$ionicLoading, Utility,$state,$rootScope){
 
   if($rootScope.userRole == null)
     $state.go('tab.dash')    
@@ -1757,7 +1759,7 @@ $scope.closeModalok = function() {
 
 })
 
-.controller('courtsView', function($scope, MyObjects,$ionicModal, config,$ionicLoading,$stateParams,$rootScope, Utility, $state) {
+.controller('courtsView', function($scope, MyObjectsREST,$ionicModal, config,$ionicLoading,$stateParams,$rootScope, Utility, $state) {
 
   var searchUser = {name: ""}
   $scope.searchUser = searchUser
@@ -1783,15 +1785,15 @@ $scope.closeModalok = function() {
 
   $scope.openModal = function(booking) {
 
-    //console.log(booking)
+    console.log(booking)
     //*********************************Variabile usate per memorizzare la prenotazione selezionata********
     $scope.waiting = "......."
     $scope.bookingx = booking
-    $scope.bookingx.note = booking.get('note')
+    $scope.bookingx.note = booking.note
      MyObjectsREST.getPaymentsByBooking(booking).then(
-        function(results){
+        function(response){
            $scope.waiting = null
-           $scope.payments = results
+           $scope.payments = response.results
            $scope.modal.show();
     
       }, function(error){
@@ -1879,7 +1881,7 @@ $scope.closeModalok = function() {
     .then(function(results){
       $scope.waiting = null
       $scope.myresults = results
-      $scope.$apply() 
+      //$scope.$apply() 
     })
 
   }
@@ -1919,10 +1921,10 @@ $scope.closeModalok = function() {
         
         $scope.waiting = "......"
          MyObjectsREST.payQuota(booking).then(
-            function(quota){
+            function(response){
               $scope.waiting = null
-              $scope.payments.push(quota) 
-              $scope.$apply()
+              $scope.payments.push(response.results) 
+              //$scope.$apply()
         
           }, function(error){
             $scope.waiting = null

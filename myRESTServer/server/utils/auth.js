@@ -137,10 +137,24 @@ var auth = {
   requestPasswordReset: function(req, res,next){
 	  console.log('requestPasswordReset...')
 	  var email = req.body.email
-	  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://localhost:8080'>fai click qui per procedere!</a>")
+	  User.findOne({'email':email}).exec(function(err,user){
+		  console.log(user)
+		  if (err) console.log(err)
+		  if (user == null){
+			  res.status(500).send('Ops! Utente non esistente')
+			  return
+		  }
+		  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://localhost:8080'>fai click qui per procedere!</a>")
+		  res.json({
+				  "status": 200,
+				  "message": "Ok, mail sent!"
+				});
+		  })
+	  
   }
 	
 }
+	
 
 // private method
 function genToken(user) {

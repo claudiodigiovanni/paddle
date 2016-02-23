@@ -18,10 +18,11 @@ var mail = require('./utils/mailgun.js')
 /*
  * Routes that can be accessed by any one
  */ 
+
 router.post('/login', auth.login);
 router.post('/registerToken', auth.registerToken);
 router.post('/signup', auth.signup);
-router.post('/requestPasswordReset',auth.requestPasswordReset)
+router.post('/requestPasswordReset',auth.requestPasswordReset);
 
 /*
  * Routes that can be accessed only by autheticated users
@@ -322,7 +323,7 @@ router.post('/api/v1/payQuota', function(req, res,next) {
 	  if (err) next(err);
 		
 	  	console.log('payment saved successfully!');
-		res.json({message: 'ok'});
+		res.json({message: 'ok', data:payment});
 	});
 	          
 });

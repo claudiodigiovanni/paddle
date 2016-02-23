@@ -29,8 +29,6 @@ mongoose.connection.on('error', function () {
 });
 
 
-//mail.sendMessage('','')
-
 app.all('/*', function(req, res, next) {
   // CORS headers
   res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
