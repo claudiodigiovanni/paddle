@@ -3,7 +3,11 @@ var bcrypt = require('bcrypt');
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var Circolo = require('./circolo.js');
+var installationSchema = require('./installation.js').installationSchema;
 var Schema = mongoose.Schema;
+
+
+
 
 // create a schema
 var userSchema = new Schema({
@@ -20,7 +24,8 @@ var userSchema = new Schema({
   level: String,
   status: String,
   preferences: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  image: Buffer
+  image: Buffer,
+  installations: [installationSchema]
 });
 
 

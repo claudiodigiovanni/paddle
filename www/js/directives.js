@@ -17,11 +17,13 @@ angular.module('starter.directives', [])
         
 		if( MyObjectsREST.isPreferred($scope.user)){
             $scope.isPreferred = true
+			//$scope.$apply()
         }
         
         $scope.setPreferred = function(user){
             $scope.isPreferred = ! $scope.isPreferred
             MyObjectsREST.setPreferred(user)
+			//$scope.$apply()
         }
             
     }]

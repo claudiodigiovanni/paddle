@@ -77,7 +77,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
         
 		$rootScope.platform = ionic.Platform.platform()
 
-        if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled' || next.name == 'privacy') {
+        if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled' || next.name == 'privacy' || next.name == 'resetPwd') {
 
            console.log('verso login...');
 
@@ -106,7 +106,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
                 $rootScope.currentGameType = currentGameType
 
             }
-            
+            //console.log($rootScope.gameTypes)
+			//console.log($rootScope.currentGameType)
 
             /*MyObjects.countMyInvitations().then(function(count){
               if (count > 0 ) 
@@ -114,7 +115,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
               else 
                 $rootScope.invitationCount = null
             })*/
-
+			if (MyObjectsREST.getNotifications() && MyObjectsREST.getNotifications().length > 0)
+				$rootScope.notificationCount = MyObjectsREST.getNotifications().length 
             
   
         } else {
@@ -191,7 +193,23 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   // Each state's controller can be found in controllers.js
   $stateProvider
 
-    .state('login', {
+  
+  .state('resetPwd', {
+		url: '/resetPwd/:user/:token',
+		cache: true,
+		templateUrl: 'templates/resetPwd.html',
+	  	controller: 'resetPwdCtrl'
+
+	  })
+  
+  .state('errorPage', {
+		url: '/errorPage',
+		cache: true,
+		templateUrl: 'templates/errorPage.html'
+
+	  })
+
+  .state('login', {
     url: '/login',
     cache: false,
     templateUrl: 'templates/login.html',
@@ -229,8 +247,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     }
   })
 
-  
- 
+
   .state('tab.bookCourt2', {
       url: '/bookCourt2',
       cache: false,

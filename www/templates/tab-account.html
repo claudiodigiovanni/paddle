@@ -42,7 +42,13 @@
            <a class="item item-icon-left item-icon-right" ng-click="openInvitiModal()">
             <i class="icon ion-at"></i>
             <small>(inviti ricevuti)</small> 
-            <i class="icon ion-chevron-right"> <span class="badge badge-assertive">{{invitationCount}}</span></i>
+            <i class="icon ion-chevron-right"></i>
+          </a>
+			
+			<a class="item item-icon-left item-icon-right" ng-click="openNotificationsModal()">
+            <i class="icon ion-at"></i>
+            <small>(messaggi ricevuti)</small> 
+            <i class="icon ion-chevron-right"> <span class="badge badge-assertive">{{notificationCount}}</span></i>
           </a>
 
            <a class="item item-icon-left  item-icon-right" ng-click="openSaldareModal()">
@@ -156,6 +162,49 @@
           <ion-option-button class="button-assertive"
                            ng-click="decline(i)">
           Declina
+        </ion-option-button>
+
+        </ion-item>
+
+    </div>
+    
+<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    </ion-content>
+  </div>
+</script>
+	
+<script id="notifications.html" type="text/ng-template">
+  <div class="modal"> 
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">Messaggi Ricevuti</h1>
+      <button class="button button-light" ng-click="closeNotificationsModal()">close</button>
+    </ion-header-bar>
+  <ion-content>
+    <small>{{error}}</small>
+ <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+    <div class="item item-text-wrap" >
+        <p ng-show="waitingMyInvitations" class="center">
+          <ion-spinner class="spinnerx" icon="dots" ng-show="waitingMyInvitations"></ion-spinner>
+        </p>
+        
+        <p class="center" ng-show="notifications.length == 0">
+            <i class="icon ion-information positive"></i> Non hai nessun messaggio....
+        </p>
+        
+        <p class="center" ng-show="notifications.length != 0" >
+            (Trascina gli elementi verso destra)
+        </p>
+        
+      <ion-list >
+        
+        
+        <ion-item ng-repeat="n in notifications">
+          <b><i class="icon ion-calendar"></i></b> {{n.date | date:'dd/MM/yyyy'}}<br>
+          <b><i class="icon ion-android-pin"></i></b> {{n.message}}<br>
+
+          <ion-option-button class="button-assertive"
+                           ng-click="deleteNotification(n)">
+          Elimina
         </ion-option-button>
 
         </ion-item>

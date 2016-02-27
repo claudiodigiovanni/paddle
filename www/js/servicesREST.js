@@ -50,6 +50,16 @@ angular.module('starter.servicesREST', [])
 			 }
 		})
 	},
+	resetPwd: function(newP,u,t){
+		return $http({
+		  url: 'http://localhost:3000/resetPwd',
+		  method: 'POST',
+		  data: {newPassword:newP, user:u,token:t},
+		  headers: {
+			   'Content-Type': 'application/json'
+			 }
+		})
+	},
 	getCircoli: function(){
 		return $http({
 		  url: 'http://localhost:3000/api/circolo',
@@ -581,6 +591,26 @@ angular.module('starter.servicesREST', [])
 			    })
             
         },	
+	getNotifications:function(){
+		//return [{date: '12/12/2016', message:"olaaaaaaa"}, {date: '11/12/2016', message:"uhoooooo"}]
+		var notifications = []
+		if (window.localStorage['notifications'] != null){
+					notifications = JSON.parse(window.localStorage['notifications']).messages
+		}
+		return notifications
+			 
+	},
+		
+	deleteNotification: function(notification){
+		
+		var mx = JSON.parse(window.localStorage['notifications']).messages
+		_.remove(mx,function(item){
+			return item._id == notification._id
+		})
+		var notification = {messages: mx}
+		window.localStorage['notifications'] = JSON.stringify(notifications)
+		
+	},
     sendMessageBookingUsers: function(booking,messagex){
             var players = booking.players
             _.each(players,function(p){
@@ -779,7 +809,7 @@ angular.module('starter.servicesREST', [])
             
         },
 	findPlayersWithName:function(namex){
-		  
+		  console.log('findPlayersWithName')
 		  return $http({
 			  url: 'http://localhost:3000/api/v1/findPlayersWithName',
 			  method: 'POST',
@@ -819,6 +849,16 @@ angular.module('starter.servicesREST', [])
                 $ionicLoading.show({ template: notification.text, duration:3000 });
 
                 //alert(notification, payload);
+				
+				if (window.localStorage['notifications'] == null){
+					var notifications = {messages:[]}
+					window.localStorage['notifications'] = JSON.stringify(notifications)
+				}
+				var notifications = JSON.parse(window.localStorage['notifications'])
+				var id = (new Date()).getTime()
+				notification.messages.push({_id:id, date:new Date(), message:notification.text })
+				window.localStorage['notifications'] = JSON.stringify(notifications)
+				
               },
               "onRegister": function(data) {
                 console.log(data.token);
@@ -862,19 +902,24 @@ angular.module('starter.servicesREST', [])
 
         },
 	setPreferred: function(user){
-		  
+		  console.log(user)
 		  return $http({
 			  url: 'http://localhost:3000/api/v1/setPreferred',
 			  method: 'POST',
-			  data: {'user': $rootScope.currentUser._id, 'userToadd': user._id}
-	  		})
+			  data: {'user': $rootScope.currentUser._id, 'userToAdd': user._id}
+	  		}).then(function(response){
+			  window.localStorage['user'] = JSON.stringify(response.results)
+			  $rootScope.currentUser = response.results
+			  //return user
+		  })
                
 
         },
     isPreferred: function(user){
             var preferences = $rootScope.currentUser.preferences
             var index = _.findIndex(preferences,function(p){
-                return p.id == user.id
+				
+                return p == user._id
             })
             return (index != -1)
 
@@ -902,20 +947,17 @@ angular.module('starter.servicesREST', [])
 
         },
     getPlayersByLevel: function(){
-		
+		console.log($rootScope.currentUser.level)
 		return $http({
 			  url: 'http://localhost:3000/api/v1/getPlayersByLevel',
-			  method: 'GET',
+			  method: 'POST',
 			  data: {'circolo': $rootScope.currentUser.circolo, 'level': $rootScope.currentUser.level}
 	  		})
-             var query = new Parse.Query(Parse.User)
-            query.equalTo('level',Parse.User.current().get('level'))
-            query.equalTo('circolo',Parse.User.current().get('circolo'))
-            return query.find()
+            
 
         },
 		
-		deleteObjectFromCollection: function(item, collection){
+	deleteObjectFromCollection: function(item, collection){
           _.remove(collection, function(object){
               return object._id == item._id
           })
@@ -1256,14 +1298,14 @@ angular.module('starter.servicesREST', [])
 	
   }
 )
-.factory('TokenInterceptor', function($q, $window) {
+.factory('TokenInterceptor', function($q, $window, $location) {
   return {
     request: function(config) {
 		if (config.url.indexOf('openweathermap') != -1)
 			return config
 		config.headers = config.headers || {};
 		if (window.localStorage['token']){
-			console.log('TokenInterceptor')
+			
 			config.headers['X-Access-Token'] = window.localStorage['token'];
 			config.headers['X-Device-Token'] = window.localStorage['deviceToken'];
 			config.headers['X-Key'] = JSON.parse(window.localStorage['user']).email;
@@ -1271,7 +1313,7 @@ angular.module('starter.servicesREST', [])
 			config.headers['Content-Type'] = "application/json";
 			//console.log(window.localStorage['token'])
 		}
-		console.log(config)
+		//console.log(config)
 		return config
 		
     },
@@ -1280,7 +1322,14 @@ angular.module('starter.servicesREST', [])
 	  //console.log(response)
 	  response.results = response.data.data
       return response || $q.when(response);
+    },
+	  
+	responseError: function(response) {
+	  console.log(response)
+	  $location.path('/errorPage');
+      return $q.reject(response); 
     }
+	  
   };
 })
 

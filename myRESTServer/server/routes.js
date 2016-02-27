@@ -6,14 +6,16 @@ var _ = require('lodash');
 var auth = require('./utils/auth.js');
 var Circolo = require('./model/circolo.js');
 var User = require('./model/user.js');
+
 var Booking = require('./model/booking.js')
 var Dashboard = require('./model/dashboard.js');
 var Invitation = require('./model/invitation.js');
 var Recharge = require('./model/recharge.js');
 var Payment = require('./model/payment.js');
 var Q = require('q')
+var logger = require('./utils/logger.js')
 
-var push = require('./utils/push.js')
+var pushMessage = require('./utils/push.js').pushMessage
 var mail = require('./utils/mailgun.js')
 /*
  * Routes that can be accessed by any one
@@ -23,6 +25,10 @@ router.post('/login', auth.login);
 router.post('/registerToken', auth.registerToken);
 router.post('/signup', auth.signup);
 router.post('/requestPasswordReset',auth.requestPasswordReset);
+
+router.post('/resetPwd',auth.resetPwd);
+
+
 
 /*
  * Routes that can be accessed only by autheticated users
@@ -39,7 +45,7 @@ router.post('/api/v1/circolo/', function(req, res,next) {
 	cx.save(function(err) {
 
 	  if (err) next(err);
-	  	console.log('Circolo saved successfully!');
+	  	logger.debug('Circolo saved successfully!');
 	  	res.json({succes: true, circolo: cx});
 	});
 	
@@ -61,8 +67,8 @@ router.get('/api/circolo/', function(req, res,next) {
 
 router.post('/api/v1/dashboardText', function(req, res,next) {
 	var c = req.body.circolo
-	console.log('circolo')
-	console.log(c)
+	logger.debug('circolo')
+	logger.debug(c)
 	Dashboard.find({'circolo':c}, function(err, dashboard) {
 	  if (err) return next(err);
 	  	res.json({data: dashboard});
@@ -74,7 +80,7 @@ router.post('/api/v1/dashboardText', function(req, res,next) {
 });
 
 router.post('/api/v1/findBookingsInDate', function(req, res,next) {
-	console.log(req.body)
+	logger.debug(req.body)
 	Booking.find({ 'date': req.body.date, 'circolo':req.body.circolo, 'gameType':req.body.gameType })
 		.populate('players user')
 		.exec( function (err, bookings) {
@@ -84,7 +90,7 @@ router.post('/api/v1/findBookingsInDate', function(req, res,next) {
 });
 
 router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
-	console.log(req.body)
+	logger.debug(req.body)
 	Booking.find({ 'date': req.body.date, 'circolo':req.body.circolo, 'gameType':req.body.gameType, 'endHour': {$gte: req.body.endHour},'startHour': {$lte: req.body.startHour}  })
 		.populate('players user')
 		.exec( function (err, bookings) {
@@ -95,7 +101,7 @@ router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
 });
 
 router.post('/api/v1/findBookingsToPayBeforeDate', function(req, res,next) {
-	console.log(req.body)
+	logger.debug(req.body)
 	Booking.find({ 'circolo':req.body.circolo, 'date': {$lte: req.body.startHour}, 'payed':false  })
 		.sort('-date')
 		.populate('players user')
@@ -110,11 +116,11 @@ router.post('/api/v1/createBooking', function(req, res,next) {
 	var booking = new Booking()
 	utils.copyProperties(req.body.book,booking)
 	  
-	console.log(booking)
+	logger.debug(booking)
 	booking.save(function(err) {
 
 	  	if (err) return next(err);
-	  	console.log('Booking saved successfully!');
+	  	logger.debug('Booking saved successfully!');
 	  	res.json({succes: true, data: booking});
 	});
 	
@@ -228,7 +234,7 @@ router.post('/api/v1/acceptInvitation', function(req, res,next) {
 	
 	Invitation.findByIdAndRemove(req.body.idInvitation)
 		.exec( function (err, invitation) {
-			  console.log('invitation removed....')
+			  logger.debug('invitation removed....')
 		})
 	Booking.findByIdAndUpdate(req.body.idBooking, {$push: { 'players': req.body.user }})
 		.exec( function (err, booking) {
@@ -242,7 +248,7 @@ router.post('/api/v1/declineInvitation', function(req, res,next) {
 	
 	Invitation.findByIdAndRemove(req.body.idInvitation)
 		.exec( function (err, invitation) {
-			  console.log('invitation removed....')
+			  logger.debug('invitation removed....')
 			  res.json({message: 'invitation removed'});
 		})
 	
@@ -279,12 +285,12 @@ router.post('/api/v1/addCharge', function(req, res,next) {
 	recharge.save(function(err) {
 
 	  if (err) next(err);
-	  	console.log('recharge saved successfully!');
+	  	logger.debug('recharge saved successfully!');
 	});
 	
 	User.findByIdAndUpdate(req.body.user, { $inc: { residualCredit: qty }})
 		.exec( function (err, user) {
-		  console.log('User residualCredit saved successfully!');
+		  logger.debug('User residualCredit saved successfully!');
 		})
 	
 	res.json({message: 'ok'});
@@ -322,7 +328,7 @@ router.post('/api/v1/payQuota', function(req, res,next) {
 
 	  if (err) next(err);
 		
-	  	console.log('payment saved successfully!');
+	  	logger.debug('payment saved successfully!');
 		res.json({message: 'ok', data:payment});
 	});
 	          
@@ -339,7 +345,7 @@ router.post('/api/v1/payTessera', function(req, res,next) {
 
 	  if (err) next(err);
 		
-	  	console.log('payment saved successfully!');
+	  	logger.debug('payment saved successfully!');
 		res.json({message: 'ok'});
 	});
 	          
@@ -355,7 +361,7 @@ router.post('/api/v1/deletePayment', function(req, res,next) {
 		if (user != null){
 			User.findByIdAndUpdate(user, { $inc: { residualCredit: -1 }})
 			.exec( function (err, user) {
-			  console.log('User residualCredit saved successfully!');
+			  logger.debug('User residualCredit saved successfully!');
 			})
 		}
 		
@@ -369,7 +375,7 @@ router.post('/api/v1/enabling', function(req, res,next) {
 	
 	User.findByIdAndUpdate(req.body.user, { enabled: !enabled})
 			.exec( function (err, user) {
-			  console.log('User residualCredit saved successfully!');
+			  logger.debug('User residualCredit saved successfully!');
 			})
 	          
 });
@@ -378,7 +384,7 @@ router.post('/api/v1/changeUserLevel', function(req, res,next) {
 	
 	User.findByIdAndUpdate(req.body.user, { level: req.body.level})
 			.exec( function (err, user) {
-			  console.log('User changeUserLevel saved successfully!');
+			  logger.debug('User changeUserLevel saved successfully!');
 			})
 	          
 });
@@ -392,7 +398,7 @@ router.post('/api/v1/deleteBooking', function(req, res,next) {
 	Booking.findById(req.body.booking)
 			.populate('players')
 			.exec( function (err, booking) {
-			  console.log('User changeUserLevel saved successfully!');
+			  logger.debug('User changeUserLevel saved successfully!');
 			  var user = req.body.user
 			  if (req.body.role == 'admin' || req.body.role == 'segreteria' || user == booking.user){
 				  booking.remove();  
@@ -441,10 +447,12 @@ router.post('/api/v1/setCallToAction', function(req, res,next) {
 
 
 router.post('/api/v1/findPlayersWithName', function(req, res,next) {
-	
-	User.find({'name': /.*m.*/ , 'circolo': req.body.circolo})
+	logger.debug(req.body.name)
+	var name = req.body.name
+	User.find({'nome': {$regex: '.*' + name + '.*'}, 'circolo': req.body.circolo})
 			.populate('players')
 			.exec( function (err, results) {  
+				logger.debug(results)
             	res.json({'data':results})
 			})
 	          
@@ -453,36 +461,36 @@ router.post('/api/v1/findPlayersWithName', function(req, res,next) {
 router.post('/api/v1/invite', function(req, res,next) {
 	
 	var promises = []
-	Booking.findById(req.body.bookingIdCalled)
+	var promise1 = Booking.find({_id: req.body.bookingIdCalled, players: req.body.userIdToInvite })
 			.populate('players')
-			.exec( function (err, results) {  
-            	res.json({'data':results})
-			})
-	Invitation.find({ 'user':req.body.userIdToInvite, 'booking':req.body.bookingIdCalled })
-		.populate('booking booking.players booking.user')
-		.exec( function (err, invitations) {
-		  res.json({data: invitations});
-		})
 	
+	var promise2 = Invitation.find({ 'user':req.body.userIdToInvite, 'booking':req.body.bookingIdCalled })
+	promises.push(promise1)
+	promises.push(promise2)
 	Q.all(promises).then(function(results){
+				console.log(results)
 				if (results[0].length == 0 && results[1].length == 0){
                       var invitation = new Invitation()
                       invitation.user = req.body.userIdToInvite
                       invitation.booking = req.body.bookingIdCalled
                       invitation.save()
-                      //Parse.Cloud.run('sendPush', {userId:userIdToInvite,message:"Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per i dettagli."})
+                      
+					  pushMessage(req.body.userIdToInvite,"Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per i dettagli.")
+					  console.log('after push...')
 					  res.json({message:'ok'})
                 }
-                else
-                    console.log("L'utente è gia della partita! Oppure è già stato invitato....")
-					res.json({message:'not ok'})
+                else{
+                    logger.debug("L'utente è gia della partita! Oppure è già stato invitato....")
+					res.json({message:'not ok'}) 
+					 
+				}  
 		
 	})
 	          
 });
 
 router.post('/api/v1/findInvitationAlredySentForBooking', function(req, res,next) {
-	
+	logger.debug(req.body)
 	Invitation.find({ 'booking':req.body.bookingId})
 		.populate('user')
 		.exec( function (err, invitations) {
@@ -492,24 +500,29 @@ router.post('/api/v1/findInvitationAlredySentForBooking', function(req, res,next
 });
 
 router.post('/api/v1/setPreferred', function(req, res,next) {
-	
+	logger.debug('setPreferred')
+	logger.debug(req.body.userToAdd)
 	User.findById(req.body.user)
-		.exec( function (err, user) {
-		  var players = user.players
-		  if (players.indexOf(req.body.userToAdd) != -1)
-			  User.findByIdAndUpdate({ $addToSet: { players: req.body.userToAdd  }}).exec(function(err,user){
-				  console.log('ok')
-			  })
-		  else
-			  User.update({ $pull: { players: req.body.userToAdd  }}).exec(function(err,user){
-				  
-			  })
-		  
-			  res.json({data: user});
-		}) 
-		
-	
-		          
+		.populate('circolo')
+		.exec( function (err, u) {
+			  console.log(u)
+			  var preferences = u.preferences
+			  logger.debug(preferences)
+			  if (preferences.indexOf(req.body.userToAdd) == -1){
+				  console.log('11111')
+					  u.preferences.push(req.body.userToAdd)
+					  u.save().then(function(ux){
+						  res.json({data: ux});
+					  })
+			  }
+			  else{ 
+					u.preferences.splice(preferences.indexOf(req.body.userToAdd), 1);
+					u.save().then(function(ux){
+						  res.json({data: ux});
+					  })
+			  }	 
+			}) 
+	       
 });
 
 
@@ -518,7 +531,7 @@ router.post('/api/v1/getPreferred', function(req, res,next) {
 	User.findById(req.body.user)
 		.populate('preferences')
 		.exec( function (err, user) {
-		  
+		  	  logger.debug (user)
 			  res.json({data: user});
 		}) 
 		
@@ -529,20 +542,20 @@ router.post('/api/v1/getPreferred', function(req, res,next) {
 
 router.post('/api/v1/setStatus', function(req, res,next) {
 	
-	//console.log('setStatus...' + req.body.user + ":" + req.body.status)
+	//logger.debug('setStatus...' + req.body.user + ":" + req.body.status)
 	try{
 		User.findByIdAndUpdate(req.body.user, {'status':req.body.status}, function (err, user) {
-			//console.log('setStatus222...')
+			//logger.debug('setStatus222...')
 		  	  if (err){
-				 console.log(err)
+				 logger.debug(err)
 				 next(err)  
 			  } 
-			console.log(user)
+			logger.debug(user)
 			res.json({data: user});
 		}) 
 	}
 	catch(error){
-		console.log(error)
+		logger.debug(error)
 	}
 	
 		
@@ -551,7 +564,7 @@ router.post('/api/v1/setStatus', function(req, res,next) {
 });
 
 
-router.get('/api/v1/getPlayersByLevel', function(req, res,next) {
+router.post('/api/v1/getPlayersByLevel', function(req, res,next) {
 	
 	User.find({'level':req.body.level, 'circolo': req.body.circolo })
 		

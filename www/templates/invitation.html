@@ -40,8 +40,8 @@
     <div class="list">
         <a class="item item-avatar item-icon-right" href="#" ng-repeat="i in invitations">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{i.get('user').get('nome')}} - Liv. {{i.get('user').get('level')}}</h2>
-          <p>{{i.get('user').get('status') ? i.get('user').get('status') : "Back off, man. I'm a scientist."}}</p>
+          <h2>{{i.user.nome}} - Liv. {{i.user.level}}</h2>
+          <p>{{i.user.status ? i.user.status : "Back off, man. I'm a scientist."}}</p>
         </a>
     </div>
     
@@ -79,8 +79,8 @@
     <div class="list">
         <a class="item item-avatar item-icon-right"  ng-repeat="p in players">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{p.get('nome')}} (L. {{p.get('level')}})</h2>
-          <p>{{p.get('status') ? p.get('status') : "Back off, man. I'm a scientist."}}</p>
+          <h2>{{p.nome}} (L. {{p.level}})</h2>
+          <p>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</p>
             
             <button class="button button-small button-positive" ng-click="invite(p)">invita</button>
             <preferred user="p"></preferred>
@@ -115,8 +115,8 @@
      <div class="list" >
         <a class="item item-avatar item-icon-right" ng-repeat="p in preferences">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{p.get('nome')}} (L. {{p.get('level')}})</h2>
-          <p>{{p.get('status') ? p.get('status') : "Back off, man. I'm a scientist."}}</p>
+          <h2>{{p.nome}} (L. {{p.level}})</h2>
+          <p>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</p>
             <button class="button button-small button-positive" ng-click="invite(p)">invita</button>
            <preferred user="p"></preferred>
         </a>
@@ -149,8 +149,8 @@
      <div class="list" >
         <a class="item item-avatar item-icon-right" ng-repeat="p in playersByLevel">
           <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{p.get('nome')}}</h2>
-          <p>{{p.get('status') ? p.get('status') : "Back off, man. I'm a scientist."}}</p>
+          <h2>{{p.nome}}</h2>
+          <p>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</p>
             <button class="button button-small button-positive" ng-click="invite(p)">invita</button>
            <preferred user="p"></preferred>
         </a>

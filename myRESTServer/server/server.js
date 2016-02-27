@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var _ = require('lodash');
 
 
+
 var init = require('./initialize.js');
 
 var app = express();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err.stack);
+  
 }); 
 
 
@@ -35,11 +37,15 @@ app.all('/*', function(req, res, next) {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   // Set custom headers for CORS
   res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token,X-Key,X-Device-Token');
-  next();
+  if (req.method == 'OPTIONS') {
+    res.status(200).end();
+  } else {
+    next();
+  }
 });
 
 // Only the requests that start with /api/v1/* will be checked for the token.
-app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
+//app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
 
 
 
@@ -49,6 +55,7 @@ app.use('/', require('./routes.js'));
 
 // Error Handler
 app.use(function(err, req, res, next) {
+	console.log('*************************Error Handler********************')
   	res.status(err.status || 500);
     res.json({error: err.message})
  });
