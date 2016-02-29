@@ -2,7 +2,7 @@ angular.module('starter.servicesREST', [])
 
 .factory('MyObjectsREST', function(Utility,$ionicLoading, $rootScope, config,$q,$http,$httpParamSerializer) {
 	
-	
+
     return {
 		
 	createBookingObject: function(){
