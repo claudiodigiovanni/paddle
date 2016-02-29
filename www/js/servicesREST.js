@@ -80,208 +80,51 @@ angular.module('starter.servicesREST', [])
 	//*********************BOOKCOURT2***********************
 	checkBeforeCreateBooking: function(date,ranges,gameT){
         
-        console.log(ranges)
-
-        var defer = $q.defer()
-        var courtsAvalaivable = []
-        var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
-
-        var courts = _.range(1,parseInt(courtsNumber) + 1)
-        return this.findBookingsInDate(date,gameT)
-        //return this.findBookingsInDateAndRange(date,gameT,ranges)
+		var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
+	
+		return $http({
+		  url: config.serverAddress + 'api/v1/checkBeforeCreateBooking',
+		  method: 'POST',
+		  data: {'circolo':$rootScope.currentUser.circolo._id, date:date, ranges:ranges, gameT:gameT,courtsNumber: courtsNumber, ranges:ranges }
+		})
+     },	
+    createBooking:function(obj){
+		 obj.circolo = $rootScope.currentUser.circolo._id;
+         obj.ranges  = _.sortBy(obj.ranges);
+		 obj.user = $rootScope.currentUser._id	
+		 obj.payed = false
+		 
+        console.log(obj)
+		return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
         .then(
           function(response){
-			var bookings = response.results
-            console.log(bookings)
-            courts.forEach(function(court){
-              //console.log("court:" + court);
-              var avalaible = true
-              ranges.forEach(function(r){
-                var p = _.filter(bookings, function(item){
-                  if (item.ranges != null &&
-                      item.ranges.indexOf(r) != -1 &&
-                      item.court != null &&
-                      item.court == court){
-                    return item
-                  }
-                })
-
-                if ( p != null && p.length > 0){
-                  avalaible = false
-                }
-              })
-              if (avalaible == true){
-                courtsAvalaivable.push(court)
-              }
-
-            })
-            
-             //****OPTIMISE: elimino i campi che hanno prenotazioni che creerebbero un buco di mezz'ora****
-            var optimezedCourts = courtsAvalaivable.slice(0)
-            var startRange = parseInt(_.head(ranges))
-            //console.log(startRange)
-            var endRange   = parseInt(_.last(ranges))
-            //console.log(endRange)
-            courtsAvalaivable.forEach(function(court){
-                  //console.log("COURT****************************:" + court)
-                  var p = _.filter(bookings, function(item){
-                  //console.log(item)
-                  var ranges = item.ranges
-                  if ( item.court == court && ((ranges.indexOf(startRange-1) == -1 &&  ranges.indexOf(startRange-2) != -1) ||
-                                                      (ranges.indexOf(endRange + 1) == -1 &&  ranges.indexOf(endRange + 2) != -1) ))
-                      {
-                        return item
-                      }
-                  })
-                  if (p.length != 0)
-                     _.pull(optimezedCourts,court)
-            })
-            
-            console.log('******COURTS FASE 1*****')
-            console.log(courtsAvalaivable)
-            console.log('******COURTS FASE 2*****')
-            console.log(optimezedCourts)
-           
-            if (optimezedCourts.length > 0){
-              defer.resolve(optimezedCourts)
-            }
-			
-            //**********FINE OPTIMISE*********************************************************************
-            
-            
-            else if (courtsAvalaivable.length > 0){
-              defer.resolve(courtsAvalaivable)
-            }
-            else {
-              defer.reject("Campo non disponibile nella fascia oraria selezionata!")
-            }
-            return defer.promise;
-
-        }, function(error){
-
-          console.log(error);
-          defer.reject(error)
-          return defer.promise;
-        })
-      },	
-    createBooking:function(obj){
-		var context = this
-        console.log(obj)
-        return this.checkBeforeCreateBooking(obj.date,obj.ranges,obj.gameType)
-        .then(
-          function(courtsAvalaivable){
-            
-            var book = context.createBookingObject();
-            book.set("user", $rootScope.currentUser._id);
-            book.set("circolo", $rootScope.currentUser.circolo._id);
-            book.set("date", obj.date);
-            book.set("ranges", _.sortBy(obj.ranges));
-			
-            if (obj.court != null){
-                book.set("court",obj.court.toString())
-            }
-            else {
-              //Prende il primo campo disponibile
-                book.set("court",courtsAvalaivable[0].toString());
-            }
-
-            book.set("callToAction",obj.callToAction);
-
-            if (obj.callToAction == true){
-				book.players = []
-                book.players.push($rootScope.currentUser._id)
-                book.set("playersNumber",parseInt(obj.playersNumber) + 1)
-
-            }
-            book.set("gameType",obj.gameType.toString());
-            book.set("note",obj.note);
-            book.set("payed",false);
-            
-
-         
-            var maestroId = obj.maestro != null ? obj.maestro.id : -1
-
-
-            //console.log(maestroId);
-            if (maestroId != -1){
-              //var Maestro = Parse.Object.extend("Maestro");
-              var maestro = {}
-              maestro._id = maestroId
-              book.set('maestro',maestro)
-            }
-              
-           
-            
-            var startRange = parseInt(_.head(_.sortBy(obj.ranges)))
-            var endRange   = parseInt(_.last(_.sortBy(obj.ranges)))
-            
-            console.log(startRange)
-            console.log(endRange)
-            console.log(obj.ranges)
-            
-            console.log(obj.date)
-            
-            //[hh,mm]
-            var hmStart = Utility.getHourMinuteFromSlot(startRange)
-            var startHour = new Date(obj.date.getTime())
-            startHour.setHours(hmStart[0])
-            startHour.setMinutes(hmStart[1])
-            console.log(startHour)
-            
-            var hmEnd = Utility.getHourMinuteFromSlot(endRange)
-            var endHour =new Date(obj.date.getTime())
-            endHour.setHours(hmEnd[0])
-            endHour.setMinutes(hmEnd[1] + 30)
-            console.log(hmEnd)
-            console.log(endHour)
-            
-            book.set('startHour',startHour)
-            book.set('endHour',endHour)
-            
-            console.log(book)
-            
-            return $http({
+			  if (response.data.status != 200){
+				  throw new Error('nessun campo disponibile....')
+				  return
+			  }
+			  var courtsAvalaivable = response.results
+			 if (obj.court == null){
+			   obj.court = courtsAvalaivable[0]
+			 } 
+			 return $http({
 			  url: config.serverAddress + 'api/v1/createBooking',
 			  method: 'POST',
-			  data: {'book':book}
-			})
+			  data: {'book':obj}
+			 })
 
-        }, function(error){
-
+        	}, 
+		 function(error){
           console.log(error);
 		  throw error
         })
       },
 	findaAvalaibleRangesInDate: function(date,gameT){
-
-        
-        var avalaibleRanges = [];
-        return this.findBookingsInDate (date,gameT)
-        .then(
-          function(response){
-			var bookings = response.results
-            var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
-            var num = $rootScope.gameTypes[gameT].courtsNumber
-
-            _.each(myranges, function(r){
-              var px =  _.filter(bookings,function(item){
-
-                  if (item.ranges.indexOf(r) != -1 )
-                      return item;
-              });
-              
-              if (px.length < num){
-                  avalaibleRanges.push(r);
-              }
-            })
-            
-            return avalaibleRanges;
-        }, function(error){
-            
-            console.log(error);
-            //Utility.handleParseError(error);
-			throw error
-        })
+		var c = $rootScope.currentUser.circolo
+		return $http({
+			  url: config.serverAddress + 'api/v1/findaAvalaibleRangesInDate',
+			  method: 'POST',
+			  data: {'circolo':c._id,'date':date,gameT:gameT}
+		})
       },
 	findBookingsInDate: function(date,gameT){
         var c = $rootScope.currentUser.circolo
@@ -294,35 +137,10 @@ angular.module('starter.servicesREST', [])
 	},
 	findBookingsInDateAndRange: function(date,gameT,ranges){
             
-            
-        var startRange = parseInt(_.head(ranges))
-        var endRange   = parseInt(_.last(ranges))
-        
-         //2 ore
-        var time = (2 * 3600 * 1000);
-        var startRange = parseInt(_.head(_.sortBy(ranges)))
-        var endRange   = parseInt(_.last(_.sortBy(ranges)))
-
-        //[hh,mm]
-        var hmStart = Utility.getHourMinuteFromSlot(startRange)
-        var startHour = new Date(date.getTime())
-        startHour.setHours(hmStart[0])
-        startHour.setMinutes(hmStart[1])
-       
-        var hmEnd = Utility.getHourMinuteFromSlot(endRange)
-        var endHour =new Date(date.getTime())
-        endHour.setHours(hmEnd[0])
-        endHour.setMinutes(hmEnd[1] + 30)
-        
-        var xx = new Date(startHour.getTime() - time);
-        var yy = new Date(endHour.getTime() + time);
-			
-		var c = $rootScope.currentUser.circolo
-            
-        return $http({
+       	return $http({
 		  url: config.serverAddress + 'api/v1/findBookingsInDateAndRange',
 		  method: 'POST',
-		  data: {'circolo':c._id, 'date': date, 'gameType':gameT, 'endHour':xx, 'startHour':yy}
+		  data: {'circolo':$rootScope.currentUser.circolo._id, 'date': date, 'gameType':gameT, 'ranges':ranges}
 		})
         
       },
@@ -338,80 +156,6 @@ angular.module('starter.servicesREST', [])
 
         
       },
-	
-	getCoaches: function(){
-
-        var Maestro = Parse.Object.extend("Maestro");
-        var query = new Parse.Query(Maestro);
-        var c = Parse.User.current().get('circolo')
-        query.equalTo('circolo',c)
-        return query.find()
-      },
-	getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
-
-            var courtsAvalabilities = []
-            var avalabilities = []
-            var myContext = this;
-            $ionicLoading.show({
-              template: 'Loading...'
-            });
-
-
-            console.log('maestroId:' + maestroId);
-            return this.findAvalabilities(month,year,typeG)
-            .then(
-                function(results){
-
-                  //formato: [{day:d, avalaibleRanges: []}]
-                  courtsAvalabilities = results
-                  //console.log(results);
-
-
-                }, function(error){
-                  console.log(error);
-                  //Utility.handleParseError(error);
-					throw error
-                })
-            .then(
-              function(obj){
-                return myContext.getDisponibilitaCoach(month,year,maestroId)
-            }, function(error){
-              console.log(error);
-                //Utility.handleParseError(error);
-				throw error
-            })
-            .then(
-              function(disponibilitaCoach){
-
-                console.log(disponibilitaCoach);
-                console.log(courtsAvalabilities);
-
-                _.each(disponibilitaCoach,function (d){
-                  _.each(d.ranges),function(r){
-                      var x = _.filter(courtsAvalabilities, function(item){
-
-                      if (item.day == d.date.getDate() &&
-                          item.avalaibleRanges.indexOf(r) != -1){
-                        return item
-                      }
-                    })
-                    if (x.length > 0)
-                      avalabilities.push({day:d[date].getDate(),range:r});
-                  }
-                })
-                //console.log(avalabilities);
-                $ionicLoading.hide()
-                return avalabilities;
-
-            }, function(error){
-                $ionicLoading.hide()
-                console.log(error);
-                //Utility.handleParseError(error);
-				throw error
-            })
-                //************
-      },
-	
 	//*********************CALL***********************
     addCallToActionPlayer: function(cta){
 
@@ -545,39 +289,13 @@ angular.module('starter.servicesREST', [])
         },
 					   
     acceptInvitation: function(invitation){
-
-            var defer = $q.defer()
-            var booking = invitation.booking
-            var players = booking.players
-            //console.log(players)
-            var index = _.findIndex(players,function(p){
-              return p.id == $rootScope.currentUser._id
-            })
-            console.log(index)
-            
-            //*****************
-             var numPlayersCurrent = booking.players != null ? booking.players.length : 0
-             var numPlayers = booking.playersNumber
-             if (numPlayers == numPlayersCurrent){
-              defer.reject("Ooopssss! La Call è già completa! Puoi solo declinare l'invito....") 
-             }
-            //*****************
-             else if (index != -1){
-              defer.reject("Utente già iscritto alla partita...")
-             }
-             else {
-				$http({
+             return $http({
 				  url: config.serverAddress + 'api/v1/acceptInvitation',
 				  method: 'POST',
 				  data: {'idInvitation': invitation._id, 'idBooking':booking._id, 'user':$rootScope.currentUser._id}
 			    })
-				//TODO
-                //Parse.Cloud.run('sendPush', {userId:booking.get('user').id,message:"Il tuo invito è stato accettato!"})
-                defer.resolve("ok acceptInvitation");
-             }
-             
-             return defer.promise; 
-        },
+              
+     },
     declineInvitation: function(invitation){
             if (invitation.booking){
 				//TODO
@@ -985,10 +703,9 @@ angular.module('starter.servicesREST', [])
               return object._id == item._id
           })
         }
-		//*****************TODO**********************
-
+   	  //*****************TODO**********************
 	  /*
-        statsByBookingAndMonth:function(month,year){
+         statsByBookingAndMonth:function(month,year){
           //console.log(month)
           var daysInMonth = Utility.getDaysInMonth(month,year);
           var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
@@ -1069,10 +786,8 @@ angular.module('starter.servicesREST', [])
               return object.id == item.id
           })
         },
-		*/
-		
+	
 	  
-      /*
 	  findAvalabilities: function(month,year,gameT){
         var avalabilities = [];
         return this.findBookings (month,year)
@@ -1314,12 +1029,83 @@ angular.module('starter.servicesREST', [])
         c.destroy()
 
       },
+	  getCoaches: function(){
+
+        var Maestro = Parse.Object.extend("Maestro");
+        var query = new Parse.Query(Maestro);
+        var c = Parse.User.current().get('circolo')
+        query.equalTo('circolo',c)
+        return query.find()
+      },
+	getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
+
+            var courtsAvalabilities = []
+            var avalabilities = []
+            var myContext = this;
+            $ionicLoading.show({
+              template: 'Loading...'
+            });
+
+
+            console.log('maestroId:' + maestroId);
+            return this.findAvalabilities(month,year,typeG)
+            .then(
+                function(results){
+
+                  //formato: [{day:d, avalaibleRanges: []}]
+                  courtsAvalabilities = results
+                  //console.log(results);
+
+
+                }, function(error){
+                  console.log(error);
+                  //Utility.handleParseError(error);
+					throw error
+                })
+            .then(
+              function(obj){
+                return myContext.getDisponibilitaCoach(month,year,maestroId)
+            }, function(error){
+              console.log(error);
+                //Utility.handleParseError(error);
+				throw error
+            })
+            .then(
+              function(disponibilitaCoach){
+
+                console.log(disponibilitaCoach);
+                console.log(courtsAvalabilities);
+
+                _.each(disponibilitaCoach,function (d){
+                  _.each(d.ranges),function(r){
+                      var x = _.filter(courtsAvalabilities, function(item){
+
+                      if (item.day == d.date.getDate() &&
+                          item.avalaibleRanges.indexOf(r) != -1){
+                        return item
+                      }
+                    })
+                    if (x.length > 0)
+                      avalabilities.push({day:d[date].getDate(),range:r});
+                  }
+                })
+                //console.log(avalabilities);
+                $ionicLoading.hide()
+                return avalabilities;
+
+            }, function(error){
+                $ionicLoading.hide()
+                console.log(error);
+                //Utility.handleParseError(error);
+				throw error
+            })
+              
+      },
+	  
 	  */
 	
-
-    }
-	
-  }
+  }	
+ }
 )
 .factory('TokenInterceptor', function($q, $window, $location) {
   return {

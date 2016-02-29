@@ -196,9 +196,6 @@ router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
 	var gameT = req.body.gameType
 	var date = new Date(req.body.date)
 	
-	var startRange = parseInt(_.head(ranges))
-	var endRange   = parseInt(_.last(ranges))
-
 	 //2 ore
 	var time = (2 * 3600 * 1000);
 	var startRange = parseInt(_.head(_.sortBy(ranges)))
@@ -239,6 +236,37 @@ router.post('/api/v1/findBookingsToPayBeforeDate', function(req, res,next) {
 	
             
 });
+
+
+router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
+	logger.debug(req.body)
+	var avalaibleRanges = [];
+	var date = req.body.date
+	var gameT = req.body.gameT
+	var circolo = req.body.circolo
+	
+	Booking.find({ 'date': date, 'circolo':circolo, 'gameType':gameType })
+		.populate('players user')
+		.exec( function (err, bookings) {
+		  	var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
+			var num = $rootScope.gameTypes[gameT].courtsNumber
+
+			_.each(myranges, function(r){
+			  var px =  _.filter(bookings,function(item){
+
+				  if (item.ranges.indexOf(r) != -1 )
+					  return item;
+			  });
+
+			  if (px.length < num){
+				  avalaibleRanges.push(r);
+			  }
+			})
+			res.json({succes: true, data: avalaibleRanges});
+		
+		})            
+});
+
 
 router.post('/api/v1/createBooking', function(req, res,next) {
 	var booking = new Booking()
@@ -399,16 +427,43 @@ router.post('/api/v1/findMyGameNotPayed-part2', function(req, res,next) {
 
 router.post('/api/v1/acceptInvitation', function(req, res,next) {
 	
-	Invitation.findByIdAndRemove(req.body.idInvitation)
+	var defer = Q.defer()
+	Invitation.findById(req.body.idInvitation)
+		.populate('booking booking.players')
 		.exec( function (err, invitation) {
-			  logger.debug('invitation removed....')
-		})
-	Booking.findByIdAndUpdate(req.body.idBooking, {$push: { 'players': req.body.user }})
-		.exec( function (err, booking) {
-		  res.json({data: booking});
-		})
-	
-            
+		  	var booking = invitation.booking
+			var players = booking.players
+			var index = _.findIndex(players,function(p){
+			  return p.id == $rootScope.currentUser._id
+			})
+			console.log(index)
+			//*****************
+			 var numPlayersCurrent = booking.players != null ? booking.players.length : 0
+			 var numPlayers = booking.playersNumber
+			 if (numPlayers == numPlayersCurrent){
+			  defer.reject("Ooopssss! La Call è già completa! Puoi solo declinare l'invito....") 
+			 }
+			//*****************
+			 else if (index != -1){
+			  defer.reject("Utente già iscritto alla partita...")
+			 }
+			 else {
+				Invitation.findByIdAndRemove(req.body.idInvitation)
+					.exec( function (err, invitation) {
+						 logger.debug('invitation removed....')
+					})
+				Booking.findByIdAndUpdate(req.body.idBooking, {$push: { 'players': req.body.user }})
+					.exec( function (err, booking) {
+					  	 logger.debug('booking update....')
+					})
+				defer.resolve("ok acceptInvitation");
+			 }
+			 defer.promise.then(function(response){
+				 res.json({status:200})
+			 },function(error){
+				 res.json({status:400})
+			 })	
+		})          
 });
 
 router.post('/api/v1/declineInvitation', function(req, res,next) {

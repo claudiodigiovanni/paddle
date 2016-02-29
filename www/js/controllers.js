@@ -579,8 +579,8 @@ $scope.closeModalok = function() {
 				});
 				$scope.showRanges = true
 				MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType).then(
-						function (ranges) {
-							avalaibleRanges = ranges;
+						function (response) {
+							avalaibleRanges = response.results;
 							console.log(ranges)
 							$scope.waiting = null
 						},
@@ -773,8 +773,8 @@ $scope.closeModalok = function() {
         });
       MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType)
       .then(
-        function(ranges){
-          avalaibleRanges = ranges;
+        function(response){
+          avalaibleRanges = response.results;
           //console.log(ranges)
           $scope.waiting = null
           //$scope.$apply()
