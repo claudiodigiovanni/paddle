@@ -267,8 +267,7 @@ angular.module('starter.servicesREST', [])
             console.log(error);
           })
 
-        },
-					   
+        },		   
     acceptInvitation: function(invitation){
              return $http({
 				  url: config.serverAddress + 'api/v1/acceptInvitation',
@@ -660,7 +659,6 @@ angular.module('starter.servicesREST', [])
             
 
         },
-		
 	saveImage: function(obj){
 		console.log(obj)
 		$http({
@@ -677,8 +675,7 @@ angular.module('starter.servicesREST', [])
 		},function(error){
 			console.log(error)
 		})
-	},
-		
+	},		
 	deleteObjectFromCollection: function(item, collection){
           _.remove(collection, function(object){
               return object._id == item._id
