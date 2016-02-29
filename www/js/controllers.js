@@ -860,33 +860,32 @@ $scope.closeModalok = function() {
     $scope.waiting = "......"
      MyObjectsREST.addCallToActionPlayer(cta)
     .then(
-      function(obj){
-        $scope.waiting = null
-         MyObjectsREST.findCallToAction()
-        .then(
-          function(results){
-            $scope.callToActionOpen = results
-            $scope.$apply()
-        }, function(error){
-          $scope.waiting = null
-          console.log(error);
-        })
-
-    }, function(error){
-      $scope.waiting = null
-      console.log(error);
-      var alertPopup = $ionicPopup.alert({
-         title: 'Opsss!',
-         template: error
-       });
-       alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone!');
-         selectedRanges = [];
-       });
+      function(response){
+		if (response.data.status == 200){
+			$scope.waiting = null
+			 MyObjectsREST.findCallToAction()
+			.then(
+			  function(response){
+				$scope.callToActionOpen = response.results
+			}, function(error){
+			  $scope.waiting = null
+			  console.log(error);
+			})
+		}
+		else{
+			  $scope.waiting = null
+			  console.log(error);
+			  var alertPopup = $ionicPopup.alert({
+				 title: 'Opsss!',
+				 template: error
+			   });
+			   alertPopup.then(function(res) {
+				 console.log('Thank you for not eating my delicious ice cream cone!');
+				 selectedRanges = [];
+			   });
+		}
     })
-
   }
-
 })
 
 .controller('AccountCtrl', function($scope, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading,$http,$cordovaCamera,Utility,MyObjectsREST,config) {

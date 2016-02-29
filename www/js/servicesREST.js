@@ -159,34 +159,14 @@ angular.module('starter.servicesREST', [])
       },
 	//*********************CALL***********************
     addCallToActionPlayer: function(cta){
-
-
-          var defer = $q.defer()
-          var user = $rootScope.currentUser;
-          var numPlayers = cta.playersNumber
-          if (cta.players.length >= numPlayers ){
-            defer.reject('Partita già al completo!')
-          }
-          else{
-            var players = cta.players
-            if (! _.find(players,{_id:user._id})){
-				
-			  $http({
+		
+		  return $http({
 				  url: config.serverAddress + 'api/v1/addCallToActionPlayer',
 				  method: 'POST',
-				  data: {'id': cta._id, 'user':$rootScope.currentUser._id}
+				  data: {'cta': cta, 'user':$rootScope.currentUser._id}
 			  })
-              .then(
-                function(obj){
-                  defer.resolve(obj)
-              }, function(error){
-                defer.reject(error)
-                console.log(error);
-              })
-            }else
-              defer.reject('Utente già inserito') 
-          }   
-           return defer.promise 
+
+          
         },
     findCallToAction:function(){
 		

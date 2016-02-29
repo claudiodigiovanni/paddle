@@ -360,12 +360,23 @@ router.post('/api/v1/findCallToAction', function(req, res,next) {
 });
 
 router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
-	
-	Booking.findByIdAndUpdate(req.body.id, {$push: { 'players': req.body.user }})
+  var cta = req.body.cta
+  var userId = req.body.user
+  
+  var defer = Q.defer()
+  var numPlayers = cta.playersNumber
+  if (cta.players.length >= numPlayers ){
+	defer.reject('Partita già al completo!')
+  }
+  else{
+	var players = cta.players
+	if (! _.find(players,{_id:userId})){
+
+	  Booking.findByIdAndUpdate(cta._id, {$push: { 'players': userId }})
 		.populate('players')
 		.exec( function (err, booking) {
 		
-			 var numPlayers = b.playersNumber
+			 var numPlayers = booking.playersNumber
 			 if (booking.callToAction == true && booking.players.length == numPlayers ){
 				 var players = booking.players
 				_.each(players,function(item){
@@ -373,8 +384,21 @@ router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
 					pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
 				})
 			 }
-		  	res.json({data: booking});
-		})         
+		  	defer.resolve(booking)
+		  	
+		}) 
+	}else
+	  defer.reject('Utente già inserito') 
+  }   
+    defer.promise .then(
+	function(obj){
+		res.json({status: 200, data: booking});
+	},
+	function(error){
+		res.json({status: 400});
+	})
+	
+	        
 });
 
 router.post('/api/v1/findMyInvitations', function(req, res,next) {
