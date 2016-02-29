@@ -136,8 +136,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   //PaddleCourtsNumber: 3,
   slotsNumber: 48,
   playersLevels:6,
-  serverAddress: 'http://192.168.1.3:3000/',
-  webServerAddress: 'http://192.168.1.3:8080/'
+  serverAddress: 'http://localhost:3000/',
+  webServerAddress: 'http://localhost:8080/'
   //PaddleCourtsNames: ['Rosso','Blu','Verde']
 })
 

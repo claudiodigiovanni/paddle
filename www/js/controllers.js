@@ -203,7 +203,7 @@ $scope.login = function(){
   }).error(function(response) {
 	
   	$ionicPopup.alert({
-             template: message
+             template: 'ops...si è verificato un errore!'
         });
   });
       
@@ -558,51 +558,46 @@ $scope.closeModalok = function() {
     $scope.booking.duration = index
   }
   
-  
   $scope.getAvalaivableCourts = function(){
-      $scope.waiting = "....."
-      $scope.courtsModal.show()
-      var ranges = getRanges()
-      var date = booking.date
-      
-      
-      MyObjectsREST.checkBeforeCreateBooking(date,ranges , booking.gameType)
-    .then(
-      function(obj){
-          $scope.waiting = null
-
-        $scope.avalaivableCourts = obj
-        //$scope.$apply()
-        
-    }, function(error){
-      $scope.waiting = null
-      console.log(error);
-      $scope.courtsModal.hide()
-      //$scope.message = "Nessun campo disponibile nelle fascie orarie selezionate..."
-      $ionicPopup.alert({
-        title: 'Oops!',
-        template: 'Nessun campo disponibile nelle fascie orarie selezionate...Ecco gli orari disponibili.'
-       });
-      $scope.showRanges = true
-       MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType)
-      .then(
-        function(ranges){
-          avalaibleRanges = ranges;
-          console.log(ranges)
-          $scope.waiting = null
-          //$scope.$apply()
-
-      }, function(error){
-        $scope.waiting = null
-        console.log(error);
-      })
-
-    })
+	$scope.waiting = "....."
+	$scope.courtsModal.show()
+	var ranges = getRanges()
+	var date = booking.date
+	MyObjectsREST.checkBeforeCreateBooking(date, ranges, booking.gameType).then(
+		function (response) {
+			console.log(response)
+			if (response.status == 200) {
+				$scope.waiting = null
+				$scope.avalaivableCourts = response.results
+			} else {
+				$scope.waiting = null
+				console.log(error);
+				$scope.courtsModal.hide()
+				$ionicPopup.alert({
+					title: 'Oops!',
+					template: 'Nessun campo disponibile nelle fascie orarie selezionate...Ecco gli orari disponibili.'
+				});
+				$scope.showRanges = true
+				MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType).then(
+						function (ranges) {
+							avalaibleRanges = ranges;
+							console.log(ranges)
+							$scope.waiting = null
+						},
+						function (error) {
+							$scope.waiting = null
+							console.log(error);
+						})
+			}
+		},
+		function (error) {
+			console.log('error....')
+			$ionicPopup.alert({
+				template: 'ops...si è verificato un errore!'
+			});
+		})
   }
   
-
- 
-
   $scope.gotoInvitation = function(){
     
     $scope.modalok.hide();
@@ -610,8 +605,6 @@ $scope.closeModalok = function() {
     $state.go('invitation',{'bookingId':$scope.booking._id,'gameType':$scope.booking.gameType})
   }
 
-
-  
   $scope.getRangeStatus = function(pos){
     if (selectedRanges.indexOf(pos) != -1){
       return "energized"
@@ -719,9 +712,6 @@ $scope.closeModalok = function() {
 
   }
 
-
-
-
   var getRanges = function(){
       if (selectedRanges.length == 0){
         var startSlot =  $scope.selectedRange
@@ -733,9 +723,7 @@ $scope.closeModalok = function() {
       else
           return selectedRanges
           
-  }
-
-   
+  }   
    
   $scope.book = function(){
   
@@ -835,9 +823,6 @@ $scope.closeModalok = function() {
           });
         });
 }
-
-    
- 
 
 })
 
