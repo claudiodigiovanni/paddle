@@ -13,7 +13,27 @@ var utils = {
 			to[property] = from[property];	
 		})
 		
-}
+	},
+	getHourMinuteFromSlot : function(r){
+      //[hh,mm]
+      var ret = [];
+      
+        //console.log(r)
+        r  = r - 0.5
+        //console.log(r)
+        if (parseInt(r) % 2 === 0 ){
+          ret.push(parseInt(r) / 2)
+          ret.push(0)
+        }
+        else{
+            ret.push(parseInt(r / 2))
+            ret.push(30)
+        }
+       
+        
+        
+      return ret;
+    }
 	
 	
 }

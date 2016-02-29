@@ -79,6 +79,106 @@ router.post('/api/v1/dashboardText', function(req, res,next) {
 
 });
 
+router.post('/api/v1/checkBeforeCreateBooking', function(req, res,next) {
+	var date = new Date(req.body.date)
+	var ranges = req.body.ranges
+	var gameT = req.body.gameT
+	var courtsNumber = req.body.courtsNumber
+	var circolo = req.body.circolo
+	//*****************************************************
+	var defer = Q.defer()
+	var courtsAvalaivable = []
+	var courts = _.range(1,parseInt(courtsNumber) + 1)
+	//findBookingsInDate(date,gameT)
+	//findBookingsInDateAndRange(date,gameT,ranges)
+	Booking.find({ 'date': date, 'circolo':circolo, 'gameType':gameT })
+		.populate('players user')
+		.exec( function (err, bookings) {
+			if (err){
+				next(err)
+				return
+			}
+			console.log(bookings)
+			courts.forEach(function(court){
+			  //console.log("court:" + court);
+			  var avalaible = true
+			  ranges.forEach(function(r){
+				var p = _.filter(bookings, function(item){
+				  if (item.ranges != null &&
+					  item.ranges.indexOf(r) != -1 &&
+					  item.court != null &&
+					  item.court == court){
+					return item
+				  }
+				})
+
+			  if ( p != null && p.length > 0){
+				  avalaible = false
+				}
+			  })
+			  if (avalaible == true){
+				courtsAvalaivable.push(court)
+			  }
+
+			})
+
+			 //****OPTIMISE: elimino i campi che hanno prenotazioni che creerebbero un buco di mezz'ora****
+			var optimezedCourts = courtsAvalaivable.slice(0)
+			var startRange = parseInt(_.head(ranges))
+			//console.log(startRange)
+			var endRange   = parseInt(_.last(ranges))
+			//console.log(endRange)
+			courtsAvalaivable.forEach(function(court){
+				  //console.log("COURT****************************:" + court)
+				  var p = _.filter(bookings, function(item){
+				  //console.log(item)
+				  var ranges = item.ranges
+				  if ( item.court == court && ((ranges.indexOf(startRange-1) == -1 &&  
+												ranges.indexOf(startRange-2) != -1) ||
+												(ranges.indexOf(endRange + 1) == -1 &&  
+												ranges.indexOf(endRange + 2) != -1) ))
+					  {
+						return item
+					  }
+				  })
+				  if (p.length != 0)
+					 _.pull(optimezedCourts,court)
+			})
+
+			console.log('******COURTS FASE 1*****')
+			console.log(courtsAvalaivable)
+			console.log('******COURTS FASE 2*****')
+			console.log(optimezedCourts)
+
+			if (optimezedCourts.length > 0){
+			  defer.resolve(optimezedCourts)
+			}
+			//**********FINE OPTIMISE*********************************************************************
+
+			else if (courtsAvalaivable.length > 0){
+			  defer.resolve(courtsAvalaivable)
+			}
+			else {
+			  defer.reject("Campo non disponibile nella fascia oraria selezionata!")
+			}
+			
+			defer.promise.then(function(results){
+				
+				res.json({status:200,data:results})
+				return
+			},function(error){
+				
+				res.json({status:400})
+				return
+			})
+		
+		})
+	//*****************************************************
+	
+});
+
+
+
 router.post('/api/v1/findBookingsInDate', function(req, res,next) {
 	logger.debug(req.body)
 	Booking.find({ 'date': req.body.date, 'circolo':req.body.circolo, 'gameType':req.body.gameType })
@@ -91,7 +191,35 @@ router.post('/api/v1/findBookingsInDate', function(req, res,next) {
 
 router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
 	logger.debug(req.body)
-	Booking.find({ 'date': req.body.date, 'circolo':req.body.circolo, 'gameType':req.body.gameType, 'endHour': {$gte: req.body.endHour},'startHour': {$lte: req.body.startHour}  })
+	
+	var ranges = req.body.ranges
+	var gameT = req.body.gameType
+	var date = new Date(req.body.date)
+	
+	var startRange = parseInt(_.head(ranges))
+	var endRange   = parseInt(_.last(ranges))
+
+	 //2 ore
+	var time = (2 * 3600 * 1000);
+	var startRange = parseInt(_.head(_.sortBy(ranges)))
+	var endRange   = parseInt(_.last(_.sortBy(ranges)))
+
+	//[hh,mm]
+	var hmStart = utils.getHourMinuteFromSlot(startRange)
+	var startHour = new Date(date.getTime())
+	startHour.setHours(hmStart[0])
+	startHour.setMinutes(hmStart[1])
+
+	var hmEnd = utils.getHourMinuteFromSlot(endRange)
+	var endHour =new Date(date.getTime())
+	endHour.setHours(hmEnd[0])
+	endHour.setMinutes(hmEnd[1] + 30)
+
+	var xx = new Date(startHour.getTime() - time);
+	var yy = new Date(endHour.getTime() + time);
+	
+		
+	Booking.find({ 'date': date, 'circolo':req.body.circolo, 'gameType':gameT, 'endHour': {$gte: endHour},'startHour': {$lte:startHour}  })
 		.populate('players user')
 		.exec( function (err, bookings) {
 		  res.json({data: bookings});
@@ -115,13 +243,52 @@ router.post('/api/v1/findBookingsToPayBeforeDate', function(req, res,next) {
 router.post('/api/v1/createBooking', function(req, res,next) {
 	var booking = new Booking()
 	utils.copyProperties(req.body.book,booking)
-	  
+	
+	if (obj.callToAction == true){
+		obj.players = []
+		obj.players.push(obj.user)
+		obj.playersNumber = parseInt(obj.playersNumber) + 1
+	}
+	var maestroId = obj.maestro != null ? obj.maestro._id : -1
+	//console.log(maestroId);
+	if (maestroId != -1){
+	  //var Maestro = Parse.Object.extend("Maestro");
+	  var maestro = {}
+	  maestro._id = maestroId
+	  obj.maestro = maestro
+	}
+
+	var startRange = parseInt(_.head(_.sortBy(obj.ranges)))
+	var endRange   = parseInt(_.last(_.sortBy(obj.ranges)))
+
+	console.log(startRange)
+	console.log(endRange)
+	console.log(obj.ranges)
+	console.log(obj.date)
+
+	//[hh,mm]
+	var hmStart = utils.getHourMinuteFromSlot(startRange)
+	var startHour = new Date(obj.date.getTime())
+	startHour.setHours(hmStart[0])
+	startHour.setMinutes(hmStart[1])
+	console.log(startHour)
+
+	var hmEnd = utils.getHourMinuteFromSlot(endRange)
+	var endHour =new Date(obj.date.getTime())
+	endHour.setHours(hmEnd[0])
+	endHour.setMinutes(hmEnd[1] + 30)
+	console.log(hmEnd)
+	console.log(endHour)
+
+	obj.startHour = startHour
+	obj.endHour = endHour
+
 	logger.debug(booking)
 	booking.save(function(err) {
 
-	  	if (err) return next(err);
-	  	logger.debug('Booking saved successfully!');
-	  	res.json({succes: true, data: booking});
+		if (err) return next(err);
+		logger.debug('Booking saved successfully!');
+		res.json({succes: true, data: booking});
 	});
 	
 });
