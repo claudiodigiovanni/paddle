@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var Installation = require('../model/installation.js').Installation;
+var User = require('../model/user.js');
 var apn = require('apn');
 var GCM = require('gcm').GCM;
 var apiKey = 'AIzaSyC8yrIrtBJykLJKBoRvMwVP2-s2Yab1Qr8';
@@ -7,18 +7,22 @@ var gcm = new GCM(apiKey);
 
 
 
-var myfunctions = {
-		pushMessage: function(user,message){
-			console.log('pushMessage') 
+var myfunction = {
+	
+	pushMessage : function(user,message){
+			console.log('pushMessage')
+			var mx = message
+			
+			
 			User.findById(user).exec(function(err,user){
 				 var results = user.installations
 				 if (results == null || results.length == 0){
 					 console.log('no installations.....')
 					 return
 				 }
-					 
+				  
 				_.each(results,function(installation){
-
+					
 					var deviceType = installation.deviceType
 					var deviceToken = installation.deviceToken
 
@@ -26,21 +30,22 @@ var myfunctions = {
 						var myDevice = new apn.Device(deviceToken);
 						var note = new apn.Notification();
 						note.badge = 0;
-						note.alert = { "body" : message};
-						note.payload = {'messageFrom': 'ASD Magic Padel'};
+						note.alert = mx;
+						//note.payload = {'messageFrom': 'ASD Magic Padel', 'text':message};
 						note.device = myDevice;
+						//note.text = 'ooooooooooooooooo'
 
 						var callback = function(errorNum, notification){
 							console.log('Error is: %s', errorNum);
-							console.log("Note " + notification);
+							//console.log(notification);
 						}
 						var options = {
 
 							errorCallback: callback,
-							cert: '../cert/cert.pem',                 
-							key:  '../cert/key.pem',                 
+							cert: './certDev/cert.pem',                 
+							key:  './certDev/key.pem',                 
 							passphrase: 'aleaiactaest',  
-							production:true
+							production:false
 
 						}
 						var apnsConnection = new apn.Connection(options);
@@ -64,18 +69,22 @@ var myfunctions = {
 
 					}
 					else{
-						console.log('device platform not ebabled for pushing message')
+						console.log('device platform not enabled for pushing message')
 					}
 
 				})	
 			})
 	
 		}
-		
+
 }
 	
+	
+		
 
-module.exports = myfunctions 
+	
+
+module.exports = myfunction 
 
 
 /*

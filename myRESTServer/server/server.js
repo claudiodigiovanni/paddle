@@ -13,8 +13,10 @@ var app = express();
 
 //app.use(logger('dev'));
 //app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(bodyParser.json());
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
+app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 
 
 
@@ -45,7 +47,7 @@ app.all('/*', function(req, res, next) {
 });
 
 // Only the requests that start with /api/v1/* will be checked for the token.
-//app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
+app.all('/api/v1/*', [require('./middlewares/validateRequest')]);
 
 
 
@@ -56,6 +58,7 @@ app.use('/', require('./routes.js'));
 // Error Handler
 app.use(function(err, req, res, next) {
 	console.log('*************************Error Handler********************')
+	console.log(err.stack)
   	res.status(err.status || 500);
     res.json({error: err.message})
  });

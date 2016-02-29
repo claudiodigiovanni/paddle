@@ -20,7 +20,7 @@ angular.module('starter.servicesREST', [])
 	login: function(email,pass){
 		  
 		  return $http({
-		  	url: 'http://localhost:3000/login',
+		  	url: config.serverAddress + 'login',
 		  	method: 'POST',
 		  	data: {'email':email, 'password':pass},
 			headers: {
@@ -31,7 +31,7 @@ angular.module('starter.servicesREST', [])
 	signup: function(user){
 		  
 		  return $http({
-		  url: 'http://localhost:3000/signup',
+		  url: config.serverAddress + 'signup',
 		  method: 'POST',
 		  data: user,
 		  headers: {
@@ -42,7 +42,7 @@ angular.module('starter.servicesREST', [])
 	requestPasswordReset: function(email){
 		
 		return $http({
-		  url: 'http://localhost:3000/requestPasswordReset',
+		  url: config.serverAddress + 'requestPasswordReset',
 		  method: 'POST',
 		  data: {email:email},
 		  headers: {
@@ -52,7 +52,7 @@ angular.module('starter.servicesREST', [])
 	},
 	resetPwd: function(newP,u,t){
 		return $http({
-		  url: 'http://localhost:3000/resetPwd',
+		  url: config.serverAddress + 'resetPwd',
 		  method: 'POST',
 		  data: {newPassword:newP, user:u,token:t},
 		  headers: {
@@ -62,7 +62,7 @@ angular.module('starter.servicesREST', [])
 	},
 	getCircoli: function(){
 		return $http({
-		  url: 'http://localhost:3000/api/circolo',
+		  url: config.serverAddress + 'api/circolo',
 		  method: 'get'
 		})
 	},
@@ -71,7 +71,7 @@ angular.module('starter.servicesREST', [])
         var text = []
         var c = $rootScope.currentUser.circolo
 		return $http({
-		  url: 'http://localhost:3000/api/v1/dashboardText',
+		  url: config.serverAddress + 'api/v1/dashboardText',
 		  method: 'POST',
 		  data: {'circolo':c}
 		})
@@ -241,7 +241,7 @@ angular.module('starter.servicesREST', [])
             console.log(book)
             
             return $http({
-			  url: 'http://localhost:3000/api/v1/createBooking',
+			  url: config.serverAddress + 'api/v1/createBooking',
 			  method: 'POST',
 			  data: {'book':book}
 			})
@@ -287,7 +287,7 @@ angular.module('starter.servicesREST', [])
         var c = $rootScope.currentUser.circolo
 		console.log(c)
 		return $http({
-		  url: 'http://localhost:3000/api/v1/findBookingsInDate',
+		  url: config.serverAddress + 'api/v1/findBookingsInDate',
 		  method: 'POST',
 		  data: {'circolo':c._id, 'date': date, 'gameType':gameT}
 		})
@@ -320,7 +320,7 @@ angular.module('starter.servicesREST', [])
 		var c = $rootScope.currentUser.circolo
             
         return $http({
-		  url: 'http://localhost:3000/api/v1/findBookingsInDateAndRange',
+		  url: config.serverAddress + 'api/v1/findBookingsInDateAndRange',
 		  method: 'POST',
 		  data: {'circolo':c._id, 'date': date, 'gameType':gameT, 'endHour':xx, 'startHour':yy}
 		})
@@ -331,7 +331,7 @@ angular.module('starter.servicesREST', [])
 		var c = $rootScope.currentUser.circolo
         
 		return $http({
-		  url: 'http://localhost:3000/api/v1/findBookingsInDateAndRange',
+		  url: config.serverAddress + 'api/v1/findBookingsInDateAndRange',
 		  method: 'POST',
 		  data: {'circolo':c._id, 'date': date}
 		})
@@ -427,7 +427,7 @@ angular.module('starter.servicesREST', [])
             if (! _.find(players,{_id:user._id})){
 				
 			  $http({
-				  url: 'http://localhost:3000/api/v1/addCallToActionPlayer',
+				  url: config.serverAddress + 'api/v1/addCallToActionPlayer',
 				  method: 'POST',
 				  data: {'id': cta._id, 'user':$rootScope.currentUser._id}
 			  })
@@ -443,7 +443,7 @@ angular.module('starter.servicesREST', [])
           }   
            return defer.promise 
         },
-     findCallToAction:function(){
+    findCallToAction:function(){
 		
 		 
         var today = new Date();
@@ -453,7 +453,7 @@ angular.module('starter.servicesREST', [])
         today.setMilliseconds(0);
 		  
 		return $http({
-		  url: 'http://localhost:3000/api/v1/findCallToAction',
+		  url: config.serverAddress + 'api/v1/findCallToAction',
 		  method: 'POST',
 		  data: {'circolo':$rootScope.currentUser.circolo._id, 'date': today}
 		})
@@ -468,13 +468,13 @@ angular.module('starter.servicesREST', [])
         today.setMilliseconds(0);
 		  
 		var query1 = $http({
-		  url: 'http://localhost:3000/api/v1/findMyBookings-part1',
+		  url: config.serverAddress + 'api/v1/findMyBookings-part1',
 		  method: 'POST',
 		  data: {'user':$rootScope.currentUser._id, 'date': today}
 		})
 		
 		var query2 = $http({
-		  url: 'http://localhost:3000/api/v1/findMyBookings-part2',
+		  url: config.serverAddress + 'api/v1/findMyBookings-part2',
 		  method: 'POST',
 		  data: {'user':$rootScope.currentUser._id, 'date': today}
 		})
@@ -495,7 +495,7 @@ angular.module('starter.servicesREST', [])
       },
 	findMyInvitations: function(){
           return $http({
-		  url: 'http://localhost:3000/api/v1/findMyInvitations',
+		  url: config.serverAddress + 'api/v1/findMyInvitations',
 		  method: 'POST',
 		  data: {'user':$rootScope.currentUser._id}
 		})
@@ -503,7 +503,7 @@ angular.module('starter.servicesREST', [])
         },
     countMyInvitations: function(){
           return $http({
-			  url: 'http://localhost:3000/api/v1/countMyInvitations',
+			  url: config.serverAddress + 'api/v1/countMyInvitations',
 			  method: 'POST',
 			  data: {'user':$rootScope.currentUser._id}
           })
@@ -518,13 +518,13 @@ angular.module('starter.servicesREST', [])
         today.setMilliseconds(0);
 		  
 		var query1 = $http({
-		  url: 'http://localhost:3000/api/v1/findMyGameNotPayed-part1',
+		  url: config.serverAddress + 'api/v1/findMyGameNotPayed-part1',
 		  method: 'POST',
 		  data: {'user':$rootScope.currentUser._id, 'date': today}
 		})
 		
 		var query2 = $http({
-		  url: 'http://localhost:3000/api/v1/findMyGameNotPayed-part2',
+		  url: config.serverAddress + 'api/v1/findMyGameNotPayed-part2',
 		  method: 'POST',
 		  data: {'user':$rootScope.currentUser._id, 'date': today}
 		})
@@ -567,7 +567,7 @@ angular.module('starter.servicesREST', [])
              }
              else {
 				$http({
-				  url: 'http://localhost:3000/api/v1/acceptInvitation',
+				  url: config.serverAddress + 'api/v1/acceptInvitation',
 				  method: 'POST',
 				  data: {'idInvitation': invitation._id, 'idBooking':booking._id, 'user':$rootScope.currentUser._id}
 			    })
@@ -585,7 +585,7 @@ angular.module('starter.servicesREST', [])
 			}
                 
 		  	return $http({
-				  url: 'http://localhost:3000/api/v1/declineInvitation',
+				  url: config.serverAddress + 'api/v1/declineInvitation',
 				  method: 'POST',
 				  data: {'idInvitation': invitation._id}
 			    })
@@ -607,23 +607,21 @@ angular.module('starter.servicesREST', [])
 		_.remove(mx,function(item){
 			return item._id == notification._id
 		})
-		var notification = {messages: mx}
+		var notifications = {messages: mx}
 		window.localStorage['notifications'] = JSON.stringify(notifications)
+		//return notifications
 		
 	},
     sendMessageBookingUsers: function(booking,messagex){
-            var players = booking.players
-            _.each(players,function(p){
-                console.log("sending Message....")
-				//TODO
-                //Parse.Cloud.run('sendPush', {userId:p.id,message:messagex}).then(function(success){
-              })
-            
-            if (! booking.callToAction){
-                //TODO
-				//Parse.Cloud.run('sendPush', {userId:booking.get('user').id,message:messagex})
-            }
-        },
+		
+		$http({
+				  url: config.serverAddress + 'api/v1/sendMessageBookingUsers',
+				  method: 'POST',
+				  data: {'booking': booking._id, 'message':messagex}
+		})
+			
+           
+     },
 	courtsView: function(datex,gameType){
 
             //console.log(datex)
@@ -660,21 +658,21 @@ angular.module('starter.servicesREST', [])
         },
 	saveNote: function(booking){
           $http({
-				  url: 'http://localhost:3000/api/v1/saveNote',
+				  url: config.serverAddress + 'api/v1/saveNote',
 				  method: 'POST',
 				  data: {'id': booking._id, 'note':booking.note}
 		  })
         },
 	getRecharges : function(user){
 		  return $http({
-				  url: 'http://localhost:3000/api/v1/getRecharges',
+				  url: config.serverAddress + 'api/v1/getRecharges',
 				  method: 'GET',
 				  data: {'user': $rootScope.currentUser._id}
 		  })
      },
 	addCharge: function(user,qty){
 		  return $http({
-				  url: 'http://localhost:3000/api/v1/addCharge',
+				  url: config.serverAddress + 'api/v1/addCharge',
 				  method: 'POST',
 				  data: {'user': user._id, 'qty':qty}
 		  })
@@ -684,7 +682,7 @@ angular.module('starter.servicesREST', [])
     getPayments: function(user){
 		  
 		  return $http({
-				  url: 'http://localhost:3000/api/v1/getPayments',
+				  url: config.serverAddress + 'api/v1/getPayments',
 				  method: 'GET',
 				  data: {'user': $rootScope.currentUser._id}
 		  })
@@ -693,7 +691,7 @@ angular.module('starter.servicesREST', [])
     getPaymentsByBooking: function(booking){
 		   console.log(booking)
 		   return $http({
-				  url: 'http://localhost:3000/api/v1/getPaymentsByBooking',
+				  url: config.serverAddress + 'api/v1/getPaymentsByBooking',
 				  method: 'GET',
 				  data: {'booking': booking._id}
 		  })
@@ -701,7 +699,7 @@ angular.module('starter.servicesREST', [])
         },
     payQuota : function(booking){
 		  return $http({
-				  url: 'http://localhost:3000/api/v1/payQuota',
+				  url: config.serverAddress + 'api/v1/payQuota',
 				  method: 'POST',
 				  data: {'booking': booking._id, 'circolo':$rootScope.currentUser.circolo._id}
 		  })
@@ -736,7 +734,7 @@ angular.module('starter.servicesREST', [])
           promises.push(Parse.Cloud.run('changeUserField', {userId:user.id,field:"residualCredit",newValue:nrc}))
           return $q.all(promises)*/
 		  return $http({
-				  url: 'http://localhost:3000/api/v1/payTessera',
+				  url: config.serverAddress + 'api/v1/payTessera',
 				  method: 'POST',
 				  data: {'booking': booking._id, 'circolo':$rootScope.currentUser.circolo._id}
 		  })
@@ -757,7 +755,7 @@ angular.module('starter.servicesREST', [])
 	deletePayment: function(payment){
 		  
 		  return $http({
-				  url: 'http://localhost:3000/api/v1/deletePayment',
+				  url: config.serverAddress + 'api/v1/deletePayment',
 				  method: 'POST',
 				  data: {'payment': payment._id}
 		  })
@@ -765,7 +763,7 @@ angular.module('starter.servicesREST', [])
         },
 	enabling: function(user){
 	   return $http({
-			  url: 'http://localhost:3000/api/v1/enabling',
+			  url: config.serverAddress + 'api/v1/enabling',
 			  method: 'POST',
 			  data: {'user': user._id}
 	  })
@@ -774,7 +772,7 @@ angular.module('starter.servicesREST', [])
 	changeUserLevel: function(user){
 		  	var level = user.level
 			return $http({
-			  url: 'http://localhost:3000/api/v1/changeUserLevel',
+			  url: config.serverAddress + 'api/v1/changeUserLevel',
 			  method: 'POST',
 			  data: {'user': user._id, 'level':level}
 	  })
@@ -793,7 +791,7 @@ angular.module('starter.servicesREST', [])
 	deleteBooking: function(booking){
 		  
 		return $http({
-			  url: 'http://localhost:3000/api/v1/deleteBooking',
+			  url: config.serverAddress + 'api/v1/deleteBooking',
 			  method: 'POST',
 			  data: {'booking': booking._id, 'role': $rootScope.currentUser.role, 'user': $rootScope.currentUser._id}
 	  	})
@@ -802,7 +800,7 @@ angular.module('starter.servicesREST', [])
 	setCallToAction : function(booking){
 		  
 		    return $http({
-			  url: 'http://localhost:3000/api/v1/setCallToAction',
+			  url: config.serverAddress + 'api/v1/setCallToAction',
 			  method: 'POST',
 			  data: {'booking': booking._id, 'user': $rootScope.currentUser._id, 'playersNumberMissing': booking.playersNumberMissing}
 	  		})
@@ -811,7 +809,7 @@ angular.module('starter.servicesREST', [])
 	findPlayersWithName:function(namex){
 		  console.log('findPlayersWithName')
 		  return $http({
-			  url: 'http://localhost:3000/api/v1/findPlayersWithName',
+			  url: config.serverAddress + 'api/v1/findPlayersWithName',
 			  method: 'POST',
 			  data: {'name': namex, 'user':$rootScope.currentUser, 'circolo': $rootScope.currentUser.circolo}
 	  		})
@@ -821,7 +819,7 @@ angular.module('starter.servicesREST', [])
         },  
 	invite:function(userIdToInvite,email, bookingIdCalled){
 		  return $http({
-			  url: 'http://localhost:3000/api/v1/invite',
+			  url: config.serverAddress + 'api/v1/invite',
 			  method: 'POST',
 			  data: {'userIdToInvite': userIdToInvite, 'email':email,'bookingIdCalled': bookingIdCalled}
 	  		})
@@ -832,7 +830,7 @@ angular.module('starter.servicesREST', [])
   	findInvitationAlredySentForBooking: function(bookingId){
 
            return $http({
-			  url: 'http://localhost:3000/api/v1/findInvitationAlredySentForBooking',
+			  url: config.serverAddress + 'api/v1/findInvitationAlredySentForBooking',
 			  method: 'POST',
 			  data: {'bookingId': bookingId}
 	  		})
@@ -846,18 +844,25 @@ angular.module('starter.servicesREST', [])
               "onNotification": function(notification) {
                 var payload = notification.payload;
                 console.log('notifica.....')
+				console.log(notification)
                 $ionicLoading.show({ template: notification.text, duration:3000 });
 
                 //alert(notification, payload);
-				
-				if (window.localStorage['notifications'] == null){
+				try{
+					if (window.localStorage['notifications'] == null){
 					var notifications = {messages:[]}
 					window.localStorage['notifications'] = JSON.stringify(notifications)
+					}
+					var notifications = JSON.parse(window.localStorage['notifications'])
+					var id = (new Date()).getTime()
+					notifications.messages.push({_id:id, date:new Date(), message:notification.text })
+					window.localStorage['notifications'] = JSON.stringify(notifications)
+					$rootScope.notificationCount = notifications.messages.length 
 				}
-				var notifications = JSON.parse(window.localStorage['notifications'])
-				var id = (new Date()).getTime()
-				notification.messages.push({_id:id, date:new Date(), message:notification.text })
-				window.localStorage['notifications'] = JSON.stringify(notifications)
+				catch(error){
+					console.log(error)
+				}
+				
 				
               },
               "onRegister": function(data) {
@@ -873,12 +878,13 @@ angular.module('starter.servicesREST', [])
                  }
               } 
             });
+			console.log('********registerToken********:' + $rootScope.platform)
 			if ($rootScope.platform == 'ios' || $rootScope.platform == 'android'){
 				push.register(function(token) {
                 console.log("Device token:",token.token);
-				window.localStorage['deviceToken'] = data.token
-				return $http({
-					url: 'http://localhost:3000/registerToken',
+				window.localStorage['deviceToken'] = token.token
+				$http({
+					url: config.serverAddress + 'registerToken',
 					method: 'POST',
 					data: {'user':$rootScope.currentUser._id, 'deviceToken':token.token, 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
 					headers: {
@@ -888,15 +894,14 @@ angular.module('starter.servicesREST', [])
             	});
 			}
 			else{
-				return $http({
-					url: 'http://localhost:3000/registerToken',
+				 /*$http({
+					url: config.serverAddress + 'registerToken',
 					method: 'POST',
 					data: {'user':$rootScope.currentUser._id, 'deviceToken':'web access', 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
 					headers: {
 					   'Content-Type': 'application/json'
 					 }
-				 })  
-				
+				 })*/  
 			}
             
 
@@ -904,7 +909,7 @@ angular.module('starter.servicesREST', [])
 	setPreferred: function(user){
 		  console.log(user)
 		  return $http({
-			  url: 'http://localhost:3000/api/v1/setPreferred',
+			  url: config.serverAddress + 'api/v1/setPreferred',
 			  method: 'POST',
 			  data: {'user': $rootScope.currentUser._id, 'userToAdd': user._id}
 	  		}).then(function(response){
@@ -927,7 +932,7 @@ angular.module('starter.servicesREST', [])
 	getPreferred:function(){
 		
 		 return $http({
-			  url: 'http://localhost:3000/api/v1/getPreferred',
+			  url: config.serverAddress + 'api/v1/getPreferred',
 			  method: 'POST',
 			  data: {'user': $rootScope.currentUser._id}
 	  		})
@@ -939,7 +944,7 @@ angular.module('starter.servicesREST', [])
 			window.localStorage['user'] = JSON.stringify(user)
 			$rootScope.currentUser = user
 			return $http({
-			  url: 'http://localhost:3000/api/v1/setStatus',
+			  url: config.serverAddress + 'api/v1/setStatus',
 			  method: 'POST',
 			  data: {'user': $rootScope.currentUser._id, 'status': message}
 	  		})
@@ -949,13 +954,31 @@ angular.module('starter.servicesREST', [])
     getPlayersByLevel: function(){
 		console.log($rootScope.currentUser.level)
 		return $http({
-			  url: 'http://localhost:3000/api/v1/getPlayersByLevel',
+			  url: config.serverAddress + 'api/v1/getPlayersByLevel',
 			  method: 'POST',
 			  data: {'circolo': $rootScope.currentUser.circolo, 'level': $rootScope.currentUser.level}
 	  		})
             
 
         },
+		
+	saveImage: function(obj){
+		console.log(obj)
+		$http({
+			  url: config.serverAddress + 'api/v1/saveImage',
+			  method: 'POST',
+			  data: {'image': obj, 'user':$rootScope.currentUser._id}
+	  		}).then(function(response){
+			  console.log('Photo Taken')
+			  //console.log(response)
+			  //window.localStorage['image'] = response.results
+			  $rootScope.currentUser = response.results
+			  window.localStorage['user'] = JSON.stringify(response.results)
+			  JSON.parse(window.localStorage['user'])
+		},function(error){
+			console.log(error)
+		})
+	},
 		
 	deleteObjectFromCollection: function(item, collection){
           _.remove(collection, function(object){

@@ -24,7 +24,7 @@ var userSchema = new Schema({
   level: String,
   status: String,
   preferences: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  image: Buffer,
+  image: String,
   installations: [installationSchema]
 });
 
@@ -37,6 +37,9 @@ userSchema.pre('save', function (next) {
   var currentDate = new Date();
   // change the updated_at field to current date
   user.updated_at = currentDate;
+	
+ if (user.isNew)
+  user.nome = user.nome.toLowerCase()
 
   // if created_at doesn't exist, add to that field
   if (!user.created_at)

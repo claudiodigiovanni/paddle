@@ -6,7 +6,7 @@ var utils = require('./utils.js');
 var _ = require('lodash');
 var Installation = require('../model/installation.js').Installation;
 
-var push = require('../utils/push.js')
+var pushMessage = require('../utils/push.js').pushMessage
 var mail = require('../utils/mailgun.js')
 
 var auth = {
@@ -64,7 +64,6 @@ var auth = {
 		})
 	 })
   },
-	
   signup: function(req,res,next){
 	    console.log("signup")
 		
@@ -95,7 +94,6 @@ var auth = {
 		});
 			
 	},
-
   validateUser: function(email) {
 	 return User.findOne({ 'email': email , 'enabled': true}, function (err, user) {
   		if (err) throw err;
@@ -126,10 +124,13 @@ var auth = {
 	 })
   },
   registerToken: function(req,res,next){
+	  console.log('********************registerToken**********************')
+	  console.log(req.body)
 	  User.findById(req.body.user).exec(function(err,user){
 		  var installations = user.installations
 		  var index = _.findIndex(installations,function(item){
-			  item.deviceToken == req.body.deviceToken
+			  return item.deviceToken == req.body.deviceToken
+			  
 		  })
 		  if (index == -1){
 			    var newInstallation = new Installation();
@@ -144,7 +145,6 @@ var auth = {
 	  })
 	  
   },
-  
   requestPasswordReset: function(req, res,next){
 	  console.log('requestPasswordReset...')
 	  var email = req.body.email

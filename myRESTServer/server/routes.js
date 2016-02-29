@@ -1,7 +1,9 @@
+var fs = require('fs')
 var express = require('express');
 var router = express.Router();
 var utils = require('./utils/utils.js')
 var _ = require('lodash');
+var moment = require('moment');
 
 var auth = require('./utils/auth.js');
 var Circolo = require('./model/circolo.js');
@@ -25,9 +27,7 @@ router.post('/login', auth.login);
 router.post('/registerToken', auth.registerToken);
 router.post('/signup', auth.signup);
 router.post('/requestPasswordReset',auth.requestPasswordReset);
-
 router.post('/resetPwd',auth.resetPwd);
-
 
 
 /*
@@ -176,7 +176,7 @@ router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
 				 var players = booking.players
 				_.each(players,function(item){
 					
-					push.pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
+					pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
 				})
 			 }
 		  	res.json({data: booking});
@@ -431,10 +431,13 @@ router.post('/api/v1/setCallToAction', function(req, res,next) {
 					defer.resolve(promise2);
 				}
 				defer.promise.then(function(result){
+					console.log('***********setCallToAction*********')
+					var date = moment(new Date(booking.date))
 					if (booking.callToAction == true && booking.players.length == numPlayers ){
 						 var players = booking.players
 						_.each(players,function(item){
-							push.pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
+							console.log('players')
+							pushMessage(item._id, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
 						})
 					 }
 					
@@ -445,14 +448,12 @@ router.post('/api/v1/setCallToAction', function(req, res,next) {
 
 });
 
-
 router.post('/api/v1/findPlayersWithName', function(req, res,next) {
 	logger.debug(req.body.name)
 	var name = req.body.name
-	User.find({'nome': {$regex: '.*' + name + '.*'}, 'circolo': req.body.circolo})
+	User.find({'nome': {$regex: '.*' + name.toLowerCase() + '.*'}, 'circolo': req.body.circolo})
 			.populate('players')
 			.exec( function (err, results) {  
-				logger.debug(results)
             	res.json({'data':results})
 			})
 	          
@@ -499,6 +500,23 @@ router.post('/api/v1/findInvitationAlredySentForBooking', function(req, res,next
 		          
 });
 
+router.post('/api/v1/sendMessageBookingUsers', function(req, res,next) {
+	Booking.findById(req.body.booking).exec(function(err,booking){
+		 var players = booking.players
+		_.each(players,function(p){
+			console.log("sending Message....")
+			pushMessage(p, req.body.message)
+		  })
+
+		if (! booking.callToAction){
+			pushMessage(booking.user, req.body.message)
+		 }
+		res.json({success:true})
+	})
+	
+		          
+});
+
 router.post('/api/v1/setPreferred', function(req, res,next) {
 	logger.debug('setPreferred')
 	logger.debug(req.body.userToAdd)
@@ -525,7 +543,6 @@ router.post('/api/v1/setPreferred', function(req, res,next) {
 	       
 });
 
-
 router.post('/api/v1/getPreferred', function(req, res,next) {
 	
 	User.findById(req.body.user)
@@ -538,7 +555,6 @@ router.post('/api/v1/getPreferred', function(req, res,next) {
 	
 		          
 });
-
 
 router.post('/api/v1/setStatus', function(req, res,next) {
 	
@@ -563,7 +579,6 @@ router.post('/api/v1/setStatus', function(req, res,next) {
 		          
 });
 
-
 router.post('/api/v1/getPlayersByLevel', function(req, res,next) {
 	
 	User.find({'level':req.body.level, 'circolo': req.body.circolo })
@@ -577,24 +592,47 @@ router.post('/api/v1/getPlayersByLevel', function(req, res,next) {
 		          
 });
 
-
-
 router.post('/api/v1/saveImage/', function(req, res,next) {
 	
 	
-	var imgBuf = new Buffer(req.body.image, 'base64');
+	/*var imgBuf = new Buffer(req.body.image, 'base64');
 	var user = req.body.user
 	User.findById(user).exec(function(err,user){
 		user.image = imgBuf
-		user.save()
-		res.json({'data': user});
+		user.save().then(function(success){
+			//console.log(user)
+			var image = new Buffer(user.image).toString('base64');
+			//console.log(image)
+			res.json({'data': image});
+		})
+		
+	})*/
+	var ux = req.body.user
+	User.findById(ux).exec(
+	function(err,user){
+		var imageToDelete = user.image
+		var newImage = ux + "-" + (new Date()).getTime() + ".png"
+		fs.unlink("../../www/img/users/" + imageToDelete, function(err) {
+			  console.log("Old Image File deleted successfully!");
+		 });
+	   	fs.writeFile( "../../www/img/users/" + newImage, req.body.image, 'base64', function(err) {
+		  if (err){
+			  console.log(err)
+			  next(err)
+			  return
+		  }
+		  user.image = newImage
+		  user.save()
+		  res.json({'data': user});
+		  
+	  });
+		
 	})
+	
 	
 	
 
 });
-
-
              		
 /*
  * Routes that can be accessed only by authenticated & authorized users

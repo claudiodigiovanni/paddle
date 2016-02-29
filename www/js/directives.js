@@ -1,5 +1,7 @@
 angular.module('starter.directives', [])
 
+
+
 .directive('preferred', function() {
   return {
     restrict: 'E',
@@ -7,7 +9,7 @@ angular.module('starter.directives', [])
     scope: {
       user: '=',
     },
-    template: '<i class="icon  {{isPreferred ? \'ion-ios-star energized\' : \'ion-ios-star-outline\'}}" ng-click="setPreferred(user)"></i>',
+    template: '<i class="icon my-ionicons-big {{isPreferred ? \'ion-ios-star energized\' : \'ion-ios-star-outline\'}}" ng-click="setPreferred(user)"></i>',
     link: function(scope, elem, attrs) {
 
     },

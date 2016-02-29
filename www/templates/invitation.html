@@ -76,16 +76,26 @@
          <div class="item center" ng-show="waiting">
            <ion-spinner class="spinnerx" icon="dots" ></ion-spinner>
         </div>
-    <div class="list">
-        <a class="item item-avatar item-icon-right"  ng-repeat="p in players">
-          <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{p.nome}} (L. {{p.level}})</h2>
-          <p>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</p>
-            
-            <button class="button button-small button-positive" ng-click="invite(p)">invita</button>
-            <preferred user="p"></preferred>
-        </a>
-    </div>
+    		<div ng-repeat="p in players">
+				<div class="row">
+					<div class="col-30">
+						<img src="{{webServerAddress}}/img/users/{{p.image}}" ng-show="p.image != null" height="60" width="60">
+						<img src="img/woimage.png" ng-show="p.image == null" height="40" width="40">
+					</div>
+					<div class="col"><b>{{p.nome}}</b> <br> <small>(Livello: {{p.level}})</small> </div>
+					<div class="col-20 col-right"><br><preferred user="p"></preferred>&nbsp;&nbsp;&nbsp;</div>
+				</div>
+				<div class="row">
+					<div class="col"><i>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</i></div>
+				</div>
+				<div class="row">
+					<div class="col"><button class="button button-block button-positive" ng-click="invite(p)">invita</button></div>
+				</div>
+				
+			</div>
+	
+   
+	
     
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
@@ -112,15 +122,23 @@
             Nessun Preferito!
     </div>
 
-     <div class="list" >
-        <a class="item item-avatar item-icon-right" ng-repeat="p in preferences">
-          <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{p.nome}} (L. {{p.level}})</h2>
-          <p>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</p>
-            <button class="button button-small button-positive" ng-click="invite(p)">invita</button>
-           <preferred user="p"></preferred>
-        </a>
-    </div>
+		<div ng-repeat="p in preferences">
+				<div class="row">
+					<div class="col-30">
+						<img src="{{webServerAddress}}/img/users/{{p.image}}" ng-show="p.image != null" height="60" width="60">
+						<img src="img/woimage.png" ng-show="p.image == null" height="40" width="40">
+					</div>
+					<div class="col"><b>{{p.nome}}</b> <br> <small>(Livello: {{p.level}})</small> </div>
+					<div class="col-20 col-right"><br><preferred user="p"></preferred>&nbsp;&nbsp;&nbsp;</div>
+				</div>
+				<div class="row">
+					<div class="col"><i>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</i></div>
+				</div>
+				<div class="row">
+					<div class="col"><button class="button button-block button-positive" ng-click="invite(p)">invita</button></div>
+				</div>
+				
+		</div>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>
@@ -145,16 +163,24 @@
             <br>
             Nessun Giocatore!
     </div>
+	<div ng-repeat="p in playersByLevel">
+				<div class="row">
+					<div class="col-30">
+						<img src="{{webServerAddress}}/img/users/{{p.image}}" ng-show="p.image != null" height="60" width="60">
+						<img src="img/woimage.png" ng-show="p.image == null" height="40" width="40">
+					</div>
+					<div class="col"><b>{{p.nome}}</b> <br> <small>(Livello: {{p.level}})</small> </div>
+					<div class="col-20 col-right"><br><preferred user="p"></preferred>&nbsp;&nbsp;&nbsp;</div>
+				</div>
+				<div class="row">
+					<div class="col"><i>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</i></div>
+				</div>
+				<div class="row">
+					<div class="col"><button class="button button-block button-positive" ng-click="invite(p)">invita</button></div>
+				</div>
+				
+	</div>
 
-     <div class="list" >
-        <a class="item item-avatar item-icon-right" ng-repeat="p in playersByLevel">
-          <img src="{{p.get('image').url() != null ? p.get('image').url(): 'img/woimage.png'}}">
-          <h2>{{p.nome}}</h2>
-          <p>{{p.status ? p.status : "Back off, man. I'm a scientist."}}</p>
-            <button class="button button-small button-positive" ng-click="invite(p)">invita</button>
-           <preferred user="p"></preferred>
-        </a>
-    </div>
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
     </ion-content>
   </div>

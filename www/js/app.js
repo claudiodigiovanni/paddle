@@ -13,12 +13,13 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
 
   $ionicPlatform.ready(function() {
-      
-    console.log("$ionicPlatform.ready...")
     
+	$rootScope.platform = ionic.Platform.platform()
+    MyObjectsREST.createInstallationObject()
+	
+	
     //**************************************
-    
-         
+     console.log("$ionicPlatform.ready...")
     //**************************************
     
      $rootScope.closeLoading = function(){
@@ -74,22 +75,16 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 		var currentUser 
 		if (window.localStorage['user'])
 		 	currentUser = JSON.parse(window.localStorage['user'])
-        
-		$rootScope.platform = ionic.Platform.platform()
 
         if(next.name =='login' || next.name== 'signUp' || next.name == 'waitingToBeEnabled' || next.name == 'privacy' || next.name == 'resetPwd') {
 
            console.log('verso login...');
 
          }
-
-        else if (currentUser) {
+		else if (currentUser) {
 
             $rootScope.currentUser = currentUser;
-            //TODO
 			$rootScope.userRole = currentUser.role
-
-            console.log($rootScope.userRole)
 
             if ($rootScope.gameTypes == null){
 				var circolo = JSON.parse(window.localStorage['user']).circolo
@@ -98,26 +93,14 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
                 gameTypes.push(circolo.gameType2)
                 gameTypes.push(circolo.gameType3)
                 $rootScope.gameTypes = gameTypes
-
             }
-            
             if ($rootScope.currentGameType == null){
                 var currentGameType = {value:0}
                 $rootScope.currentGameType = currentGameType
-
             }
-            //console.log($rootScope.gameTypes)
-			//console.log($rootScope.currentGameType)
-
-            /*MyObjects.countMyInvitations().then(function(count){
-              if (count > 0 ) 
-                $rootScope.invitationCount = count 
-              else 
-                $rootScope.invitationCount = null
-            })*/
+           
 			if (MyObjectsREST.getNotifications() && MyObjectsREST.getNotifications().length > 0)
 				$rootScope.notificationCount = MyObjectsREST.getNotifications().length 
-            
   
         } else {
             // show the signup or login page
@@ -153,6 +136,8 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   //PaddleCourtsNumber: 3,
   slotsNumber: 48,
   playersLevels:6,
+  serverAddress: 'http://192.168.1.3:3000/',
+  webServerAddress: 'http://192.168.1.3:8080/'
   //PaddleCourtsNames: ['Rosso','Blu','Verde']
 })
 

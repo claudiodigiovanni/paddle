@@ -21,6 +21,7 @@
 	  "android-gcm": "~0.1.5",
 	  "gcm": "~1.0.1",
 	  "mailgun-js": "~0.7.7",
-	  "winston": "~2.1.1"
+	  "winston": "~2.1.1",
+	  "moment": "~2.11.2"
   }
 }

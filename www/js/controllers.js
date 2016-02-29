@@ -259,6 +259,7 @@ $scope.logOut = function(form) {
    window.localStorage.removeItem('user')
    window.localStorage.removeItem('userRole')
    window.localStorage.removeItem('deviceToken')
+   window.localStorage.removeItem('notifications')
 
   $scope.currentUser = null;
   $state.go('login');
@@ -368,6 +369,10 @@ $scope.currentUser = currentUser;
 
 console.log ($stateParams.user)
 console.log ($stateParams.token)
+
+$scope.undo = function(){
+	$state.go('login');
+}
 $scope.changePassword = function() {
   //$scope.modal.hide();
   
@@ -797,14 +802,14 @@ $scope.closeModalok = function() {
   }
 
   $scope.addEventToCalendar = function(){
-
-      var startSlot = $scope.booking.get('ranges')[0]
-      var endSlot = $scope.booking.get('ranges')[$scope.booking.get('ranges').length - 1]
+	  console.log($scope.booking)
+      var startSlot = $scope.booking.ranges[0]
+      var endSlot = $scope.booking.ranges[$scope.booking.ranges.length - 1]
 
       var startHM = Utility.getHourMinuteFromSlot(startSlot)
       var endHM = Utility.getHourMinuteFromSlot(endSlot)
     
-      var sdate = $scope.booking.get('date')
+      var sdate = new Date($scope.booking.date)
       sdate.setHours(startHM[0])
       sdate.setMinutes(startHM[1])
     
@@ -907,7 +912,7 @@ $scope.closeModalok = function() {
 
 })
 
-.controller('AccountCtrl', function($scope, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading,$http,$cordovaCamera,Utility,MyObjectsREST) {
+.controller('AccountCtrl', function($scope, $state,$ionicModal,$rootScope,$ionicPopup,$ionicListDelegate,$timeout,$ionicLoading,$http,$cordovaCamera,Utility,MyObjectsREST,config) {
     
     // Il ruolo admin o segreteria non vede la pagina account (inutile...)
     if ($rootScope.currentUser.role == 'admin' || $rootScope.currentUser.role == 'segreteria')
@@ -1004,7 +1009,7 @@ $scope.closeModalok = function() {
     }
 
     $scope.openCameraModal = function(){
-        
+        $scope.image = config.webServerAddress + "/img/users/" + $rootScope.currentUser.image
         $scope.cameraModal.show()
     }
     
@@ -1032,6 +1037,7 @@ $scope.closeModalok = function() {
          console.log('xxx')
          $scope.notifications = MyObjectsREST.getNotifications()
 		 $scope.notificationsModal.show()
+		 
                
     }
 	 
@@ -1047,7 +1053,11 @@ $scope.closeModalok = function() {
     }
 	
 	$scope.deleteNotification = function(notification){
+		
 		MyObjectsREST.deleteNotification(notification)
+		MyObjectsREST.deleteObjectFromCollection(notification,$scope.notifications)
+		$rootScope.notificationCount = $scope.notifications.length 
+		
 	}
     //*********************************************
   var vm = $scope;
@@ -1067,7 +1077,7 @@ $scope.closeModalok = function() {
       quality : 75,
       // This ensures the actual base64 data is returned, and not the file URI
       destinationType: Camera.DestinationType.DATA_URL,
-      encodingType : Camera.EncodingType.JPEG,
+      encodingType : Camera.EncodingType.PNG,
       targetWidth: 300,
       targetHeight: 300
     };
@@ -1088,7 +1098,7 @@ $scope.closeModalok = function() {
   // Function to submit the object using the REST API
   function submitObject(imageData) {
  
-    //TODO
+    MyObjectsREST.saveImage(imageData)
   };
  
 
@@ -1309,7 +1319,7 @@ $scope.closeModalok = function() {
 
 })
 
-.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjectsREST,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading, $timeout) {
+.controller('InvitationCtrl',function($scope, $stateParams, Utility, MyObjectsREST,$state,$ionicModal,$rootScope, $ionicPopup, $ionicLoading, $timeout,config) {
 
 
   var model = {name:""}
@@ -1317,7 +1327,7 @@ $scope.closeModalok = function() {
   $scope.invitations = []
   var actualGame = $rootScope.gameTypes[$stateParams.gameType]
   var  numPlayers = parseInt(actualGame.numberPlayers) -1
-  
+  $scope.webServerAddress = config.webServerAddress
   
   
 
@@ -1410,6 +1420,14 @@ $scope.closeModalok = function() {
   $scope.search = function(){
 	 
 	 console.log('search')
+	
+	if ($scope.model.name.length <= 2){
+		$ionicPopup.alert({
+         title: 'Opsss!',
+         template: 'Inserire almeno 3 caratteri...'
+       });
+		return
+	}
 
     if ($scope.model.name.length > 2 && $scope.invitations.length < parseInt(numPlayers)){
 
@@ -1419,11 +1437,17 @@ $scope.closeModalok = function() {
        MyObjectsREST.findPlayersWithName($scope.model.name)
       .then(
         function(response){
-          console.log(response);
+          //console.log(response);
           $scope.waiting = null
           $rootScope.closeLoading()
           $scope.players = response.results
           //$scope.$apply()
+		  if (response.results && response.results.length == 0){
+			  $ionicPopup.alert({
+				 title: 'Opsss!',
+				 template: 'Nessun risultato...'
+			   });
+		  }
           
 
       }, function(error){
@@ -1494,10 +1518,15 @@ $scope.closeModalok = function() {
 	  window.localStorage.removeItem('user')
 	  window.localStorage.removeItem('userRole')
 	  window.localStorage.removeItem('deviceToken')
+	  window.localStorage.removeItem('notifications')
 
 	  $scope.currentUser = null;
 	  $state.go('login');
     }
+	
+	$scope.undo = function(){
+		$state.go('tab.dash');
+	}
       
 })
   
