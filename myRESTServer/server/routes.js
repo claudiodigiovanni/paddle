@@ -244,13 +244,13 @@ router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
 	var date = req.body.date
 	var gameT = req.body.gameT
 	var circolo = req.body.circolo
+	var courtsNumber = req.body.courtsNumber
 	
-	Booking.find({ 'date': date, 'circolo':circolo, 'gameType':gameType })
+	Booking.find({ 'date': date, 'circolo':circolo, 'gameType':gameT })
 		.populate('players user')
 		.exec( function (err, bookings) {
-		  	var myranges = _.range(1, parseInt(config.slotsNumber) + 1);
-			var num = $rootScope.gameTypes[gameT].courtsNumber
-
+			//config.slotsNumber = 48
+		  	var myranges = _.range(1, parseInt(48) + 1);
 			_.each(myranges, function(r){
 			  var px =  _.filter(bookings,function(item){
 
@@ -258,7 +258,7 @@ router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
 					  return item;
 			  });
 
-			  if (px.length < num){
+			  if (px.length < courtsNumber){
 				  avalaibleRanges.push(r);
 			  }
 			})
@@ -269,8 +269,8 @@ router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
 
 
 router.post('/api/v1/createBooking', function(req, res,next) {
-	var booking = new Booking()
-	utils.copyProperties(req.body.book,booking)
+	var obj = new Booking()
+	utils.copyProperties(req.body.book,obj)
 	
 	if (obj.callToAction == true){
 		obj.players = []
@@ -311,12 +311,11 @@ router.post('/api/v1/createBooking', function(req, res,next) {
 	obj.startHour = startHour
 	obj.endHour = endHour
 
-	logger.debug(booking)
-	booking.save(function(err) {
+	obj.save(function(err) {
 
 		if (err) return next(err);
 		logger.debug('Booking saved successfully!');
-		res.json({succes: true, data: booking});
+		res.json({succes: true, data: obj});
 	});
 	
 });

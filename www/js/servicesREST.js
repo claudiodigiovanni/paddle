@@ -120,10 +120,11 @@ angular.module('starter.servicesREST', [])
       },
 	findaAvalaibleRangesInDate: function(date,gameT){
 		var c = $rootScope.currentUser.circolo
+		var courtsNumber = $rootScope.gameTypes[gameT].courtsNumber
 		return $http({
 			  url: config.serverAddress + 'api/v1/findaAvalaibleRangesInDate',
 			  method: 'POST',
-			  data: {'circolo':c._id,'date':date,gameT:gameT}
+			  data: {'circolo':c._id,'date':date,gameT:gameT,courtsNumber:courtsNumber}
 		})
       },
 	findBookingsInDate: function(date,gameT){

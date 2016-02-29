@@ -566,12 +566,11 @@ $scope.closeModalok = function() {
 	MyObjectsREST.checkBeforeCreateBooking(date, ranges, booking.gameType).then(
 		function (response) {
 			console.log(response)
-			if (response.status == 200) {
+			if (response.data.status == 200) {
 				$scope.waiting = null
 				$scope.avalaivableCourts = response.results
 			} else {
 				$scope.waiting = null
-				console.log(error);
 				$scope.courtsModal.hide()
 				$ionicPopup.alert({
 					title: 'Oops!',
@@ -747,42 +746,35 @@ $scope.closeModalok = function() {
 
     MyObjectsREST.createBooking(booking)
     .then(
-      function(response){
-          
-      $scope.waiting = null
-      console.log(response)
-	 
-      $scope.message = "Prenotazione Effettuata!";
-       
-	  $scope.booking = response.results
-      
-      $scope.modalok.show();
-      $rootScope.closeLoading()
-     
-
+      function(response){ 
+		  $scope.waiting = null
+		  console.log(response)
+		  $scope.message = "Prenotazione Effettuata!";
+		  $scope.booking = response.results
+		  $scope.modalok.show();
+		  $rootScope.closeLoading()
     }, function(error){
+		  $scope.waiting = null
+		  console.log(error);
+		  $scope.showRanges = true
+		  booking.court = null
+		  //$scope.message = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
+		  $ionicPopup.alert({
+			   title: 'Oops!',
+			   template: 'Nessun campo disponibile nelle fasce orarie selezionate...'
+			});
+		  MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType)
+		  .then(
+			function(response){
+			  avalaibleRanges = response.results;
+			  //console.log(ranges)
+			  $scope.waiting = null
+			  //$scope.$apply()
 
-      $scope.waiting = null
-      console.log(error);
-      $scope.showRanges = true
-      booking.court = null
-      //$scope.message = "Oooops! Nessun campo disponibile nelle fasce orarie selezionate..."
-      $ionicPopup.alert({
-           title: 'Oops!',
-           template: 'Nessun campo disponibile nelle fasce orarie selezionate...'
-        });
-      MyObjectsREST.findaAvalaibleRangesInDate(booking.date, booking.gameType)
-      .then(
-        function(response){
-          avalaibleRanges = response.results;
-          //console.log(ranges)
-          $scope.waiting = null
-          //$scope.$apply()
-
-      }, function(error){
-          $scope.waiting = null
-          console.log(error);
-      })
+		  }, function(error){
+			  $scope.waiting = null
+			  console.log(error);
+		  })
 
     })
     selectedRanges = [];

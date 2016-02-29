@@ -241,6 +241,8 @@
         <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
     </div>
     <div class="item center"> {{message}}</div>
+		
+	<div class="item center alert item-text-wrap" ng-show="avalaivableCourts == null || avalaivableCourts.length == 0"> Nessun campo disponibile per l'orario scelto...</div>
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
      <div class="list">
