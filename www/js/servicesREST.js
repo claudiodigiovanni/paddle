@@ -267,7 +267,7 @@ angular.module('starter.servicesREST', [])
             console.log(error);
           })
 
-        }, 		   
+        },  		   
     acceptInvitation: function(invitation){
              return $http({
 				  url: config.serverAddress + 'api/v1/acceptInvitation',
