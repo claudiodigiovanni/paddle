@@ -42,10 +42,10 @@ var myfunction = {
 						var options = {
 
 							errorCallback: callback,
-							cert: './cert/cert.pem',                 
-							key:  './cert/key.pem',                 
+							cert: './certDev/cert.pem',                 
+							key:  './certDev/key.pem',                 
 							passphrase: 'aleaiactaest',  
-							production:true
+							production:false
 
 						}
 						var apnsConnection = new apn.Connection(options);
