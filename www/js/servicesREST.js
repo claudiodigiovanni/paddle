@@ -3,19 +3,7 @@ angular.module('starter.servicesREST', [])
 .factory('MyObjectsREST', function(Utility,$ionicLoading, $rootScope, config,$q,$http,$httpParamSerializer) {
 	
     return {
-		
-	createBookingObject: function(){
-		function Booking(){}
-			
-			Booking.prototype.set = function(property,value){
-										this[property]=value		 
-									}
-			Booking.prototype.get = function(property){
-										return this[property]		 
-									}
-			
-			return new Booking()
-	},  	
+		 	
 	login: function(email,pass){
 		  
 		  return $http({

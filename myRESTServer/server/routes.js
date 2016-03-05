@@ -52,7 +52,6 @@ router.post('/api/v1/circolo/', function(req, res,next) {
 	
 
 });
-
 router.get('/api/circolo/', function(req, res,next) {
 	
 	Circolo.find({}, function(err, circoli) {
@@ -64,7 +63,6 @@ router.get('/api/circolo/', function(req, res,next) {
 	
 
 });
-
 router.post('/api/v1/dashboardText', function(req, res,next) {
 	var c = req.body.circolo
 	logger.debug('circolo')
@@ -78,6 +76,7 @@ router.post('/api/v1/dashboardText', function(req, res,next) {
 	
 
 });
+
 
 router.post('/api/v1/checkBeforeCreateBooking', function(req, res,next) {
 	var date = new Date(req.body.date)
@@ -176,9 +175,6 @@ router.post('/api/v1/checkBeforeCreateBooking', function(req, res,next) {
 	//*****************************************************
 	
 });
-
-
-
 router.post('/api/v1/findBookingsInDate', function(req, res,next) {
 	logger.debug(req.body)
 	Booking.find({ 'date': req.body.date, 'circolo':req.body.circolo, 'gameType':req.body.gameType })
@@ -188,7 +184,6 @@ router.post('/api/v1/findBookingsInDate', function(req, res,next) {
 		})
 	
 });
-
 router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
 	logger.debug(req.body)
 	
@@ -224,7 +219,6 @@ router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/findBookingsToPayBeforeDate', function(req, res,next) {
 	logger.debug(req.body)
 	Booking.find({ 'circolo':req.body.circolo, 'date': {$lte: req.body.startHour}, 'payed':false  })
@@ -236,8 +230,6 @@ router.post('/api/v1/findBookingsToPayBeforeDate', function(req, res,next) {
 	
             
 });
-
-
 router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
 	logger.debug(req.body)
 	var avalaibleRanges = [];
@@ -266,8 +258,6 @@ router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
 		
 		})            
 });
-
-
 router.post('/api/v1/createBooking', function(req, res,next) {
 	var obj = new Booking()
 	utils.copyProperties(req.body.book,obj)
@@ -319,7 +309,6 @@ router.post('/api/v1/createBooking', function(req, res,next) {
 	});
 	
 });
-
 router.post('/api/v1/findMyBookings-part1', function(req, res,next) {
 	
 	
@@ -332,7 +321,6 @@ router.post('/api/v1/findMyBookings-part1', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/findMyBookings-part2', function(req, res,next) {
 	
 	
@@ -345,7 +333,6 @@ router.post('/api/v1/findMyBookings-part2', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/findCallToAction', function(req, res,next) {
 	
 	
@@ -358,7 +345,6 @@ router.post('/api/v1/findCallToAction', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
   var cta = req.body.cta
   var userId = req.body.user
@@ -411,7 +397,6 @@ router.post('/api/v1/findMyInvitations', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/countMyInvitations', function(req, res,next) {
 	
 	Invitation.count({ 'user':req.body.user })
@@ -421,7 +406,6 @@ router.post('/api/v1/countMyInvitations', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/findMyGameNotPayed-part1', function(req, res,next) {
 	
 	
@@ -434,7 +418,6 @@ router.post('/api/v1/findMyGameNotPayed-part1', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/findMyGameNotPayed-part2', function(req, res,next) {
 	
 	
@@ -447,7 +430,6 @@ router.post('/api/v1/findMyGameNotPayed-part2', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/acceptInvitation', function(req, res,next) {
 	
 	var defer = Q.defer()
@@ -488,7 +470,6 @@ router.post('/api/v1/acceptInvitation', function(req, res,next) {
 			 })	
 		})          
 });
-
 router.post('/api/v1/declineInvitation', function(req, res,next) {
 	
 	Invitation.findByIdAndRemove(req.body.idInvitation)
@@ -500,7 +481,6 @@ router.post('/api/v1/declineInvitation', function(req, res,next) {
 	
             
 });
-
 router.post('/api/v1/saveNote', function(req, res,next) {
 	
 	
@@ -511,7 +491,6 @@ router.post('/api/v1/saveNote', function(req, res,next) {
 	
             
 });
-
 router.get('/api/v1/getRecharges', function(req, res,next) {
 	
 	Recharge.find({user:req.body.user})
@@ -520,7 +499,6 @@ router.get('/api/v1/getRecharges', function(req, res,next) {
 		  res.json({data: recharges});
 		}) 
 });
-
 router.post('/api/v1/addCharge', function(req, res,next) {
 	//TODO....Rsipostsa solo dopo che ho completato le due operazioni...
 	var recharge = new Recharge()
@@ -541,7 +519,6 @@ router.post('/api/v1/addCharge', function(req, res,next) {
 	res.json({message: 'ok'});
 	            
 });
-
 router.get('/api/v1/getPayments', function(req, res,next) {
 	
 	Payment.find({user:req.body.user})
@@ -551,7 +528,6 @@ router.get('/api/v1/getPayments', function(req, res,next) {
 		  res.json({data: payments});
 		}) 
 });
-
 router.get('/api/v1/getPaymentsByBooking', function(req, res,next) {
 	
 	Payment.find({booking:req.body.booking})
@@ -561,7 +537,6 @@ router.get('/api/v1/getPaymentsByBooking', function(req, res,next) {
 		  res.json({data: payments});
 		}) 
 });
-
 router.post('/api/v1/payQuota', function(req, res,next) {
 	
 	var payment = new Payment()
@@ -578,7 +553,6 @@ router.post('/api/v1/payQuota', function(req, res,next) {
 	});
 	          
 });
-
 router.post('/api/v1/payTessera', function(req, res,next) {
 	
 	var payment = new Payment()
@@ -595,8 +569,6 @@ router.post('/api/v1/payTessera', function(req, res,next) {
 	});
 	          
 });
-
-
 router.post('/api/v1/deletePayment', function(req, res,next) {
 	
 	Payment.findById(req.body.payment)
@@ -615,7 +587,6 @@ router.post('/api/v1/deletePayment', function(req, res,next) {
 	
 	          
 });
-
 router.post('/api/v1/enabling', function(req, res,next) {
 	
 	User.findByIdAndUpdate(req.body.user, { enabled: !enabled})
@@ -624,7 +595,6 @@ router.post('/api/v1/enabling', function(req, res,next) {
 			})
 	          
 });
-
 router.post('/api/v1/changeUserLevel', function(req, res,next) {
 	
 	User.findByIdAndUpdate(req.body.user, { level: req.body.level})
@@ -658,7 +628,6 @@ router.post('/api/v1/deleteBooking', function(req, res,next) {
 			})
 	          
 });
-
 router.post('/api/v1/setCallToAction', function(req, res,next) {
 	var defer = Q.defer()
 	Booking.findById(req.body.booking)
@@ -692,7 +661,6 @@ router.post('/api/v1/setCallToAction', function(req, res,next) {
 			})
 
 });
-
 router.post('/api/v1/findPlayersWithName', function(req, res,next) {
 	logger.debug(req.body.name)
 	var name = req.body.name
@@ -703,7 +671,6 @@ router.post('/api/v1/findPlayersWithName', function(req, res,next) {
 			})
 	          
 });
-
 router.post('/api/v1/invite', function(req, res,next) {
 	
 	var promises = []
@@ -734,7 +701,6 @@ router.post('/api/v1/invite', function(req, res,next) {
 	})
 	          
 });
-
 router.post('/api/v1/findInvitationAlredySentForBooking', function(req, res,next) {
 	logger.debug(req.body)
 	Invitation.find({ 'booking':req.body.bookingId})
@@ -744,7 +710,6 @@ router.post('/api/v1/findInvitationAlredySentForBooking', function(req, res,next
 		}) 
 		          
 });
-
 router.post('/api/v1/sendMessageBookingUsers', function(req, res,next) {
 	Booking.findById(req.body.booking).exec(function(err,booking){
 		 var players = booking.players
@@ -761,7 +726,6 @@ router.post('/api/v1/sendMessageBookingUsers', function(req, res,next) {
 	
 		          
 });
-
 router.post('/api/v1/setPreferred', function(req, res,next) {
 	logger.debug('setPreferred')
 	logger.debug(req.body.userToAdd)
@@ -787,7 +751,6 @@ router.post('/api/v1/setPreferred', function(req, res,next) {
 			}) 
 	       
 });
-
 router.post('/api/v1/getPreferred', function(req, res,next) {
 	
 	User.findById(req.body.user)
@@ -800,7 +763,6 @@ router.post('/api/v1/getPreferred', function(req, res,next) {
 	
 		          
 });
-
 router.post('/api/v1/setStatus', function(req, res,next) {
 	
 	//logger.debug('setStatus...' + req.body.user + ":" + req.body.status)
@@ -823,7 +785,6 @@ router.post('/api/v1/setStatus', function(req, res,next) {
 	
 		          
 });
-
 router.post('/api/v1/getPlayersByLevel', function(req, res,next) {
 	
 	User.find({'level':req.body.level, 'circolo': req.body.circolo })
@@ -836,7 +797,6 @@ router.post('/api/v1/getPlayersByLevel', function(req, res,next) {
 	
 		          
 });
-
 router.post('/api/v1/saveImage/', function(req, res,next) {
 	
 	

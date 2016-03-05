@@ -6,6 +6,9 @@ var mongoose = require('mongoose');
 var _ = require('lodash');
 
 
+//*******************
+//require('look').start();
+//*******************
 
 var init = require('./initialize.js');
 

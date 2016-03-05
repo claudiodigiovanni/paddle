@@ -15,34 +15,20 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   $ionicPlatform.ready(function() {
     
 	$rootScope.platform = ionic.Platform.platform()
-    MyObjectsREST.createInstallationObject()
+    //MyObjectsREST.createInstallationObject()
 	
 	
     //**************************************
      console.log("$ionicPlatform.ready...")
     //**************************************
     
-     $rootScope.closeLoading = function(){
-        
-        
-        $ionicLoading.hide()
-        
+    $rootScope.closeLoading = function(){
+        $ionicLoading.hide()   
     }
-
     $rootScope.openLoading = function(){
-        $ionicLoading.show({ template: '<img src="img/logo.png" width=50 height=50>', scope:$rootScope, duration:4000 });
-        
+        $ionicLoading.show({ template: '<img src="img/logo.png" width=50 height=50>', scope:$rootScope, duration:4000 });   
     }
     
-    
-    //**************************************
-    /*if (Parse.User.current())
-        MyObjects.createInstallationObject()*/
-    //**************************************
-    
-    
-    
-  //***************************************
 
 
     if ($rootScope.platform == 'ios' || $rootScope.platform == 'android' ){
@@ -112,61 +98,27 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
         return;
 
     });
-
-    /*var loadingOpen = 0;
-
-    $rootScope.$on('loading:show', function() {
-      loadingOpen = parseInt(loadingOpen) +1
-      if (loadingOpen == 1){
-          $ionicLoading.show({template: 'uhauuu....'})
-      }
-    })
-    $rootScope.$on('loading:hide', function() {
-      loadingOpen = parseInt(loadingOpen) - 1
-      if (loadingOpen == 0){
-        $ionicLoading.hide()
-      }
-    })*/
+	
+	
+	//**************************************
+    if ($rootScope.currentUser)
+        MyObjects.createInstallationObject()
+    //************************************** 
+    
+  //***************************************
 
 })
 
 .constant('config', {
-  //ClayTennisCourtsNumber: 2,
-  //HardTennisCourtsNumber: 2,
-  //PaddleCourtsNumber: 3,
+
   slotsNumber: 48,
   playersLevels:6,
   serverAddress: 'http://178.62.243.221:3000/',
   webServerAddress: 'http://178.62.243.221:8080/'
-  //PaddleCourtsNames: ['Rosso','Blu','Verde']
+  //serverAddress: 'http://localhost:3000/',
+  //webServerAddress: 'http://localhost:8080/'
+
 })
-
-
-/*.config(function($httpProvider) {
-  $httpProvider.interceptors.push(function($rootScope) {
-    return {
-      request: function(config) {
-        console.log('request');
-        console.log(config);
-        $rootScope.$broadcast('loading:show')
-        return config
-      },
-      requestError: function(rejection) {
-        $rootScope.$broadcast('loading:hide')
-        return rejection
-      },
-      response: function(response) {
-        //console.log('response');
-        $rootScope.$broadcast('loading:hide')
-        return response
-      },
-      responseError: function(rejection) {
-        $rootScope.$broadcast('loading:hide')
-        return rejection
-      }
-    }
-  })
-})*/
 
 .config(function($stateProvider, $urlRouterProvider,$httpProvider) {
 
@@ -383,18 +335,11 @@ url: '/gameType',
 cache: true,
 templateUrl: 'templates/setGameType.html',
 controller: 'gameTypeController'
-})
-
-
-
-
-
-;
-
+});
 
   // if none of the above states are matched, use this as the fallback
   //$urlRouterProvider.otherwise('/tab/dash');
-  $urlRouterProvider.otherwise( function($injector, $location) {
+$urlRouterProvider.otherwise( function($injector, $location) {
             var $state = $injector.get("$state");
             $state.go("tab.dash");
         });
