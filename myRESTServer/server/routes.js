@@ -688,7 +688,7 @@ router.post('/api/v1/invite', function(req, res,next) {
                       invitation.booking = req.body.bookingIdCalled
                       invitation.save()
                       
-					  pushMessage(req.body.userIdToInvite,"Olà! Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per i dettagli.")
+					  pushMessage(req.body.userIdToInvite,"Olà!!! Sei stato invitato ad una partita! Vai nella pagina account, sezione inviti, per i dettagli.")
 					  console.log('after push...')
 					  res.json({message:'ok'})
                 }
