@@ -13,10 +13,14 @@ var auth = {
 
   login: function(req, res,next) {
 
-    var email = req.body.email || '';
-    var password = req.body.password || '';
+    
+		var emailOrNome = req.body.email || '';
+    
+		console.log(emailOrNome);
+		
+		var password = req.body.password || '';
 
-    if (email == '' || password == '') {
+    if (emailOrNome == '' || password == '') {
       //res.status(401);
       res.json({
         "status": 401,
@@ -25,7 +29,7 @@ var auth = {
       return;
     }
 	  
-	User.findOne({ 'email': email }).populate('circolo').exec( function (err, user) {
+	User.findOne({ $or: [{'email': emailOrNome},{'nome': emailOrNome}] }).populate('circolo').exec( function (err, user) {
 		
   		if (err) {
 			console.log(err);
