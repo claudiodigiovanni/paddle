@@ -113,10 +113,10 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   slotsNumber: 48,
   playersLevels:6,
-  //serverAddress: 'http://178.62.243.221:3000/',
-  //webServerAddress: 'http://178.62.243.221:8080/'
-  serverAddress: 'http://localhost:3000/',
-  webServerAddress: 'http://localhost:8080/'
+  serverAddress: 'http://192.168.1.71:3000/',
+  webServerAddress: 'http://192.168.1.71:8080/'
+  //serverAddress: 'http://localhost:3000/',
+  //webServerAddress: 'http://localhost:8080/'
 
 })
 
@@ -124,7 +124,6 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   $httpProvider.interceptors.push('TokenInterceptor');
 
-  // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
