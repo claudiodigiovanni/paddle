@@ -133,11 +133,11 @@ angular.module('starter.servicesREST', [])
         
       },
 	findBookingsToPayBeforeDate: function(date){
-        console.log(date)
+    console.log(date)
 		var c = $rootScope.currentUser.circolo
         
 		return $http({
-		  url: config.serverAddress + 'api/v1/findBookingsInDateAndRange',
+		  url: config.serverAddress + 'api/v1/findBookingsToPayBeforeDate',
 		  method: 'POST',
 		  data: {'circolo':c._id, 'date': date}
 		})
@@ -450,10 +450,19 @@ angular.module('starter.servicesREST', [])
 	   return $http({
 			  url: config.serverAddress + 'api/v1/enabling',
 			  method: 'POST',
-			  data: {'user': user._id}
+			  data: {'user': user._id,'enabled':user.enabled}
 	  })
 
 	},
+  getUsersToEnable:function(){
+		
+		 return $http({
+			  url: config.serverAddress + 'api/v1/getUsersToEnable',
+			  method: 'POST',
+			  data: {'circolo': $rootScope.currentUser.circolo}
+	  		})
+
+        },
 	changeUserLevel: function(user){
 		  	var level = user.level
 			return $http({

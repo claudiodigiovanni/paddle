@@ -14,13 +14,13 @@ var auth = {
   login: function(req, res,next) {
 
     
-		var emailOrNome = req.body.email || '';
+		var myemail = req.body.email || '';
     
-		console.log(emailOrNome);
+		console.log(myemail);
 		
 		var password = req.body.password || '';
 
-    if (emailOrNome == '' || password == '') {
+    if (myemail == '' || password == '') {
       //res.status(401);
       res.json({
         "status": 401,
@@ -29,9 +29,9 @@ var auth = {
       return;
     }
 	  
-	User.findOne({ $or: [{'email': emailOrNome},{'nome': emailOrNome}] }).populate('circolo').exec( function (err, user) {
+	User.findOne({ $or: [{'email': myemail},{'nome': myemail}] }).populate('circolo').exec( function (err, user) {
 		
-  		if (err) {
+  	if (err) {
 			console.log(err);
 			return next(err)	
 		}
@@ -70,8 +70,7 @@ var auth = {
   },
   signup: function(req,res,next){
 	    console.log("signup")
-		
-
+	
 		if (req.body.email == '' || req.body.password == '') {
 		 
 		  res.json({
@@ -80,23 +79,34 @@ var auth = {
 		  });
 		  return;
 		}
-		var u = new User()
 		
-		//TODO: copiare campi
-	  	utils.copyProperties(req.body,u)
-		u.enabled = false
-		console.log(u)
-		u.save(function(err) {
-			  console.log(err)
-			  if (err){
-				  next (err);
-				  return
-			  } 
-			  console.log('user saved successfully!');
-			
-			  res.json({succes: true, user: u});
-		});
-			
+		 User.findOne({'email': req.body.email}).exec( function (err, user) {
+			if (user != null) {
+				console.log("signup: check duplicate email...")
+				res.json({
+				"status": 401,
+				"message": "Email gia' esistente!"
+				});
+				return;
+			}
+			console.log("signup: check duplicate email...continue!")
+			var u = new User()
+		
+			//TODO: copiare campi
+			utils.copyProperties(req.body,u)
+			u.enabled = false
+			console.log(u)
+			u.save(function(err) {
+					console.log(err)
+					if (err){
+						next (err);
+						return
+					} 
+					console.log('user saved successfully!');
+				
+					res.json({succes: true, user: u});
+			})
+		})	
 	},
   validateUser: function(email) {
 	 return User.findOne({ 'email': email , 'enabled': true}, function (err, user) {

@@ -1,4 +1,4 @@
-<ion-view>
+
 <ion-header-bar align-title="left" class="bar-positive">
    <!-- Toggle left side menu -->
    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
@@ -12,14 +12,14 @@
 
   <div class="card" ng-repeat="user in users">
     <div class="item item-text-wrap">
-      <b>Username:</b> {{user.get('username')}}<br><br>
-      <b>Nome:</b> {{user.get('nome')}}<br><br>
-      <b>email:</b> {{user.get('email')}}<br><br>
-      <b>Livello:</b> {{user.get('level')}} &nbsp;  
+      <b>Username:</b> {{user.username}}<br><br>
+      <b>Nome:</b> {{user.nome}}<br><br>
+      <b>email:</b> {{user.email}}<br><br>
+      <b>Livello:</b> {{user.level}} &nbsp;  
       <button class="button button-small button-positive" ng-click="userDetailOpen(user)">
           Modifica
       </button><br><br>
-      <b>Data Iscrizione:</b> {{user.createdAt | date:'dd/MM/yyyy'}}<br><br>
+      <b>Data Iscrizione:</b> {{user.created_at | date:'dd/MM/yyyy'}}<br><br>
 
       <button class="button button-small button-positive" ng-click="enableUser(user)">
           Abilita
@@ -28,8 +28,6 @@
   </div>
 </div>
 </ion-content>
-
-</ion-view>
 
 <script id="userDetail.html" type="text/ng-template">
   <div class="modal">

@@ -33,24 +33,25 @@
       <div class="col"><b>Telefono</b></div>
       <div class="col"><b>Data Iscriz.</b></div>
       <div class="col"><b>Livello</b></div>
-      <div class="col"><b>Credito</b></div>
       <div class="col"><b>Abilitato</b></div>
+      <!--<div class="col"><b>Credito</b></div>
+      
       <div class="col"><b>Ricariche</b></div>
-      <div class="col"><b>Pagamenti</b></div>
+      <div class="col"><b>Pagamenti</b></div>-->
     </div>
 
       <div class="row item courtsViewFont" ng-repeat="user in myresults">
-        <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.get('nome')}}</div>
+        <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.nome}}</div>
         
-        <div class="col">{{user.get('phoneNumber')}}</div>
-        <div class="col">{{user.createdAt | date: 'dd/MM/yyyy'}}</div>
-        <div class="col">{{user.get('level')}} <i class="icon ion-edit energized my-ion-checkmark-circled" ng-click="changeLevelOpen(user)"></i></div> 
-        <div class="col">{{user.get('residualCredit')}}</div>
-        <div class="col"><i class="icon my-ion-checkmark-circled {{user.get('enabled') == true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
+        <div class="col">{{user.phoneNumber}}</div>
+        <div class="col">{{user.created_at | date: 'dd/MM/yyyy'}}</div>
+        <div class="col">{{user.level}} <i class="icon ion-edit energized my-ion-checkmark-circled" ng-click="changeLevelOpen(user)"></i></div> 
+        <div class="col"><i class="icon my-ion-checkmark-circled {{user.enabled== true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
+        <!--<div class="col">{{user.residualCredit}}</div>
         
         <div class="col"><i class="icon ion-card my-ion-checkmark-circled" ng-click="getRecharges(user)"></i> </div>
         <div class="col"><i class="icon ion-cash my-ion-checkmark-circled" ng-click="getPayments(user)"></i> </div>
-
+-->
       </div>
   </ion-content>
 
@@ -106,9 +107,9 @@
    
  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
       <div class="row item courtsViewFont" ng-repeat="p in payments">
-          <div class="col">{{p.createdAt | date: "dd/MM/yyyy"}}</div>
-          <div class="col">{{p.get('qty')}}</div>
-          <div class="col">{{p.get('booking').get('date') | date: 'dd/MM/yyyy'}}</div>
+          <div class="col">{{p.created_at | date: "dd/MM/yyyy"}}</div>
+          <div class="col">{{p.qty}}</div>
+          <div class="col">{{p.booking.date| date: 'dd/MM/yyyy'}}</div>
         </div>
 
 <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->

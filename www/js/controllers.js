@@ -336,22 +336,20 @@ $scope.signUp = function() {
     $ionicLoading.hide();
     return
   }
-
-
-
-
   console.log(currentUser);
   MyObjectsREST.signup(currentUser).success(function(data){
 	  console.log(data)
 	  $ionicLoading.hide();
-	  $state.go('waitingToBeEnabled');
-  }).error(function(response){
-	  $ionicLoading.hide();
-	  if (response.error.indexOf('E11000') != -1)
-		  mymessage.text = "Email già utilizzata!"
+   
+	  if (data.status == 401){
+      mymessage.text = "Email già utilizzata!"
+    }
 	  else
-      	mymessage.text = response.error;
-      console.log(response);
+      //mymessage.text = "Errore!";
+      //console.log(response);
+	    $state.go('waitingToBeEnabled');
+  }).error(function(response){
+	  console.log("errore generico signup")
   })
 
   
@@ -1506,7 +1504,7 @@ $scope.closeModalok = function() {
       
 })
   
-.controller('manageUsers', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state,$rootScope){
+.controller('manageUsers', function($scope, MyObjectsREST,$ionicModal,$ionicLoading, Utility,$state,$rootScope){
 
   if($rootScope.userRole == null)
     $state.go('tab.dash')    
@@ -1547,7 +1545,7 @@ $scope.closeModalok = function() {
 
     $scope.changeLevelOpen = function(user){
          $scope.userx = user
-          $scope.userx.level = user.get('level')
+          $scope.userx.level = user.level
           $scope.changeLevelModal.show()
     }
 
@@ -1556,7 +1554,7 @@ $scope.closeModalok = function() {
     }
 
     $scope.confirmChangeLevel = function(user){
-      user.set('level',user.level)
+      //user.level = user.level
        MyObjectsREST.changeUserLevel(user)
       .then(
         function(obj){
@@ -1577,10 +1575,10 @@ $scope.closeModalok = function() {
           template: 'Loading...'
         });
          MyObjectsREST.findPlayersWithName($scope.userToSearch.nome)
-        .then(function(ret){
+        .then(function(response){
           $ionicLoading.hide()
-          $scope.myresults = ret
-          if (ret.length == 0)
+          $scope.myresults = response.results
+          if (response.results.length == 0)
             $scope.message = "Nessun utente trovato..."
         },function(error){
           $ionicLoading.hide()
@@ -1651,11 +1649,11 @@ $scope.closeModalok = function() {
          MyObjectsREST.enabling(user)
         .then(function(ret){
            MyObjectsREST.findPlayersWithName($scope.userToSearch.nome)
-        .then(function(ret){
+        .then(function(response){
           $ionicLoading.hide()
-          $scope.myresults = ret
-          $scope.$apply()
-          if (ret.length == 0)
+          $scope.myresults = response.results
+          //$scope.$apply()
+          if (response.results.length == 0)
             $scope.message = "Nessun utente trovato..."
         })
         })
@@ -1674,10 +1672,10 @@ $scope.closeModalok = function() {
       });
        MyObjectsREST.getUsersToEnable()
       .then(
-        function(results){
+        function(response){
           
-          $scope.myresults = results
-          if (results.length == 0)
+          $scope.myresults = response.results
+          if (response.results.length == 0)
             $scope.message = "Nessun utente trovato..."
           $ionicLoading.hide();
 
@@ -1724,10 +1722,10 @@ $scope.closeModalok = function() {
       $scope.waiting = "....."
        MyObjectsREST.findBookingsToPayBeforeDate(today)
       .then(
-        function(results){
+        function(response){
            $scope.waiting = null
-          $scope.results = results
-          $scope.$apply()
+          $scope.results = response.results
+          //$scope.$apply()
 
       }, function(error){
         console.log(error);
@@ -2200,7 +2198,7 @@ $scope.closeModalok = function() {
 
 })
 
-.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjects,$state,$ionicLoading,$ionicPopup,$ionicModal,$rootScope) {
+.controller('UserToEnable', function($scope, $stateParams, Utility, MyObjectsREST,$state,$ionicLoading,$ionicPopup,$ionicModal,$rootScope) {
 
    if($rootScope.userRole == null)
     $state.go('tab.dash')  
@@ -2218,9 +2216,9 @@ $scope.closeModalok = function() {
   });
    MyObjectsREST.getUsersToEnable()
   .then(
-    function(results){
-      console.log(results);
-      $scope.users=results
+    function(response){
+      console.log(response);
+      $scope.users=response.results
       //alert(results[0]);
       //$scope.$apply();
       $ionicLoading.hide();
@@ -2233,7 +2231,7 @@ $scope.closeModalok = function() {
   $scope.userDetailOpen = function(user){
 
     $scope.userx = user
-    $scope.userx.level = user.get('level')
+    $scope.userx.level = user.level
     $scope.modal.show()
   }
 
@@ -2273,7 +2271,7 @@ $scope.closeModalok = function() {
 
 
   $scope.confirmChangeLevel = function(user){
-      user.set('level',user.level)
+      //user.level = user.level
        MyObjectsREST.changeUserLevel(user)
       .then(
         function(obj){

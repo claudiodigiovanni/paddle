@@ -221,7 +221,7 @@ router.post('/api/v1/findBookingsInDateAndRange', function(req, res,next) {
 });
 router.post('/api/v1/findBookingsToPayBeforeDate', function(req, res,next) {
 	logger.debug(req.body)
-	Booking.find({ 'circolo':req.body.circolo, 'date': {$lte: req.body.startHour}, 'payed':false  })
+	Booking.find({ 'circolo':req.body.circolo, 'date': {$lte: req.body.date}, 'payed':false  })
 		.sort('-date')
 		.populate('players user')
 		.exec( function (err, bookings) {
@@ -589,17 +589,29 @@ router.post('/api/v1/deletePayment', function(req, res,next) {
 });
 router.post('/api/v1/enabling', function(req, res,next) {
 	
-	User.findByIdAndUpdate(req.body.user, { enabled: !enabled})
+	User.findByIdAndUpdate(req.body.user, { 'enabled': !req.body.enabled})
 			.exec( function (err, user) {
-			  logger.debug('User residualCredit saved successfully!');
+			  logger.debug('User enabled saved successfully!');
+				res.json({message: 'ok'});
 			})
 	          
 });
+
+router.post('/api/v1/getUsersToEnable', function(req, res,next) {
+	
+	User.find({'enabled':false, 'circolo': req.body.circolo })	
+		.exec( function (err, results) {
+			  res.json({'data': results});
+		}) 
+		
+});
+
 router.post('/api/v1/changeUserLevel', function(req, res,next) {
 	
 	User.findByIdAndUpdate(req.body.user, { level: req.body.level})
 			.exec( function (err, user) {
 			  logger.debug('User changeUserLevel saved successfully!');
+				res.json({message: 'ok'});
 			})
 	          
 });
