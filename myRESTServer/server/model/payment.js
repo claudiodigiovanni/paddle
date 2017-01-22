@@ -24,6 +24,7 @@ paymentSchema.pre('save', function (next) {
 	if (payment.isNew){
 		payment.created_at = currentDate
 	}
+  next()	
 })
 
 var Payment = mongoose.model('Payment', paymentSchema);

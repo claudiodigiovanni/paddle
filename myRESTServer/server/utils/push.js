@@ -11,7 +11,7 @@ var myfunction = {
 	
 	pushMessage : function(user,message){
 			console.log('pushMessage')
-			var mx = message
+		/*	var mx = message
 			
 			
 			User.findById(user).exec(function(err,user){
@@ -73,7 +73,7 @@ var myfunction = {
 					}
 
 				})	
-			})
+			})*/
 	
 		}
 

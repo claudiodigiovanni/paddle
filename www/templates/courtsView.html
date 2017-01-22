@@ -13,7 +13,7 @@
           <input type="text" placeholder="nome (note)" ng-model="mybooking.note" ng-change="clear()">
         </label>
         <button class="button button-small positive" ng-click="book()">
-          Conferma
+          Conferma...
         </button>
         <button class="button button-energized " ng-click="updateView()">
           Aggiorna
@@ -75,26 +75,30 @@
     <li class="item">
       <b><i class="icon ion-person"></i></b>&nbsp;{{bookingx.user.nome}} &nbsp;
     </li>
-    <li class="item center">
-        <button class="button  button-positive button-small" ng-click="payQuota(bookingx)">
-          Aggiungi Quota
-        </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="button  button-positive button-small" ng-click="payTessera(bookingx)">
-          Aggiungi Tessera
-        </button>&nbsp;&nbsp;
     
-    </li>
     <li class="item">
-      <ion-item class="center">Dettaglio</ion-item>
+      <ion-item class="center"><b>Dettaglio Pagamenti</b></ion-item>
       <ion-item class="center" ng-show="waiting">
         <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
       </ion-item>
       <ion-list >
+         <ion-item ng-show="payments.length == 0">
+          Nessun pagamento!
+         </ion-item>
         <ion-item ng-repeat="p in payments">
             {{p.type}} - 
-            <span ng-show="p.user"> {{p.user.nome}} - </span> Data: {{p.createdAt | date: "dd/MM/yyyy HH.mm.ss"}} &nbsp;&nbsp;<i class="icon ion-close my-ion-information-circled assertive" ng-click="deletePayment(p)"></i>
+            <span ng-show="p.user"> {{p.user.nome}} - </span> Data: {{p.created_at | date: "dd/MM/yyyy HH.mm.ss"}} &nbsp;&nbsp;<i class="icon ion-close my-ion-information-circled assertive" ng-click="deletePayment(p)"></i>
         </ion-item>
       </ion-list>
+    </li>
+    <li class="item center">
+        <button class="button  button-positive button-small" ng-click="payQuota(bookingx)">
+          Aggiungi Quota
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <!--<button class="button  button-positive button-small" ng-click="payTessera(bookingx)">
+          Aggiungi Tessera
+        </button>&nbsp;&nbsp;-->
+    
     </li>
 
         

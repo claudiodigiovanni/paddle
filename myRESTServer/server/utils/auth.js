@@ -80,16 +80,16 @@ var auth = {
 		  return;
 		}
 		
-		 User.findOne({'email': req.body.email}).exec( function (err, user) {
+		 User.findOne({$or: [{'email': req.body.email},{'nome': req.body.nome}]}).exec( function (err, user) {
 			if (user != null) {
-				console.log("signup: check duplicate email...")
+				console.log("signup: check duplicate email or nome...")
 				res.json({
 				"status": 401,
-				"message": "Email gia' esistente!"
+				"message": "Email o nome gia' esistente!"
 				});
 				return;
 			}
-			console.log("signup: check duplicate email...continue!")
+			console.log("signup: check duplicate email/nome...continue!")
 			var u = new User()
 		
 			//TODO: copiare campi

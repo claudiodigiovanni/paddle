@@ -377,7 +377,7 @@ angular.module('starter.servicesREST', [])
 		   console.log(booking)
 		   return $http({
 				  url: config.serverAddress + 'api/v1/getPaymentsByBooking',
-				  method: 'GET',
+				  method: 'POST',
 				  data: {'booking': booking._id}
 		  })
            
@@ -478,6 +478,14 @@ angular.module('starter.servicesREST', [])
               return $rootScope.currentUser
           })
         },
+
+  setBookingPayed: function(booking){
+      return $http({
+			  url: config.serverAddress + 'api/v1/setBookingPayed',
+			  method: 'POST',
+			  data: {'booking': booking._id}
+	  })
+  },
 	//Se l'utente in sessione ha ruolo admin o segreteria elimino e basta
     //KKK eliminare le invitations
     //Se l'utente in sessione è l'organizzatore la partita viene cancellata
@@ -523,14 +531,33 @@ angular.module('starter.servicesREST', [])
 		
   	findInvitationAlredySentForBooking: function(bookingId){
 
-           return $http({
-			  url: config.serverAddress + 'api/v1/findInvitationAlredySentForBooking',
-			  method: 'POST',
-			  data: {'bookingId': bookingId}
+        return $http({
+          url: config.serverAddress + 'api/v1/findInvitationAlredySentForBooking',
+          method: 'POST',
+          data: {'bookingId': bookingId}
 	  		})
 
-        },   
-	createInstallationObject: function(){
+        },
+
+      /*statsByBookingAndMonth:function(month,year){
+          
+          return $http({
+            url: config.serverAddress + 'api/v1/statsByBookingAndMonth',
+            method: 'POST',
+            data: {'month': month,'year':year}
+	  		  })
+        },*/
+
+        statsByBookingAndYear:function(year){
+          console.log($rootScope.currentUser.circolo)
+          return $http({
+            url: config.serverAddress + 'api/v1/statsByBookingAndYear',
+            method: 'POST',
+            data: {'year':year,'circolo': $rootScope.currentUser.circolo}
+	  		  })
+        },
+
+	  createInstallationObject: function(){
 
 
             var push = new Ionic.Push({

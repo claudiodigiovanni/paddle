@@ -177,8 +177,15 @@
     <b><i class="icon ion-android-pin my-ion-checkmark-circled"></i></b> {{booking.court | courtName:booking.gameType }} &nbsp;
 </span>
 
-
 <div class="row" ng-hide="waiting">
+      <div class="col">
+       <button class="button  button-block button-positive" ng-click="closeModalok()">
+         <i class="icon ion-close-circled" ></i> <small>chiudi</small>
+      </button>
+      </div>
+</div>
+
+<!--<div class="row" ng-hide="waiting">
       <div class="col">
        <button class="button  button-block button-positive" ng-click="gotoInvitation()">
          <i class="icon ion-at" ></i> <small>Invita amici</small>
@@ -189,7 +196,7 @@
            <i class="icon ion-calendar " ></i> <small>Save the Date</small>
       </button>
       </div>
-</div>
+</div>-->
     
     </ion-content>
   </div>

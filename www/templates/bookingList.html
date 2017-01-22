@@ -58,6 +58,9 @@
      <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner>
   </div>
   <!-- xxx -->
+  <div class="center" ng-show="results.length == 0">
+     Tutte le partite sono state saldate!
+  </div>
   <show-bookings bookings="results" text="Prenotazioni precedenti da saldare" pay="setBookingPayed(b)" delete="delete(b)" showpay="true"></show-bookings>
   <!-- xxx -->
 

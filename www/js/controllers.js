@@ -342,7 +342,7 @@ $scope.signUp = function() {
 	  $ionicLoading.hide();
    
 	  if (data.status == 401){
-      mymessage.text = "Email già utilizzata!"
+      mymessage.text = "Email o nome già utilizzati!"
     }
 	  else
       //mymessage.text = "Errore!";
@@ -859,29 +859,29 @@ $scope.closeModalok = function() {
      MyObjectsREST.addCallToActionPlayer(cta)
     .then(
       function(response){
-		if (response.data.status == 200){
-			$scope.waiting = null
-			 MyObjectsREST.findCallToAction()
-			.then(
-			  function(response){
-				$scope.callToActionOpen = response.results
-			}, function(error){
-			  $scope.waiting = null
-			  console.log(error);
-			})
-		}
-		else{
-			  $scope.waiting = null
-			  console.log(error);
-			  var alertPopup = $ionicPopup.alert({
-				 title: 'Opsss!',
-				 template: error
-			   });
-			   alertPopup.then(function(res) {
-				 console.log('Thank you for not eating my delicious ice cream cone!');
-				 selectedRanges = [];
-			   });
-		}
+          if (response.data.status == 200){
+            $scope.waiting = null
+            MyObjectsREST.findCallToAction()
+            .then(
+              function(response){
+              $scope.callToActionOpen = response.results
+            }, function(error){
+              $scope.waiting = null
+              console.log(error);
+            })
+          }
+          else{
+              $scope.waiting = null
+              //console.log(error);
+              var alertPopup = $ionicPopup.alert({
+              title: 'Opsss!',
+              template: "error"
+              });
+              alertPopup.then(function(res) {
+              console.log('Thank you for not eating my delicious ice cream cone!');
+              selectedRanges = [];
+              });
+          }
     })
   }
 })
@@ -1723,7 +1723,7 @@ $scope.closeModalok = function() {
        MyObjectsREST.findBookingsToPayBeforeDate(today)
       .then(
         function(response){
-           $scope.waiting = null
+          $scope.waiting = null
           $scope.results = response.results
           //$scope.$apply()
 
@@ -1761,12 +1761,13 @@ $scope.closeModalok = function() {
 
   };*/
 
-    $scope.setBookingPayed = function(booking){
+  $scope.setBookingPayed = function(booking){
 
      MyObjectsREST.setBookingPayed(booking)
     .then(
       function(obj){
         console.log('ok');
+        booking.payed = true
     }, function(error){
       console.log(error);
     })
@@ -1778,17 +1779,15 @@ $scope.closeModalok = function() {
 
     console.log('delete');
      $scope.waiting = "......"
-    
-    var m = parseInt($scope.currentMonth) + 1
-    var datex = $scope.currentYear + "/" + m + "/" + $scope.selectedDay
-
+  
      MyObjectsREST.deleteBooking(item)
     .then(function(item){
-      return  MyObjectsREST.findBookingsToPayBeforeDate(new Date(datex))
+      return  MyObjectsREST.findBookingsToPayBeforeDate(today)
     })
     .then(
-      function(results){
-        $scope.results = results
+      function(response){
+        console.log(response);
+        $scope.results = response.results
          $scope.waiting = null
         //$scope.$apply()
     }, function(error){
@@ -2087,10 +2086,12 @@ $scope.closeModalok = function() {
 
 
   $scope.setBookingPayed = function(booking){
+    
      MyObjectsREST.setBookingPayed(booking)
     .then(
       function(obj){
         console.log('ok');
+        booking.payed = true
     }, function(error){
       console.log(error);
     })
@@ -2137,19 +2138,17 @@ $scope.closeModalok = function() {
      MyObjectsREST.createBooking(mybooking)
     .then(
       function(result){
-      //console.log('state.go....') 
-      //$state.go('tab.courtsView',{'datez': datex});
-      // MyObjectsREST.courtsView(new Date( datex))
-      _.each(mybooking.ranges, function(range,index){
+      init()
+      /*_.each(mybooking.ranges, function(range,index){
 
           var row = _.find($scope.myresults, function(row){
               return row.range == range
           })
           row.courts[parseInt(mybooking.court) - 1].push(result)
           selectedRanges = []
-          $scope.$apply()
+          //$scope.$apply()
 
-      })
+      })*/
 
     }, function(error){
   
@@ -2171,9 +2170,9 @@ $scope.closeModalok = function() {
         console.log(error);
       })
     .then(
-      function(results){
+      function(response){
         $scope.waiting = null
-         $scope.payments = results
+         $scope.payments = response.results
       })
     
   };
@@ -2287,7 +2286,7 @@ $scope.closeModalok = function() {
 
 })
 
-.controller('statsController', function($scope, MyObjects,$ionicModal,$ionicLoading, Utility,$state,$stateParams,$rootScope){
+.controller('statsController', function($scope, MyObjectsREST,$ionicModal,$ionicLoading, Utility,$state,$stateParams,$rootScope){
 
     if($rootScope.userRole != 'admin')
       $state.go('tab.dash')    
@@ -2300,7 +2299,7 @@ $scope.closeModalok = function() {
     $scope.month = parseInt(month)+1
     $scope.year = year
 
-     MyObjectsREST.statsByBookingAndMonth(month,year)
+     /*MyObjectsREST.statsByBookingAndMonth(month,year)
     .then(function(results){
       //$scope.waiting = null
       $scope.statsByBookingAndMonth = results
@@ -2329,7 +2328,7 @@ $scope.closeModalok = function() {
     
       }, function(error){
         console.log(error);
-      })
+      })*/
 
 
      MyObjectsREST.statsByBookingAndYear(year).then(
@@ -2344,9 +2343,10 @@ $scope.closeModalok = function() {
 
 
           var data1 = []
-          data1.push(obj)
+          data1.push(obj.data.results)
           
           $scope.data1 = data1
+          $scope.waiting = null
           
           //$scope.$apply()
     
@@ -2354,7 +2354,7 @@ $scope.closeModalok = function() {
         console.log(error);
       })
 
-     MyObjectsREST.statsByPaymentAndYear(year).then(
+    /* MyObjectsREST.statsByPaymentAndYear(year).then(
         function(obj){
           var quote = _.take(obj,12)
           var tariffe = _.takeRight(obj,12)
@@ -2376,7 +2376,7 @@ $scope.closeModalok = function() {
       }, function(error){
         console.log(error);
       })
-  
+  */
 
    
   $scope.goBack = function() {

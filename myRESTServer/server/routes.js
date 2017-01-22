@@ -347,6 +347,7 @@ router.post('/api/v1/findCallToAction', function(req, res,next) {
 });
 router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
   var cta = req.body.cta
+	console.log("cta:" + cta._id)
   var userId = req.body.user
   
   var defer = Q.defer()
@@ -357,28 +358,33 @@ router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
   else{
 	var players = cta.players
 	if (! _.find(players,{_id:userId})){
-
+		console.log('111111')
 	  Booking.findByIdAndUpdate(cta._id, {$push: { 'players': userId }})
 		.populate('players')
 		.exec( function (err, booking) {
 		
-			 var numPlayers = booking.playersNumber
+			/* var numPlayers = booking.playersNumber
+			 console.log('222222')
 			 if (booking.callToAction == true && booking.players.length == numPlayers ){
 				 var players = booking.players
 				_.each(players,function(item){
-					
-					pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
+					console.log("invio comunicazione utente...")
+					//pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
 				})
-			 }
+			 }*/
 		  	defer.resolve(booking)
 		  	
 		}) 
-	}else
-	  defer.reject('Utente già inserito') 
+	} else{
+			defer.reject('Utente già inserito') 
+			console.log("Utente già inserito")
+	}
+	  
   }   
-    defer.promise .then(
+	console.log('33333')
+  defer.promise .then(
 	function(obj){
-		res.json({status: 200, data: booking});
+		res.json({status: 200, data: obj});
 	},
 	function(error){
 		res.json({status: 400});
@@ -528,7 +534,7 @@ router.get('/api/v1/getPayments', function(req, res,next) {
 		  res.json({data: payments});
 		}) 
 });
-router.get('/api/v1/getPaymentsByBooking', function(req, res,next) {
+router.post('/api/v1/getPaymentsByBooking', function(req, res,next) {
 	
 	Payment.find({booking:req.body.booking})
 		.populate('user booking')
@@ -538,17 +544,17 @@ router.get('/api/v1/getPaymentsByBooking', function(req, res,next) {
 		}) 
 });
 router.post('/api/v1/payQuota', function(req, res,next) {
-	
+	logger.debug('payQuota!');
 	var payment = new Payment()
 	payment.circolo = req.body.circolo
 	payment.booking = req.body.booking
 	payment.type="quota"
 	payment.qty = 1 
 	payment.save(function(err) {
-
+		logger.debug('xxxx');
 	  if (err) next(err);
 		
-	  	logger.debug('payment saved successfully!');
+	  logger.debug('payment saved successfully!');
 		res.json({message: 'ok', data:payment});
 	});
 	          
@@ -572,21 +578,36 @@ router.post('/api/v1/payTessera', function(req, res,next) {
 router.post('/api/v1/deletePayment', function(req, res,next) {
 	
 	Payment.findById(req.body.payment)
-		.populate('booking')
+		//.populate('booking')
 		.exec(function(error,payment){
-		var user = payment.user
+		/*var user = payment.user
 		if (user != null){
 			User.findByIdAndUpdate(user, { $inc: { residualCredit: -1 }})
 			.exec( function (err, user) {
 			  logger.debug('User residualCredit saved successfully!');
 			})
-		}
-		
+		}*/
+		payment.remove()
 		res.json({message: 'ok'});
 	})
 	
 	          
 });
+
+
+
+router.post('/api/v1/setBookingPayed', function(req, res,next) {
+	
+	Booking.findByIdAndUpdate(req.body.booking, { 'payed': true})
+			.exec( function (err, user) {
+			  logger.debug('Booking payed!');
+				res.json({message: 'ok'});
+			})
+	          
+});
+
+
+
 router.post('/api/v1/enabling', function(req, res,next) {
 	
 	User.findByIdAndUpdate(req.body.user, { 'enabled': !req.body.enabled})
@@ -849,6 +870,52 @@ router.post('/api/v1/saveImage/', function(req, res,next) {
 	
 	
 
+});
+
+
+
+/*router.post('/api/v1/statsByBookingAndMonth/', function(req, res,next) {
+          //console.log(month)
+          
+
+          var Booking = Parse.Object.extend("Booking");
+          var query = new Parse.Query(Booking);
+          query.greaterThanOrEqualTo("date", startDate);
+          query.lessThanOrEqualTo("date", endDate);
+          var c = Parse.User.current().get('circolo')
+          query.equalTo('circolo',c)
+
+          return query.count()
+});*/
+
+router.post('/api/v1/statsByBookingAndYear/', function(req, res,next) {
+					var year = req.body.year
+					var circolo = req.body.circolo
+          var promises = []
+					var ranges = _.range(0, 12);
+          _.each(ranges, function(month){
+
+						var daysInMonth = utils.getDaysInMonth(month,year);
+						var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
+						var endDate =new Date( year + "/" + (parseInt(month) +1) + "/" + daysInMonth);
+						endDate.setHours(23)
+						endDate.setMinutes(59)
+						var promise = Booking.count({ 'circolo':circolo,'date': {$gte: startDate,$lte: endDate} })
+							.exec( function (err, booking) {
+								console.log(booking)
+								
+						})
+						promises.push(promise)
+          })
+	
+					Q.all(promises).then(function(results){
+						console.log(results)
+						res.json({'results': results});
+					})
+          
+          
+
+         
 });
              		
 /*
