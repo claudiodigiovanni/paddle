@@ -706,7 +706,7 @@ angular.module('starter.servicesREST', [])
         }
    	  //*****************TODO**********************
 	  /*
-         statsByBookingAndMonth:function(month,year){
+        statsByBookingAndMonth:function(month,year){
           //console.log(month)
           var daysInMonth = Utility.getDaysInMonth(month,year);
           var startDate = new Date(year + "/" + (parseInt(month) +1) + "/" + 1);
@@ -1038,7 +1038,7 @@ angular.module('starter.servicesREST', [])
         query.equalTo('circolo',c)
         return query.find()
       },
-	getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
+	  getCoachAvalabilitiesFilteredByBookings:function(month,year,maestroId, typeG){
 
             var courtsAvalabilities = []
             var avalabilities = []

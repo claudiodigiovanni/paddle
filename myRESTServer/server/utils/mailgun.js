@@ -9,7 +9,7 @@ var myfunction = {
 		
 	var data = {
     //Specify email data
-      from: 'magicpade@magicpadel.it',
+      from: 'magicpadel@magicpadel.it',
     //The email to contact
       to: email,
     	//Subject and text data  
