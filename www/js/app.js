@@ -15,6 +15,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   $ionicPlatform.ready(function() {
     
 	$rootScope.platform = ionic.Platform.platform()
+    //Scommentare per APP
     //MyObjectsREST.createInstallationObject()
 	
 	
@@ -70,11 +71,11 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 		else if (currentUser) {
 
             $rootScope.currentUser = currentUser;
-			$rootScope.userRole = currentUser.role
+			      $rootScope.userRole = currentUser.role
 
             if ($rootScope.gameTypes == null){
-				var circolo = JSON.parse(window.localStorage['user']).circolo
-				var gameTypes = []
+                var circolo = JSON.parse(window.localStorage['user']).circolo
+                var gameTypes = []
                 gameTypes.push(circolo.gameType1)
                 gameTypes.push(circolo.gameType2)
                 gameTypes.push(circolo.gameType3)
@@ -100,12 +101,12 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
     });
 	
 	
-	//**************************************
-    if ($rootScope.currentUser)
-        MyObjects.createInstallationObject()
-    //************************************** 
+	  //**************************************SCOMMENTARE per APP**********************
+    //if ($rootScope.currentUser)
+    //    MyObjects.createInstallationObject()
+    //******************************************************************************* 
     
-  //***************************************
+ 
 
 })
 
@@ -113,10 +114,10 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   slotsNumber: 48,
   playersLevels:6,
-  serverAddress: 'http://192.168.1.71:3000/',
-  webServerAddress: 'http://192.168.1.71:8080/'
-  //serverAddress: 'http://localhost:3000/',
-  //webServerAddress: 'http://localhost:8080/'
+  //serverAddress: 'http://192.168.1.71:3000/',
+  //webServerAddress: 'http://192.168.1.71:8080/'
+  serverAddress: 'http://localhost:3000/',
+  webServerAddress: 'http://localhost:8080/'
 
 })
 

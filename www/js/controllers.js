@@ -2414,7 +2414,7 @@ $scope.ok = function(){
 
 //{date: new Date(d), ranges:selectedRanges, maestro:maestro1}
 //Funzione disponibile solo a Maestro!!!!
-.controller('SetAvalability', function($scope, $stateParams, Utility, MyObjects) {
+/*.controller('SetAvalability', function($scope, $stateParams, Utility, MyObjectsREST) {
 
   var currentDate = new Date();
   var currentMonth = parseInt(currentDate.getMonth())  ;
@@ -2557,5 +2557,5 @@ $scope.ok = function(){
 
   }
 
-})
+})*/
 
