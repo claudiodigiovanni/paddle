@@ -135,7 +135,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 		url: '/resetPwd/:user/:token',
 		cache: true,
 		templateUrl: 'templates/resetPwd.html',
-	  	controller: 'resetPwdCtrl'
+	  controller: 'resetPwdCtrl'
 
 	  })
   

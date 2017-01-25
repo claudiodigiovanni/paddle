@@ -193,13 +193,12 @@ $scope.login = function(){
 		$rootScope.currentUser = response.user
 		console.log(response.user)
 
-		MyObjectsREST.createInstallationObject()
+		//MyObjectsREST.createInstallationObject()
 		$scope.modal.hide();
 		$ionicLoading.hide();
 		$state.go('tab.dash');
 	}
 		
-	
   }).error(function(response) {
 	
   	$ionicPopup.alert({
@@ -330,9 +329,9 @@ $scope.signUp = function() {
   return
 }*/
 
-  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.password === null || currentUser.circolo === undefined){
+  if ( !$scope.privacy || currentUser.email === null || currentUser.email === undefined || currentUser.username === null || currentUser.username === undefined|| currentUser.password === null || currentUser.circolo === undefined){
     console.log(currentUser);
-    mymessage.text = "Occorre inserire email, password, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
+    mymessage.text = "Occorre inserire email, password, username, circolo e accettare le condizioni contenute nell'informativa sulla privacy."
     $ionicLoading.hide();
     return
   }
@@ -342,7 +341,7 @@ $scope.signUp = function() {
 	  $ionicLoading.hide();
    
 	  if (data.status == 401){
-      mymessage.text = "Email o nome già utilizzati!"
+      mymessage.text = "Email o Username già utilizzati!"
     }
 	  else
       //mymessage.text = "Errore!";
@@ -372,38 +371,30 @@ $scope.undo = function(){
 	$state.go('login');
 }
 $scope.changePassword = function() {
-  //$scope.modal.hide();
-  
-	
-  //$rootScope.$broadcast('openLoginModal', 'x' );
-	MyObjectsREST.resetPwd(currentUser.newPassword,$stateParams.user,$stateParams.token).then(
-	function(response){
-		console.log(response)
-		if (response.data.status != 400){
-			var popup = $ionicPopup.alert({
-             template: "Reset Password avvenuto con successo "
-			});
-			popup.then(function(res) {
-				$state.go('login');
-			//console.log('xxxx')
-			});
-		}
-		else{
-			var popup = $ionicPopup.alert({
-             template: "ehiiii non ci provare!!!! "
-			});
-			popup.then(function(res) {
-				$state.go('login');
-			//console.log('xxxx')
-			});
-			
-		}
-		
-		
-	})
-	
-	
-	
+  console.log('changePassword.....')
+    MyObjectsREST.resetPwd(currentUser.newPassword,$stateParams.user,$stateParams.token).then(
+    function(response){
+      console.log(response)
+      if (response.data.status != 400){
+        var popup = $ionicPopup.alert({
+                template: "Reset Password avvenuto con successo "
+        });
+        popup.then(function(res) {
+          $state.go('login');
+        //console.log('xxxx')
+        });
+      }
+      else{
+        var popup = $ionicPopup.alert({
+                template: "ehiiii non ci provare!!!! "
+        });
+        popup.then(function(res) {
+          $state.go('login');
+        //console.log('xxxx')
+        });
+        
+      }
+    })	
 };
 
 
@@ -2021,28 +2012,26 @@ $scope.closeModalok = function() {
   }
 
   $scope.payQuota = function(booking){
-        
         $scope.waiting = "......"
          MyObjectsREST.payQuota(booking).then(
             function(response){
               $scope.waiting = null
               $scope.payments.push(response.results) 
               //$scope.$apply()
-        
           }, function(error){
-            $scope.waiting = null
-            console.log(error);
+              $scope.waiting = null
+              console.log(error);
           })
       
     }
 
     $scope.payTessera = function(booking){
       $scope.waiting = "......"
-       MyObjectsREST.payTessera(Parse.User.current(),booking,1)
-          .then(function(tessera){
+       MyObjectsREST.payTessera(booking).then(
+         function(response){
             $scope.waiting = null
-            $scope.payments.push(tessera) 
-            $scope.$apply()
+            $scope.payments.push(response.results) 
+            //$scope.$apply()
             //$scope.$apply()
           }, function(error){
                   console.log(error)
@@ -2105,17 +2094,17 @@ $scope.closeModalok = function() {
      MyObjectsREST.deleteBooking(mybooking)
     .then(function(){
       
-      _.each(mybooking.get('ranges'), function(range,index){
+      _.each(mybooking.ranges, function(range,index){
 
           var row = _.find($scope.myresults, function(row){
               return row.range == range
           })
-          var index = _.findIndex(row.courts[parseInt(mybooking.get('court')) - 1],function(b){
+          var index = _.findIndex(row.courts[parseInt(mybooking.court) - 1],function(b){
             return b.id == mybooking.id
           })
-          row.courts[parseInt(mybooking.get('court')) - 1].splice(index,1);
+          row.courts[parseInt(mybooking.court) - 1].splice(index,1);
           selectedRanges = []
-          $scope.$apply()
+          //$scope.$apply()
 
       })
     },function(error){

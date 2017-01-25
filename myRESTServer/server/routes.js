@@ -24,7 +24,7 @@ var mail = require('./utils/mailgun.js')
  */ 
 
 router.post('/login', auth.login);
-router.post('/registerToken', auth.registerToken);
+//router.post('/registerToken', auth.registerToken);
 router.post('/signup', auth.signup);
 router.post('/requestPasswordReset',auth.requestPasswordReset);
 router.post('/resetPwd',auth.resetPwd);
@@ -567,11 +567,9 @@ router.post('/api/v1/payTessera', function(req, res,next) {
 	payment.type="tessera"
 	payment.qty = 1 
 	payment.save(function(err) {
-
-	  if (err) next(err);
-		
-	  	logger.debug('payment saved successfully!');
-		res.json({message: 'ok'});
+		if (err) next(err);
+		logger.debug('payment saved successfully!');
+		res.json({message: 'ok',data:payment});
 	});
 	          
 });

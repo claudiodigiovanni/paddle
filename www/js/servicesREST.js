@@ -47,6 +47,74 @@ angular.module('starter.servicesREST', [])
 			 }
 		})
 	},
+  /*createInstallationObject: function(){
+
+
+            var push = new Ionic.Push({
+              "debug": false,
+              "onNotification": function(notification) {
+                var payload = notification.payload;
+                console.log('notifica.....')
+				        console.log(notification)
+                $ionicLoading.show({ template: notification.text, duration:3000 });
+
+                //alert(notification, payload);
+                try{
+                  if (window.localStorage['notifications'] == null){
+                  var notifications = {messages:[]}
+                  window.localStorage['notifications'] = JSON.stringify(notifications)
+                  }
+                  var notifications = JSON.parse(window.localStorage['notifications'])
+                  var id = (new Date()).getTime()
+                  notifications.messages.push({_id:id, date:new Date(), message:notification.text })
+                  window.localStorage['notifications'] = JSON.stringify(notifications)
+                  $rootScope.notificationCount = notifications.messages.length 
+                }
+                catch(error){
+                  console.log(error)
+                }
+              },
+              "onRegister": function(data) {
+                console.log(data.token);
+              },
+              "pluginConfig": {
+                "ios": {
+                  "badge": true,
+                  "sound": true
+                 },
+                 "android": {
+
+                 }
+              } 
+            });
+            console.log('********registerToken********:' + $rootScope.platform)
+            if ($rootScope.platform == 'ios' || $rootScope.platform == 'android'){
+              push.register(function(token) {
+                console.log("Device token:",token.token);
+                window.localStorage['deviceToken'] = token.token
+                $http({
+                  url: config.serverAddress + 'registerToken',
+                  method: 'POST',
+                  data: {'user':$rootScope.currentUser._id, 'deviceToken':token.token, 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                  })  
+                });
+            }
+            else{
+                $http({
+                url: config.serverAddress + 'registerToken',
+                method: 'POST',
+                data: {'user':$rootScope.currentUser._id, 'deviceToken':'web access', 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              }) 
+            }
+            
+
+  },*/
 	getCircoli: function(){
 		return $http({
 		  url: config.serverAddress + 'api/circolo',
@@ -164,12 +232,12 @@ angular.module('starter.servicesREST', [])
         today.setSeconds(0);
         today.setMilliseconds(0);
 		  
-		return $http({
-		  url: config.serverAddress + 'api/v1/findCallToAction',
-		  method: 'POST',
-		  data: {'circolo':$rootScope.currentUser.circolo._id, 'date': today}
-		})
-        },
+        return $http({
+          url: config.serverAddress + 'api/v1/findCallToAction',
+          method: 'POST',
+          data: {'circolo':$rootScope.currentUser.circolo._id, 'date': today}
+        })
+    },
     //**********************ACCOUNT*******************
 	findMyBookings: function(){
         var promises = [];
@@ -213,13 +281,13 @@ angular.module('starter.servicesREST', [])
 		})
 
         },
-    countMyInvitations: function(){
-          return $http({
-			  url: config.serverAddress + 'api/v1/countMyInvitations',
-			  method: 'POST',
-			  data: {'user':$rootScope.currentUser._id}
-          })
-	  },
+  countMyInvitations: function(){
+        return $http({
+      url: config.serverAddress + 'api/v1/countMyInvitations',
+      method: 'POST',
+      data: {'user':$rootScope.currentUser._id}
+        })
+  },
 	findMyGameNotPayed: function(){
 		  
 		var promises = [];
@@ -297,16 +365,16 @@ angular.module('starter.servicesREST', [])
 		//return notifications
 		
 	},
-    sendMessageBookingUsers: function(booking,messagex){
-		
-		$http({
-				  url: config.serverAddress + 'api/v1/sendMessageBookingUsers',
-				  method: 'POST',
-				  data: {'booking': booking._id, 'message':messagex}
-		})
-			
-           
-     },
+  sendMessageBookingUsers: function(booking,messagex){
+  
+    $http({
+          url: config.serverAddress + 'api/v1/sendMessageBookingUsers',
+          method: 'POST',
+          data: {'booking': booking._id, 'message':messagex}
+    })
+    
+          
+  },
 	courtsView: function(datex,gameType){
 
             //console.log(datex)
@@ -391,7 +459,7 @@ angular.module('starter.servicesREST', [])
 		  
           
         },
-    payTessera: function(user,booking,qty){
+    payTessera: function(booking){
 
           /*KKK Scommentare quando verrà abilitato pagamento tessere
           ed inserire questo option button nella pagina tab account (modal saldare.html):
@@ -527,106 +595,34 @@ angular.module('starter.servicesREST', [])
 	  		})
 		  
             
-        },
+  },
 		
-  	findInvitationAlredySentForBooking: function(bookingId){
+  findInvitationAlredySentForBooking: function(bookingId){
 
-        return $http({
-          url: config.serverAddress + 'api/v1/findInvitationAlredySentForBooking',
-          method: 'POST',
-          data: {'bookingId': bookingId}
-	  		})
+      return $http({
+        url: config.serverAddress + 'api/v1/findInvitationAlredySentForBooking',
+        method: 'POST',
+        data: {'bookingId': bookingId}
+      })
 
-        },
+  },
 
-      /*statsByBookingAndMonth:function(month,year){
-          
-          return $http({
-            url: config.serverAddress + 'api/v1/statsByBookingAndMonth',
-            method: 'POST',
-            data: {'month': month,'year':year}
-	  		  })
-        },*/
-
-        statsByBookingAndYear:function(year){
-          console.log($rootScope.currentUser.circolo)
-          return $http({
-            url: config.serverAddress + 'api/v1/statsByBookingAndYear',
-            method: 'POST',
-            data: {'year':year,'circolo': $rootScope.currentUser.circolo}
-	  		  })
-        },
-
-	  createInstallationObject: function(){
-
-
-            var push = new Ionic.Push({
-              "debug": false,
-              "onNotification": function(notification) {
-                var payload = notification.payload;
-                console.log('notifica.....')
-				console.log(notification)
-                $ionicLoading.show({ template: notification.text, duration:3000 });
-
-                //alert(notification, payload);
-				try{
-					if (window.localStorage['notifications'] == null){
-					var notifications = {messages:[]}
-					window.localStorage['notifications'] = JSON.stringify(notifications)
-					}
-					var notifications = JSON.parse(window.localStorage['notifications'])
-					var id = (new Date()).getTime()
-					notifications.messages.push({_id:id, date:new Date(), message:notification.text })
-					window.localStorage['notifications'] = JSON.stringify(notifications)
-					$rootScope.notificationCount = notifications.messages.length 
-				}
-				catch(error){
-					console.log(error)
-				}
-				
-				
-              },
-              "onRegister": function(data) {
-                console.log(data.token);
-              },
-              "pluginConfig": {
-                "ios": {
-                  "badge": true,
-                  "sound": true
-                 },
-                 "android": {
-
-                 }
-              } 
-            });
-			console.log('********registerToken********:' + $rootScope.platform)
-			if ($rootScope.platform == 'ios' || $rootScope.platform == 'android'){
-				push.register(function(token) {
-                console.log("Device token:",token.token);
-				window.localStorage['deviceToken'] = token.token
-				$http({
-					url: config.serverAddress + 'registerToken',
-					method: 'POST',
-					data: {'user':$rootScope.currentUser._id, 'deviceToken':token.token, 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
-					headers: {
-					   'Content-Type': 'application/json'
-					 }
-				 	})  
-            	});
-			}
-			else{
-				 /*$http({
-					url: config.serverAddress + 'registerToken',
-					method: 'POST',
-					data: {'user':$rootScope.currentUser._id, 'deviceToken':'web access', 'jwtToken': window.localStorage['token'],'deviceType':$rootScope.platform},
-					headers: {
-					   'Content-Type': 'application/json'
-					 }
-				 })*/  
-			}
-            
-
-        },
+  /*statsByBookingAndMonth:function(month,year){
+      
+      return $http({
+        url: config.serverAddress + 'api/v1/statsByBookingAndMonth',
+        method: 'POST',
+        data: {'month': month,'year':year}
+      })
+    },*/
+  statsByBookingAndYear:function(year){
+      console.log($rootScope.currentUser.circolo)
+      return $http({
+        url: config.serverAddress + 'api/v1/statsByBookingAndYear',
+        method: 'POST',
+        data: {'year':year,'circolo': $rootScope.currentUser.circolo}
+      })
+  },
 	setPreferred: function(user){
 		  console.log(user)
 		  return $http({
@@ -703,8 +699,8 @@ angular.module('starter.servicesREST', [])
           _.remove(collection, function(object){
               return object._id == item._id
           })
-        }
-   	  //*****************TODO**********************
+  }
+  //*****************TODO**********************
 	  /*
         statsByBookingAndMonth:function(month,year){
           //console.log(month)

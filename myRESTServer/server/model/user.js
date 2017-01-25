@@ -23,9 +23,11 @@ var userSchema = new Schema({
   updated_at: Date,
   level: String,
   status: String,
-  preferences: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  jwtToken: String,
+  username: { type: String, required: true ,  unique: true }
+  /*preferences: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   image: String,
-  installations: [installationSchema]
+  installations: [installationSchema]*/
 });
 
 
