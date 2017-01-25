@@ -6,7 +6,8 @@ var mailgun = new Mailgun({apiKey: apiKey, domain:'sandboxb318624be69540219e6c0e
 var myfunction = {
 
 	sendMessage : function(email,message){
-		
+	
+    console.log("sendMessage 00000 ");
 	var data = {
     //Specify email data
       from: 'magicpadel@magicpadel.it',
@@ -16,7 +17,7 @@ var myfunction = {
       subject: 'Magic Booking',
       html: message
     }
-
+    console.log("sendMessage 1111 ");
     //Invokes the method to send emails given the above data with the helper library
     mailgun.messages().send(data, function (err, body) {
         //If there is an error, render the error page

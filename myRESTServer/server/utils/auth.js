@@ -166,18 +166,21 @@ var auth = {
 	  User.findOne({email:email}).then(
 	  function(user){
 		  //**********************
-		  if (user == null || user.installations && user.installations.length == 0){
+		  if (user == null /*|| user.installations && user.installations.length == 0 */){
 			  res.status(500).send('Ops! Utente non esistente')
 			  return
 		  }
 		  var installation = user.installations[0]
-		  
+		  console.log('requestPasswordReset...11111')
 		  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://localhost:8080/#/resetPwd/"  + email + "/" + installation.jwtToken + "'>fai click qui per procedere!</a>")
 		  res.json({
 				  "status": 200,
 				  "message": "Ok, mail sent!"
 				});
+			console.log('requestPasswordReset...2222')
+			
 		  }
+			
 		  //**********************
 	  ,function (err){
 		  res.status(500).send('Ops! Utente non esistente')
