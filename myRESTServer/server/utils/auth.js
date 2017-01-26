@@ -116,7 +116,7 @@ var auth = {
 			var userToken = genToken(user)
 			user.jwtToken = userToken.token
 			user.save()
-		  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://localhost:8080/#/resetPwd/"  + email + "/" + user.jwtToken + "'>fai click qui per procedere!</a>")
+		  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://178.62.243.221:8080/#/resetPwd/"  + email + "/" + user.jwtToken + "'>fai click qui per procedere!</a>")
 		  res.json({
 				  "status": 200,
 				  "message": "Ok, mail sent!"
