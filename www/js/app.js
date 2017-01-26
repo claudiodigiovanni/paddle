@@ -333,7 +333,7 @@ templateUrl: 'templates/privacy.html'
   .state('gameType', {
 url: '/gameType',
 cache: true,
-templateUrl: 'templates/setGameType.html',
+templateUrl: 'templates/setGametype.html',
 controller: 'gameTypeController'
 });
 
