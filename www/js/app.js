@@ -115,7 +115,7 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
   slotsNumber: 48,
   playersLevels:6,
   serverAddress: 'http://178.62.243.221:3000/',
-  webServerAddress: 'http://178.62.243.221:8081/'
+  webServerAddress: 'http://178.62.243.221:8080/'
   //serverAddress: 'http://localhost:3000/',
   //webServerAddress: 'http://localhost:8080/'
 
