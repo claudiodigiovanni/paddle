@@ -113,11 +113,14 @@ var auth = {
 			  res.status(500).send('Ops! Utente non esistente o non abilitato.')
 			  return
 		  }
-			var userToken = genToken(user)
+			/*var userToken = genToken(user)
 			user.jwtToken = userToken.token
-			user.save()
-		  mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://178.62.243.221:8080/#/resetPwd/"  + email + "/" + user.jwtToken + "'>fai click qui per procedere!</a>")
-		  res.json({
+			user.save()*/
+		  
+			mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://178.62.243.221:8080/#/resetPwd/"  + email + "/" + user._id + "'>fai click qui per procedere!</a>")
+		  //mail.sendMessage(email,"Hai richiesto il reset della tua password. <a href='http://localhost:8080/#/resetPwd/"  + email + "/" + user._id + "'>fai click qui per procedere!</a>")
+		  
+			res.json({
 				  "status": 200,
 				  "message": "Ok, mail sent!"
 				});
@@ -130,7 +133,7 @@ var auth = {
 	  })
   },
 	resetPwd:function(req, res,next){
-	  User.findOne({email : req.body.user, jwtToken: req.body.token}).exec(function (err, user) {
+	  User.findOne({email : req.body.user, _id: req.body.token}).exec(function (err, user) {
 		if (err) {
 			next(err)
 			return
