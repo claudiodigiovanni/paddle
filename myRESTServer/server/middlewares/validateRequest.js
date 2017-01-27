@@ -22,7 +22,7 @@ module.exports = function(req, res, next) {
 					validateUser(key).then(function(user){
 					
 					//	var payload = { foo: 'bar1' };
-					if (user && decoded && decoded.foo == 'bar1') {
+					if (user && user.enabled && decoded && decoded.foo == 'bar1') {
 							req.user = user
 							next()
 					}
