@@ -372,6 +372,13 @@ $scope.undo = function(){
 }
 $scope.changePassword = function() {
   console.log('changePassword.....')
+  if (currentUser.newPassword == ""){
+    $ionicPopup.alert({
+             template: 'Nuova Password obbligatoria!'
+        });
+    return
+  }
+    console.log('changePassword.....continue')
     MyObjectsREST.resetPwd(currentUser.newPassword,$stateParams.user,$stateParams.token).then(
     function(response){
       console.log(response)
