@@ -29,6 +29,7 @@
 
     <div class="row item courtsViewFont">
       <div class="col"><i class="icon ion-search" ng-click=""></i> Nome</div>
+      <div class="col"><b>Email</b></div>
       
       <div class="col"><b>Telefono</b></div>
       <div class="col"><b>Data Iscriz.</b></div>
@@ -42,10 +43,12 @@
 
       <div class="row item courtsViewFont" ng-repeat="user in myresults">
         <div class="col"><i class="icon ion-search" ng-click=""></i>  {{user.nome}}</div>
+        <div class="col">{{user.email}}</div>
         
         <div class="col">{{user.phoneNumber}}</div>
         <div class="col">{{user.created_at | date: 'dd/MM/yyyy'}}</div>
-        <div class="col">{{user.level}} <i class="icon ion-edit energized my-ion-checkmark-circled" ng-click="changeLevelOpen(user)"></i></div> 
+        <div class="col">{{user.level}} </div> 
+        <!--<div class="col">{{user.level}} <i class="icon ion-edit energized my-ion-checkmark-circled" ng-click="changeLevelOpen(user)"></i></div> -->
         <div class="col"><i class="icon my-ion-checkmark-circled {{user.enabled== true ? 'ion-thumbsup' : 'ion-thumbsdown'}}" ng-click="enabling(user)"></i> </div>
         <!--<div class="col">{{user.residualCredit}}</div>
         
