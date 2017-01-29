@@ -1843,6 +1843,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
 
   $scope.setGameType = function(index){
     $scope.gameType = index
+    console.log("setGameType:" + index)
     
   }
 
@@ -1949,6 +1950,8 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
     var gameType = $stateParams.gameType
     $scope.datex = Utility.formatDate(new Date(datex))
 
+    console.log("........pppppp" + gameType)
+
   //******************************Variabile usata per creare nuova prenotazione******************
     var mybooking = {};
     mybooking.gameType = gameType;
@@ -1965,8 +1968,12 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
     $scope.message = message
     
 
-    var courtsNumber = $rootScope.gameTypes[gameType].courtsNumber
-    $scope.courts = _.range(1,parseInt(courtsNumber) + 1)
+    //var courtsNumber = $rootScope.gameTypes[gameType].courtsNumber
+    var courtsNames = $rootScope.gameTypes[gameType].courtsNames
+    console.log('courtsNames:' + courtsNames)
+    $scope.courtsNames = courtsNames
+
+    //$scope.courts = _.range(1,parseInt(courtsNumber) + 1)
 
     var init = function(){
       $scope.waiting = "...."
@@ -1975,6 +1982,7 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
       MyObjectsREST.courtsView(d, gameType)
       .then(function(results){
         $scope.waiting = null
+        console.log("response...." + results)
         $scope.myresults = results
         //$scope.$apply() 
       })
