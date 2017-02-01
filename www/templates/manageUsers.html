@@ -3,7 +3,9 @@
 <h1 class="title">Gestione Utenti</h1>
  </ion-header-bar>
 
- <div class="bar bar-header bar-subheader custom">
+<br>
+
+ <div class="center">
         <ion-item> {{message}} </ion-item>
         <div class="center">
             <ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner> 
@@ -12,12 +14,12 @@
     <label class="item-input-wrapper">
       <input type="text" placeholder="nome " ng-model="userToSearch.nome" ng-change="clear()">
     </label>
-    <button class="button button-positive" ng-click="findUsers()">
-      Cerca (max 20 record)
+    <button class="button button-small button-positive" ng-click="findUsers()">
+      Cerca (max 20)
     </button>
     
-    <button class="button button-assertive " ng-click="getUsersToEnable()">
-      Utenti da abilitare..
+    <button class="button button-small button-assertive " ng-click="getUsersToEnable()">
+      Utenti da abilit.
     </button>
   </div>
  </div>

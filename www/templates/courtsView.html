@@ -5,7 +5,7 @@
   <h1 class="title">Vista Campi {{datex}}</h1>
 </ion-header-bar>
 
-<div class="bar bar-header bar-subheader custom">
+<br><br>
 <div class="center"><ion-spinner class="spinnerx" icon="dots" ng-show="waiting"></ion-spinner></div>
 <h5>{{message}}</h5>
       <div class="item item-input-inset">
@@ -13,12 +13,12 @@
           <input type="text" placeholder="nome (note)" ng-model="mybooking.note" ng-change="clear()">
         </label>
         <button class="button button-small positive" ng-click="book()">
-          Conferma...
+          ok
         </button>
-        <button class="button button-energized " ng-click="updateView()">
+        <button class="button button-small button-energized " ng-click="updateView()">
           Aggiorna
         </button>&nbsp;&nbsp;
-        <button class="button button-positive " ng-click="gotoStatistics()">
+        <button class="button button-small button-positive " ng-click="gotoStatistics()">
           Indietro
         </button>&nbsp;&nbsp;
         
@@ -27,7 +27,7 @@
         <div class="col">Orario</div>
          <div class="col" ng-repeat="court in courtsNames">{{court}} </div>
       </div>
-</div>
+
 
 <ion-content class="has-header has-subheader-custom" scroll="true">
 

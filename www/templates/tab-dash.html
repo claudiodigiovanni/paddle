@@ -7,9 +7,9 @@
       <div class="item item-body">
       <ion-spinner class="spinnerx" icon="dots" ng-show="! text0"></ion-spinner> 
            <p ng-bind-html="text0"></p>
-          <button class="button button-small button-positive" ng-click="openModal(0)" ng-show="userRole == 'admin'">
+          <!--<button class="button button-small button-positive" ng-click="openModal(0)" ng-show="userRole == 'admin'">
               Edit
-          </button>
+          </button>-->
       </div>
     </div>
     <div class="list card">
@@ -17,9 +17,9 @@
       <div class="item item-body">
               <ion-spinner class="spinnerx" icon="dots" ng-show="! text1"></ion-spinner> 
              <p ng-bind-html="text1"></p>
-            <button class="button button-small button-positive" ng-click="openModal(1)" ng-show="userRole == 'admin'">
+           <!-- <button class="button button-small button-positive" ng-click="openModal(1)" ng-show="userRole == 'admin'">
               Edit
-            </button>
+            </button>-->
       </div>
     </div>
     <div class="list card">
@@ -27,12 +27,12 @@
       <div class="item item-body">
       <ion-spinner class="spinnerx" icon="dots" ng-show="! text2"></ion-spinner> 
              <p ng-bind-html="text2"></p>
-            <button class="button button-small button-positive" ng-click="openModal(2)" ng-show="userRole == 'admin'">
+           <!-- <button class="button button-small button-positive" ng-click="openModal(2)" ng-show="userRole == 'admin'">
               Edit
-            </button>
+            </button>-->
       </div>
     </div>
-    <h6>ver. 2.0.1</h6>
+    <h6>ver. 2.2.0</h6>
   </ion-content>
 
   <script id="edit.html" type="text/ng-template">
@@ -46,9 +46,9 @@
         <textarea  ng-model="edit.text"></textarea>
       </label>
 
-      <button class="button button-block button-positive" ng-click="closeModal()">
+      <!--<button class="button button-block button-positive" ng-click="closeModal()">
         Invia
-      </button>
+      </button>-->
 
       </ion-content>
     </div>
