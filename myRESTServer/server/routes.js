@@ -77,8 +77,36 @@ router.post('/api/v1/dashboardText', function(req, res,next) {
 
 });
 
+//*************************BOT API**************************************
+router.post('/botApi/v1/createBooking', function(req, res,next){
+	var emailUser = req.body.book.email
+	User.findOne({"email":emailUser}, function(err,user){
+		req.body.book.user = user
+		console.log('*********************************')
+		//console.log(req.body.book)
+		createBookingCallback(req, res,next)	
+	})
+	
+});
+router.post('/botApi/v1/checkBeforeCreateBooking', function(req, res,next){
+	
+	checkBeforeBookingCallback(req, res,next)
+})
 
-router.post('/api/v1/checkBeforeCreateBooking', function(req, res,next) {
+router.post('/botApi/v1/findMyBookings', function(req, res,next){
+
+	var emailUser = req.body.userEmail
+	User.findOne({"email":emailUser}, function(err,user){
+		req.body.user = user
+		console.log('*********************************')
+		//console.log(req.body.book)
+		findMyBookingsCallback(req, res,next)	
+	})
+})
+//**********************************************************************
+
+function checkBeforeBookingCallback(req,res,next) {
+	console.log('checkBeforeBookingCallback')
 	var date = new Date(req.body.date)
 	var ranges = req.body.ranges
 	var gameT = req.body.gameT
@@ -163,7 +191,7 @@ router.post('/api/v1/checkBeforeCreateBooking', function(req, res,next) {
 			
 			defer.promise.then(function(results){
 				
-				res.json({status:200,data:results})
+				res.json({status:200,data:results,slot1:ranges[0]})
 				return
 			},function(error){
 				
@@ -174,7 +202,10 @@ router.post('/api/v1/checkBeforeCreateBooking', function(req, res,next) {
 		})
 	//*****************************************************
 	
-});
+}
+
+router.post('/api/v1/checkBeforeCreateBooking', checkBeforeBookingCallback);
+
 router.post('/api/v1/findBookingsInDate', function(req, res,next) {
 	logger.debug(req.body)
 	Booking.find({ 'date': req.body.date, 'circolo':req.body.circolo, 'gameType':req.body.gameType })
@@ -258,7 +289,8 @@ router.post('/api/v1/findaAvalaibleRangesInDate', function(req, res,next) {
 		
 		})            
 });
-router.post('/api/v1/createBooking', function(req, res,next) {
+
+function createBookingCallback(req, res,next) {
 	var obj = new Booking()
 	utils.copyProperties(req.body.book,obj)
 	
@@ -308,19 +340,22 @@ router.post('/api/v1/createBooking', function(req, res,next) {
 		res.json({succes: true, data: obj});
 	});
 	
-});
-router.post('/api/v1/findMyBookings-part1', function(req, res,next) {
-	
-	
+}
+
+router.post('/api/v1/createBooking', createBookingCallback );
+
+function findMyBookingsCallback(req, res,next){
 	Booking.find({ 'user':req.body.user, 'date': {$gte: req.body.date} })
 		.sort('-date')
 		.populate('players user')
 		.exec( function (err, bookings) {
 		  res.json({data: bookings});
 		})
-	
-            
-});
+
+}
+
+router.post('/api/v1/findMyBookings-part1', findMyBookingsCallback);
+
 router.post('/api/v1/findMyBookings-part2', function(req, res,next) {
 	
 	

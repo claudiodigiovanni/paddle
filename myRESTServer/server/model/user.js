@@ -24,7 +24,8 @@ var userSchema = new Schema({
   level: String,
   status: String,
   jwtToken: String,
-  username: { type: String, required: true ,  unique: true }
+  username: { type: String, required: true ,  unique: true },
+  botEnabled: {type:Boolean, default: false}
   /*preferences: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   image: String,
   installations: [installationSchema]*/

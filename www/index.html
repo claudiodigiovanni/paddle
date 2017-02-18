@@ -138,6 +138,9 @@
          <ion-item nav-clear="" menu-close="" href="#/manageUsers" ng-show="userRole == &apos;admin&apos; || userRole == &apos;segreteria&apos;">
           Gestione Utenti
         </ion-item>
+         <ion-item nav-clear="" menu-close="" href="https://telegram.me/mybooking_bot?start={{currentUser.email}}:{{currentUser.nome}}:axsdfgtg21" ng-show="currentUser.botEnabled == true">
+          Avvia BOT
+        </ion-item>
 
         
       </ion-list>
