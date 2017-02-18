@@ -72,6 +72,12 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
             $rootScope.currentUser = currentUser;
 			      $rootScope.userRole = currentUser.role
+            try {
+                $rootScope.nomeWithoutSpaces = currentUser.nome.replace(/\s+/g,'')
+            }
+            catch(err) {
+                $rootScope.nomeWithoutSpaces = "bello"
+            }
 
             if ($rootScope.gameTypes == null){
                 var circolo = JSON.parse(window.localStorage['user']).circolo
