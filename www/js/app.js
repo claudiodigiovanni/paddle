@@ -6,7 +6,7 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 
-
+ 
 angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ngCordova','ionic.service.deploy', 'ngIOS9UIWebViewPatch', 'starter.controllers',  'starter.servicesREST','starter.directives','starter.filters','vcRecaptcha'])
 
 .run(function($ionicPlatform,$rootScope, $state,$cordovaSplashscreen,$timeout,$ionicLoading,MyObjectsREST,Utility,$ionicPush) {
@@ -120,10 +120,12 @@ angular.module('starter', ['ionic','ionic.service.core','ionic.service.push','ng
 
   slotsNumber: 48,
   playersLevels:6,
- serverAddress: 'http://185.58.194.123:3000/',
- webServerAddress: 'http://185.58.194.123:8080/'
- // serverAddress: 'http://localhost:3000/',
- // webServerAddress: 'http://localhost:8080/'
+  //serverAddress: 'http://178.62.243.221:3000/',
+  //webServerAddress: 'http://178.62.243.221:8080/'
+ //serverAddress: 'http://185.58.194.123:3000/',
+ //webServerAddress: 'http://185.58.194.123:8080/'
+ serverAddress: 'http://localhost:3000/',
+ webServerAddress: 'http://localhost:8080/'
 
 })
 

@@ -5,12 +5,26 @@ var GCM = require('gcm').GCM;
 var apiKey = 'AIzaSyC8yrIrtBJykLJKBoRvMwVP2-s2Yab1Qr8';
 var gcm = new GCM(apiKey);
 
+var mail = require('./mailgun.js')
+
 
 
 var myfunction = {
 	
 	pushMessage : function(user,message){
 			console.log('pushMessage')
+			User.findById(user).exec(function(err,user){
+				var email = user.email
+				console.log('xxxxx')
+				mail.sendMessage(email,message)
+			})
+	}
+		
+}		
+			
+module.exports = myfunction 
+			
+
 		/*	var mx = message
 			
 			
@@ -75,7 +89,7 @@ var myfunction = {
 				})	
 			})*/
 	
-		}
+/*		}
 
 }
 	
@@ -85,6 +99,7 @@ var myfunction = {
 	
 
 module.exports = myfunction 
+*/
 
 
 /*

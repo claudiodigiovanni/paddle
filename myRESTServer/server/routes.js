@@ -398,15 +398,18 @@ router.post('/api/v1/addCallToActionPlayer', function(req, res,next) {
 		.populate('players')
 		.exec( function (err, booking) {
 		
-			/* var numPlayers = booking.playersNumber
+			 var numMissingPlayers = booking.playersNumber - 1
 			 console.log('222222')
-			 if (booking.callToAction == true && booking.players.length == numPlayers ){
+			 console.log(booking.callToAction)
+			 console.log(booking.players.length)
+			 console.log(numMissingPlayers)
+			 if (booking.callToAction == true && (booking.players.length - 1 == numMissingPlayers)){
 				 var players = booking.players
 				_.each(players,function(item){
 					console.log("invio comunicazione utente...")
-					//pushMessage(item, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
+					pushMessage(item._id, "La Partita del "  + date.format("DD/MM/YYYY")  + " si farà!")
 				})
-			 }*/
+			 }
 		  	defer.resolve(booking)
 		  	
 		}) 
@@ -672,18 +675,35 @@ router.post('/api/v1/changeUserLevel', function(req, res,next) {
 
 //Se l'utente in sessione ha ruolo admin o segreteria elimino e basta
 //KKK eliminare le invitations
-//Se l'utente in sessione è l'organizzatore la partita viene cancellata
+//Se l'utente in sessione è l'organizzatore e mancano più di 24h la partita viene cancellata, altrimenti no...
 // Se l'utente in sessione è stato invitato viene tolto dai players
 router.post('/api/v1/deleteBooking', function(req, res,next) {
 	
 	Booking.findById(req.body.booking)
 			.populate('players')
 			.exec( function (err, booking) {
+
+				var bookingDate = moment(new Date(booking.date))
+				var nowPlus24h = moment().add(1,'days')
+
+				logger.debug('comparo date!!!!')
+				logger.debug (nowPlus24h.isAfter(bookingDate))
+
 			  logger.debug('User changeUserLevel saved successfully!');
 			  var user = req.body.user
-			  if (req.body.role == 'admin' || req.body.role == 'segreteria' || user == booking.user){
+			  if (req.body.role == 'admin' || req.body.role == 'segreteria' ){
 				  booking.remove();  
 				  res.json({message:'ok'})
+				  return
+				}
+				if ( user == booking.user && nowPlus24h.isBefore(bookingDate)){
+				  booking.remove();  
+				  res.json({message:'ok'})
+				  return
+				}
+				if ( user == booking.user && nowPlus24h.isSameOrAfter(bookingDate)){
+				  
+				  res.json({message:'notok'})
 				  return
 			  }
 			  booking.update({$pull: {players:{_id: user}}})
@@ -781,11 +801,11 @@ router.post('/api/v1/sendMessageBookingUsers', function(req, res,next) {
 		 var players = booking.players
 		_.each(players,function(p){
 			console.log("sending Message....")
-			pushMessage(p, req.body.message)
+			pushMessage(p._id, req.body.message)
 		  })
 
 		if (! booking.callToAction){
-			pushMessage(booking.user, req.body.message)
+			pushMessage(booking.user._id, req.body.message)
 		 }
 		res.json({success:true})
 	})

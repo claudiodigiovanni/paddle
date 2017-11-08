@@ -1211,8 +1211,23 @@ angular.module('starter.controllers', ['chart.js','ngCordova'])
     $scope.waitingMyBookings = "......"
     $rootScope.openLoading()
       MyObjectsREST.deleteBooking(item)
-      .then(function(){
-        MyObjectsREST.deleteObjectFromCollection(item,$scope.bookings)
+      .then(function(response){
+        var r = response.data.message
+        
+        console.log( r )
+        if (r == 'notok'){
+          var alertPopup = $ionicPopup.alert({
+            title: 'ops.....',
+            template: "Non puoi effettuare la cancellazione perchè mancano meno di 24h all'evento."
+          });
+          alertPopup.then(function(res) {
+ 
+          });
+        }
+        else{
+          MyObjectsREST.deleteObjectFromCollection(item,$scope.bookings)
+        }
+        
         $scope.waitingMyBookings = null
         $rootScope.closeLoading()
         //$scope.$apply()
