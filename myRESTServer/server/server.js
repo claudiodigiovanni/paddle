@@ -30,8 +30,9 @@ process.on('uncaughtException', function (err) {
 
 
 mongoose.set('debug', true);
-//mongoose.connect("mongodb://mybooking:mareblu69030303@127.0.0.1:27017/paddle");
-mongoose.connect("mongodb://127.0.0.1:27017/mybooking");
+mongoose.connect("mongodb://mybooking:mareblu69030303@127.0.0.1:27017/paddle");
+//mongoose.connect("mongodb://mybooking:mareblu69030303@http://185.58.194.123:27017/paddle");
+//mongoose.connect("mongodb://127.0.0.1:27017/mybooking");
 mongoose.connection.on('error', function () {
     debug('Mongoose connection error');
 });
