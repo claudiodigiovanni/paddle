@@ -1,7 +1,6 @@
 // grab the things we need
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
 var Circolo = require('./circolo.js');
 var installationSchema = require('./installation.js').installationSchema;
 var Schema = mongoose.Schema;

@@ -95,7 +95,17 @@ i.ion-social-pinterest-outline {
 
 
 
+.courtsViewFontTest{
 
+  
+  font-size: 10px;
+  /*background-color:#f5f5f5;*/
+  font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
+
+text-rendering: optimizeLegibility;
+color: #444;
+
+}
 
 .courtsViewFont{
 
